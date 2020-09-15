@@ -3,4 +3,10 @@
     <string name="quick_access">Quick Access</string>
     <string name="quick_workout_button">Quick Workout</string>
     <string name="your_workouts_header">Your Workouts</string>
+    <string name="rest">Rest</string>
+    <string name="skip">Skip</string>
+    <string name="remaining_time">Remaining Time</string>
+    <string name="time">Time</string>
+    <string name="done">Done!</string>
+    <string name="start_3min_timer">3min Timer</string>
 </resources>
