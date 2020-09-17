@@ -7,6 +7,7 @@ public class Exercise {
 
     private String name;
     private EXTYPE type;
+    private int parameter;//weight for weighted exercises, duration for duration-based exercises
 
     public Exercise(String name, EXTYPE type) {
         this.name = name;
@@ -19,5 +20,13 @@ public class Exercise {
 
     public EXTYPE getType() {
         return type;
+    }
+
+    public void setParameter(int x) {
+        this.parameter = x;
+    }
+
+    public int getParameter() {
+        return this.parameter;
     }
 }

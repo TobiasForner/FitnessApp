@@ -12,4 +12,5 @@
     <string name="workout">Workout</string>
     <string name="log_button">Log</string>
     <string name="weight">Weight</string>
+    <string name="weight_unit">kg</string>
 </resources>

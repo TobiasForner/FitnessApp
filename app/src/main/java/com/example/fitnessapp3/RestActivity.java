@@ -28,7 +28,7 @@ public class RestActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         if ("WorkoutActivity".equals(Objects.requireNonNull(intent.getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
-            nextIntent = new Intent(this, RestActivity.class);
+            nextIntent = new Intent(this, WorkoutActivity.class);
         } else {
             nextIntent = new Intent(this, MainActivity.class);
         }
@@ -57,7 +57,7 @@ public class RestActivity extends AppCompatActivity {
 
     public void skipTimer(View view) {
         timer.cancel();
-        startActivity(nextIntent);
+        timer.onFinish();
     }
 
 
