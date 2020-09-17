@@ -32,6 +32,7 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
     public void logExercise(View view) {
+        //TODO write file logger for exercises
         CurrentWorkout.position += 1;
         if (CurrentWorkout.hasNextExercise()) {
             if(CurrentWorkout.getNextExercise().getType()== Exercise.EXTYPE.REST){

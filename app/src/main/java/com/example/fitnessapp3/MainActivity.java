@@ -3,8 +3,18 @@ package com.example.fitnessapp3;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.util.AttributeSet;
 import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
@@ -15,10 +25,25 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        LinearLayout linear = findViewById(R.id.workout_linear_layout);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        List<String> workoutList=new ArrayList<>(Objects.requireNonNull(sharedPreferences.getStringSet("Workouts", new HashSet<String>())));
+        for(String s:workoutList){
+            Button b = new Button(this);
+            b.setText(s);
+            b.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startWorkout(v);
+                }
+            });
+            linear.addView(b);
+
+        }
     }
 
-    public void startWorkout(View view){
-        CurrentWorkout.initExercises();
+    public void startWorkout(View view) {
+        CurrentWorkout.init();
         Intent intent = new Intent(this, WorkoutActivity.class);
         startActivity(intent);
     }
