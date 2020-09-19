@@ -6,7 +6,13 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 public class CurrentWorkout {
     public static Exercise[] exercises;
@@ -42,20 +48,28 @@ public class CurrentWorkout {
 
     public static void finishWorkout(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+
+        Set<String> lastWorkoutDef = new HashSet<>();
+        Set<String> workoutResults = Objects.requireNonNull(sharedPreferences.getStringSet(workoutName + "_results", lastWorkoutDef));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd.hh-mm:", Locale.getDefault());
+        Date today = Calendar.getInstance().getTime();
+        String date = dateFormat.format(today);
+        workoutResults.add(date + currentWorkout);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(workoutName + "last_result", currentWorkout);
+        editor.putStringSet(workoutName + "_results", workoutResults);
         editor.apply();
+
     }
 
     public static void init(String workoutName, Activity activity) {
+        currentWorkout = "";
+        useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         String[] exStrings = Objects.requireNonNull(sharedPreferences.getString(workoutName, "")).split(";");
         position = 0;
-        /*
-        Set<String> lastWorkoutDef = new HashSet<>();
-        List<String> workoutResults = new ArrayList<>(Objects.requireNonNull(sharedPreferences.getStringSet(workoutName + "_results", lastWorkoutDef)));
-        java.util.Collections.sort(workoutResults);*/
+
         exercises = new Exercise[exStrings.length];
         for (int i = 0; i < exStrings.length; i++) {
             exercises[i] = processExercise(exStrings[i]);
