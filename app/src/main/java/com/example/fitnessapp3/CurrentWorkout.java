@@ -5,11 +5,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+
 import java.util.Objects;
-import java.util.Set;
 
 public class CurrentWorkout {
     public static Exercise[] exercises;

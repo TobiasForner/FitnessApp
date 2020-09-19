@@ -7,8 +7,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
 
 public class WorkoutActivity extends AppCompatActivity {
 
