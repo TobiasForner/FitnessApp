@@ -1,5 +1,6 @@
 package com.example.fitnessapp3;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -43,10 +44,11 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
     public void logExercise(View view) {
-        CurrentWorkout.position += 1;
+
         TextView exNum = findViewById(R.id.exerciseNumberInput);
         TextView repNum = findViewById(R.id.repNumberInput);
-        CurrentWorkout.currentWorkout += exNum.getText() + "," + repNum.getText() + ";";
+        CurrentWorkout.currentWorkout[CurrentWorkout.position] = exNum.getText() + "," + repNum.getText() + ";";
+        CurrentWorkout.position += 1;
         if (CurrentWorkout.hasNextExercise()) {
             if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.REST) {
                 Intent intent = new Intent(this, RestActivity.class);
@@ -64,4 +66,11 @@ public class WorkoutActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
+    public void onBackPressed() {
+        CurrentWorkout.goBack();
+        super.onBackPressed();
+    }
+
+
 }

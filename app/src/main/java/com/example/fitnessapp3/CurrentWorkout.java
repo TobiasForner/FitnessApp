@@ -20,7 +20,7 @@ public class CurrentWorkout {
     public static String[] lastWorkout;
     public static String workoutName;
     public static boolean useLastWorkout;
-    public static String currentWorkout = "";
+    public static String[] currentWorkout;
 
     private static Exercise processExercise(String exString) {
         String[] info = exString.split(",");
@@ -54,22 +54,23 @@ public class CurrentWorkout {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd.hh-mm:", Locale.getDefault());
         Date today = Calendar.getInstance().getTime();
         String date = dateFormat.format(today);
-        workoutResults.add(date + currentWorkout);
+        workoutResults.add(date + String.join("", currentWorkout));
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(workoutName + "last_result", currentWorkout);
+        editor.putString(workoutName + "last_result", String.join("", currentWorkout));
         editor.putStringSet(workoutName + "_results", workoutResults);
         editor.apply();
 
     }
 
     public static void init(String workoutName, Activity activity) {
-        currentWorkout = "";
+
         useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         String[] exStrings = Objects.requireNonNull(sharedPreferences.getString(workoutName, "")).split(";");
         position = 0;
 
+        currentWorkout = new String[exStrings.length];
         exercises = new Exercise[exStrings.length];
         for (int i = 0; i < exStrings.length; i++) {
             exercises[i] = processExercise(exStrings[i]);
@@ -98,5 +99,11 @@ public class CurrentWorkout {
             throw new IllegalArgumentException("No next exercise!");
         }
         return exercises[position];
+    }
+
+    public static void goBack() {
+        if (position > 0) {
+            position -= 1;
+        }
     }
 }

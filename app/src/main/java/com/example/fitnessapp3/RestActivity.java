@@ -1,5 +1,6 @@
 package com.example.fitnessapp3;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,13 +19,17 @@ import java.util.Objects;
 public class RestActivity extends AppCompatActivity {
     CountDownTimer timer;
     Intent nextIntent;
+    int millisForTimer;
+    int timeElapsed = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rest);
-
+        if(savedInstanceState!=null){
+            timeElapsed = savedInstanceState.getInt("timeElapsed");
+        }
 
         Intent intent = getIntent();
         if ("WorkoutActivity".equals(Objects.requireNonNull(intent.getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
@@ -33,22 +38,22 @@ public class RestActivity extends AppCompatActivity {
             nextIntent = new Intent(this, MainActivity.class);
         }
 
-        int millisForTimer = intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000);
-        CurrentWorkout.currentWorkout += millisForTimer + ";";
+        millisForTimer = intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000) - timeElapsed;
         final TextView timeRemaining = findViewById(R.id.textView5);
         timer = new CountDownTimer(millisForTimer, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);
+                timeElapsed += 1000;
                 String formattedDate = new SimpleDateFormat("mm:ss", Locale.GERMAN).format(date);
                 timeRemaining.setText(formattedDate);
-                //here you can have your logic to set text to edittext
             }
 
             public void onFinish() {
                 if ("WorkoutActivity".equals(Objects.requireNonNull(getIntent().getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
                     CurrentWorkout.position += 1;
                 }
+                CurrentWorkout.currentWorkout[CurrentWorkout.position] = millisForTimer + ";";
                 timeRemaining.setText(getResources().getString(R.string.done));
                 startActivity(nextIntent);
             }
@@ -59,6 +64,18 @@ public class RestActivity extends AppCompatActivity {
     public void skipTimer(View view) {
         timer.cancel();
         timer.onFinish();
+    }
+
+    public void onBackPressed() {
+        CurrentWorkout.goBack();
+        super.onBackPressed();
+    }
+
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+
+        super.onSaveInstanceState(outState);
+        outState.putInt("timeElapsed", timeElapsed);
+
     }
 
 
