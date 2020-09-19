@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -27,8 +27,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        List<String> workoutList=new ArrayList<>(Objects.requireNonNull(sharedPreferences.getStringSet("Workouts", new HashSet<String>())));
-        for(String s:workoutList){
+        List<String> workoutList = new ArrayList<>(Objects.requireNonNull(sharedPreferences.getStringSet("Workouts", new HashSet<String>())));
+        ((ViewGroup) linear).removeAllViews();
+        for (String s : workoutList) {
             Button b = new Button(this);
             b.setText(s);
             b.setOnClickListener(new View.OnClickListener() {
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startWorkout(View view) {
-        CurrentWorkout.init();
+        CurrentWorkout.init((String) ((Button) view).getText(), this);
         Intent intent = new Intent(this, WorkoutActivity.class);
         startActivity(intent);
     }

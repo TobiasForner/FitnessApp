@@ -34,6 +34,7 @@ public class RestActivity extends AppCompatActivity {
         }
 
         int millisForTimer = intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000);
+        CurrentWorkout.currentWorkout += millisForTimer + ";";
         final TextView timeRemaining = findViewById(R.id.textView5);
         timer = new CountDownTimer(millisForTimer, 1000) {
 
