@@ -5,6 +5,8 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -21,13 +23,14 @@ public class RestActivity extends AppCompatActivity {
     Intent nextIntent;
     int millisForTimer;
     int timeElapsed = 0;
+    boolean playSound = true;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rest);
-        if(savedInstanceState!=null){
+        if (savedInstanceState != null) {
             timeElapsed = savedInstanceState.getInt("timeElapsed");
         }
 
@@ -47,6 +50,7 @@ public class RestActivity extends AppCompatActivity {
                 timeElapsed += 1000;
                 String formattedDate = new SimpleDateFormat("mm:ss", Locale.GERMAN).format(date);
                 timeRemaining.setText(formattedDate);
+
             }
 
             public void onFinish() {
@@ -56,6 +60,10 @@ public class RestActivity extends AppCompatActivity {
                     CurrentWorkout.position += 1;
                 }
                 timeRemaining.setText(getResources().getString(R.string.done));
+                if (playSound) {
+                    ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                    toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
+                }
                 startActivity(nextIntent);
             }
 
@@ -64,6 +72,7 @@ public class RestActivity extends AppCompatActivity {
 
     public void skipTimer(View view) {
         timer.cancel();
+        playSound = false;
         timer.onFinish();
     }
 
