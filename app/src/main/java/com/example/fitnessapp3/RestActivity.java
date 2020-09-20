@@ -50,10 +50,11 @@ public class RestActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
+
                 if ("WorkoutActivity".equals(Objects.requireNonNull(getIntent().getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
+                    CurrentWorkout.currentWorkout[CurrentWorkout.position] = millisForTimer + ";";
                     CurrentWorkout.position += 1;
                 }
-                CurrentWorkout.currentWorkout[CurrentWorkout.position] = millisForTimer + ";";
                 timeRemaining.setText(getResources().getString(R.string.done));
                 startActivity(nextIntent);
             }
