@@ -23,11 +23,12 @@ public class RestActivity extends AppCompatActivity {
     Intent nextIntent;
     int millisForTimer;
     int timeElapsed = 0;
-    boolean playSound = true;
+    boolean playSound;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        playSound = true;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rest);
         if (savedInstanceState != null) {

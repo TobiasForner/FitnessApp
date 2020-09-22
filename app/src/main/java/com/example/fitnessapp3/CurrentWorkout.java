@@ -9,8 +9,10 @@ import android.util.Log;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -21,6 +23,7 @@ public class CurrentWorkout {
     public static String workoutName;
     public static boolean useLastWorkout;
     public static String[] currentWorkout;
+    public static String[] setStrings;
 
     private static Exercise processExercise(String exString) {
         String[] info = exString.split(",");
@@ -72,8 +75,20 @@ public class CurrentWorkout {
 
         currentWorkout = new String[exStrings.length];
         exercises = new Exercise[exStrings.length];
+        setStrings = new String[exStrings.length];
+        Map<String, Integer> exCounts = new HashMap<>();
         for (int i = 0; i < exStrings.length; i++) {
             exercises[i] = processExercise(exStrings[i]);
+            exCounts.putIfAbsent(exercises[i].getName(), 0);
+            try {
+                exCounts.put(exercises[i].getName(), Objects.requireNonNull(exCounts.getOrDefault(exercises[i].getName(), 0)) + 1);
+            } catch (NullPointerException e) {
+                Log.e("CurrentWorkout", e.toString());
+            }
+            setStrings[i] = "" + exCounts.getOrDefault(exercises[i].getName(), 0) + "/";
+        }
+        for (int i = 0; i < exStrings.length; i++) {
+            setStrings[i] += "" + exCounts.get(exercises[i].getName());
         }
         String lastWorkoutString = sharedPreferences.getString(workoutName + "last_result", "");
         assert lastWorkoutString != null;
@@ -81,13 +96,7 @@ public class CurrentWorkout {
             lastWorkout = lastWorkoutString.split(";");
             useLastWorkout = lastWorkout.length == exStrings.length;
         }
-        /*
-        String lastWorkoutResults = workoutResults.get(workoutResults.size() - 1);
-        String[] lastWorkoutResultsSplit = lastWorkoutResults.split(";");
-        if (lastWorkoutResultsSplit.length == exStrings.length) {
-            lastWorkout = new String[lastWorkoutResults.length()];
-            System.arraycopy(lastWorkoutResultsSplit, 0, lastWorkout, 0, exStrings.length);
-        }*/
+
     }
 
     public static boolean hasNextExercise() {

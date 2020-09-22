@@ -26,6 +26,7 @@ public class WorkoutActivity extends AppCompatActivity {
 
     public void refreshExercise() {
         TextView exName = findViewById(R.id.exerciseName);
+        TextView setProg = findViewById(R.id.setProgressText);
         exName.setText(CurrentWorkout.exercises[CurrentWorkout.position].getName());
         if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.WEIGHT) {
             if (CurrentWorkout.useLastWorkout) {
@@ -41,6 +42,7 @@ public class WorkoutActivity extends AppCompatActivity {
             TextView exNum = findViewById(R.id.exerciseNumberInput);
             exNum.setHint("Duration");
         }
+        setProg.setText(CurrentWorkout.setStrings[CurrentWorkout.position]);
     }
 
     public void logExercise(View view) {
