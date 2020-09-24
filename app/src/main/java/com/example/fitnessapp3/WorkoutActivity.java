@@ -31,12 +31,22 @@ public class WorkoutActivity extends AppCompatActivity {
         if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.WEIGHT) {
             if (CurrentWorkout.useLastWorkout) {
                 String[] prevNums = CurrentWorkout.lastWorkout[CurrentWorkout.position].split(",");
-                TextView exNum = findViewById(R.id.exerciseNumberInput);
-                exNum.setText(prevNums[0]);
-                TextView repNum = findViewById(R.id.repNumberInput);
-                repNum.setText(prevNums[1]);
+                if (prevNums.length == 2) {
+                    TextView exNum = findViewById(R.id.exerciseNumberInput);
+                    exNum.setText(prevNums[0]);
+                    TextView repNum = findViewById(R.id.repNumberInput);
+                    repNum.setText(prevNums[1]);
+                }
             }
-
+            String prevResults = CurrentWorkout.getPrevResultsInWorkout();
+            TextView prevResultsView = findViewById(R.id.prev_results_body);
+            if (prevResults.length() > 0) {
+                prevResultsView.setText(prevResults);
+            } else {
+                TextView prevResultsHeaderView = findViewById(R.id.prev_results_header);
+                prevResultsView.setVisibility(View.INVISIBLE);
+                prevResultsHeaderView.setVisibility(View.INVISIBLE);
+            }
         }
         if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.DURATION) {
             TextView exNum = findViewById(R.id.exerciseNumberInput);
@@ -49,8 +59,7 @@ public class WorkoutActivity extends AppCompatActivity {
 
         TextView exNum = findViewById(R.id.exerciseNumberInput);
         TextView repNum = findViewById(R.id.repNumberInput);
-        CurrentWorkout.currentWorkout[CurrentWorkout.position] = exNum.getText() + "," + repNum.getText() + ";";
-        CurrentWorkout.position += 1;
+        CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString());
         if (CurrentWorkout.hasNextExercise()) {
             if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.REST) {
                 Intent intent = new Intent(this, RestActivity.class);

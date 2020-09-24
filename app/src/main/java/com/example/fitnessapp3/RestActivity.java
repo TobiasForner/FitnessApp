@@ -57,7 +57,7 @@ public class RestActivity extends AppCompatActivity {
             public void onFinish() {
 
                 if ("WorkoutActivity".equals(Objects.requireNonNull(getIntent().getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
-                    CurrentWorkout.currentWorkout[CurrentWorkout.position] = millisForTimer + ";";
+                    CurrentWorkout.currentWorkout[CurrentWorkout.position] = "" + millisForTimer;
                     CurrentWorkout.position += 1;
                 }
                 timeRemaining.setText(getResources().getString(R.string.done));

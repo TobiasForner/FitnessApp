@@ -24,6 +24,8 @@ public class CurrentWorkout {
     public static boolean useLastWorkout;
     public static String[] currentWorkout;
     public static String[] setStrings;
+    protected static int[] numberOfExercise;
+    protected static Map<String, String[]> exToResults;
 
     private static Exercise processExercise(String exString) {
         String[] info = exString.split(",");
@@ -51,22 +53,19 @@ public class CurrentWorkout {
 
     public static void finishWorkout(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-
         Set<String> lastWorkoutDef = new HashSet<>();
         Set<String> workoutResults = Objects.requireNonNull(sharedPreferences.getStringSet(workoutName + "_results", lastWorkoutDef));
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd.hh-mm:", Locale.getDefault());
         Date today = Calendar.getInstance().getTime();
         String date = dateFormat.format(today);
-        workoutResults.add(date + String.join("", currentWorkout));
+        workoutResults.add(date + String.join(";", currentWorkout));
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(workoutName + "last_result", String.join("", currentWorkout));
+        editor.putString(workoutName + "last_result", String.join(";", currentWorkout));
         editor.putStringSet(workoutName + "_results", workoutResults);
         editor.apply();
-
     }
 
     public static void init(String workoutName, Activity activity) {
-
         useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -76,19 +75,29 @@ public class CurrentWorkout {
         currentWorkout = new String[exStrings.length];
         exercises = new Exercise[exStrings.length];
         setStrings = new String[exStrings.length];
+        numberOfExercise = new int[exStrings.length];
         Map<String, Integer> exCounts = new HashMap<>();
+        exToResults = new HashMap<>();
         for (int i = 0; i < exStrings.length; i++) {
             exercises[i] = processExercise(exStrings[i]);
             exCounts.putIfAbsent(exercises[i].getName(), 0);
             try {
-                exCounts.put(exercises[i].getName(), Objects.requireNonNull(exCounts.getOrDefault(exercises[i].getName(), 0)) + 1);
+                int newCount = Objects.requireNonNull(exCounts.getOrDefault(exercises[i].getName(), 0)) + 1;
+                numberOfExercise[i] = newCount - 1;
+                exCounts.put(exercises[i].getName(), newCount);
             } catch (NullPointerException e) {
                 Log.e("CurrentWorkout", e.toString());
             }
             setStrings[i] = "" + exCounts.getOrDefault(exercises[i].getName(), 0) + "/";
         }
         for (int i = 0; i < exStrings.length; i++) {
-            setStrings[i] += "" + exCounts.get(exercises[i].getName());
+            String exName = exercises[i].getName();
+            int exCount = Objects.requireNonNull(exCounts.get(exName));
+            if (!exToResults.containsKey(exName) && !exName.equals("Rest")) {
+                String[] res = new String[exCount];
+                exToResults.put(exName, res);
+            }
+            setStrings[i] += "" + exCount;
         }
         String lastWorkoutString = sharedPreferences.getString(workoutName + "last_result", "");
         assert lastWorkoutString != null;
@@ -114,5 +123,24 @@ public class CurrentWorkout {
         if (position > 0) {
             position -= 1;
         }
+    }
+
+    public static void logExercise(String exNum, String repNum) {
+        currentWorkout[position] = exNum + "," + repNum;
+        Objects.requireNonNull(exToResults.get(exercises[position].getName()))[numberOfExercise[position]] = "+" + exNum + "kg x " + repNum;
+        position += 1;
+    }
+
+    public static String getPrevResultsInWorkout() {
+        String[] prevResults = exToResults.getOrDefault(exercises[position].getName(), null);
+        if (prevResults == null || prevResults[0] == null) {
+            return "";
+        }
+        StringBuilder res = new StringBuilder();
+        for (int i = 0; i < numberOfExercise[position]; i++) {
+            res.append(prevResults[i]);
+            res.append(System.getProperty("line.separator"));
+        }
+        return res.toString();
     }
 }
