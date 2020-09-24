@@ -138,7 +138,7 @@ public class CurrentWorkout {
         }
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < numberOfExercise[position]; i++) {
-            res.append(prevResults[i]);
+            res.append("Set ").append(i + 1).append(":\t").append(prevResults[i]);
             res.append(System.getProperty("line.separator"));
         }
         return res.toString();
