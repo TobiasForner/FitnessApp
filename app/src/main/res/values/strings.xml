@@ -15,4 +15,5 @@
     <string name="weight_unit">kg</string>
     <string name="reps">Reps</string>
     <string name="prev_results">Previous Results</string>
+    <string name="popup">Please enter a valid rep number and weight.</string>
 </resources>
