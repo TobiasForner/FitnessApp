@@ -25,10 +25,12 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button button = findViewById(R.id.go_to_add_exercise_button);
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         List<String> workoutList = new ArrayList<>(Objects.requireNonNull(sharedPreferences.getStringSet("Workouts", new HashSet<String>())));
-        ((ViewGroup) linear).removeAllViews();
+        linear.removeAllViews();
         for (String s : workoutList) {
             Button b = new Button(this);
             b.setText(s);
@@ -54,6 +56,11 @@ public class MainActivity extends AppCompatActivity {
         int time = 180000;
         intent.putExtra(EXTRA_MESSAGE, time);
         intent.putExtra(EXTRA_RETURN_DEST, "MainActivity");
+        startActivity(intent);
+    }
+
+    public void goToAddExercise(View view) {
+        Intent intent = new Intent(this, AddExerciseActivity.class);
         startActivity(intent);
     }
 }
