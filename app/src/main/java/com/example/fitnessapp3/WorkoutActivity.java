@@ -64,11 +64,10 @@ public class WorkoutActivity extends AppCompatActivity {
 
         TextView exNum = findViewById(R.id.exerciseNumberInput);
         TextView repNum = findViewById(R.id.repNumberInput);
-        if (exNum.getText().toString().equals("") || repNum.getText().toString().equals("")) {
+        if (!CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString())) {
             showPopupWindowClick(exNum);
             return;
         }
-        CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString());
         if (CurrentWorkout.hasNextExercise()) {
             if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.REST) {
                 Intent intent = new Intent(this, RestActivity.class);
@@ -108,7 +107,7 @@ public class WorkoutActivity extends AppCompatActivity {
         //popUpText.setText(text);
 
         // show the popup window
-        // which view you pass in doesn't matter, it is only used for the window tolken
+        // which view you pass in doesn't matter, it is only used for the window token
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
         // dismiss the popup window when touched

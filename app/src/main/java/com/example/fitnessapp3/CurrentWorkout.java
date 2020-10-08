@@ -26,6 +26,7 @@ public class CurrentWorkout {
     public static String[] setStrings;
     protected static int[] numberOfExercise;
     protected static Map<String, String[]> exToResults;
+    protected static ExerciseManager exerciseManager;
 
     private static Exercise processExercise(String exString) {
         String[] info = exString.split(",");
@@ -43,12 +44,17 @@ public class CurrentWorkout {
             default:
                 type = Exercise.EXTYPE.WEIGHT;
         }
-        Exercise ex = new Exercise(info[0], type);
+        Exercise ex = new Exercise(info[0], type, true);
         if (info[1].equals("REST")) {
             ex.setParameter(Integer.parseInt(info[2]));
         }
         return ex;
 
+    }
+
+    private static Exercise getExerciseFromManager(String exString) {
+        String[] info = exString.split(",");
+        return exerciseManager.getExercise(info[0]);
     }
 
     public static void finishWorkout(Activity activity) {
@@ -66,6 +72,8 @@ public class CurrentWorkout {
     }
 
     public static void init(String workoutName, Activity activity) {
+        exerciseManager = new ExerciseManager(activity);
+        //exerciseManager.initExerciseDetails(activity);
         useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -80,6 +88,8 @@ public class CurrentWorkout {
         exToResults = new HashMap<>();
         for (int i = 0; i < exStrings.length; i++) {
             exercises[i] = processExercise(exStrings[i]);
+            Exercise exercise=getExerciseFromManager(exStrings[i]);
+            exercises[i] = exercise;
             exCounts.putIfAbsent(exercises[i].getName(), 0);
             try {
                 int newCount = Objects.requireNonNull(exCounts.getOrDefault(exercises[i].getName(), 0)) + 1;
@@ -125,10 +135,14 @@ public class CurrentWorkout {
         }
     }
 
-    public static void logExercise(String exNum, String repNum) {
+    public static boolean logExercise(String exNum, String repNum) {
+        if (exNum == null || repNum == null || exNum.equals("") || repNum.equals("")) {
+            return false;
+        }
         currentWorkout[position] = exNum + "," + repNum;
         Objects.requireNonNull(exToResults.get(exercises[position].getName()))[numberOfExercise[position]] = "+" + exNum + "kg x " + repNum;
         position += 1;
+        return true;
     }
 
     public static String getPrevResultsInWorkout() {

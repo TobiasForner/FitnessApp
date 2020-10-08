@@ -20,4 +20,8 @@
     <string name="exercise_type">Exercise Type</string>
     <string name="weighted">weighted</string>
     <string name="exercise_name">Exercise Name</string>
+    <string name="initWorkouts">Initialize Workouts</string>
+    <string name="add_workout">Add Workout</string>
+    <string name="workout_name">Workout Name</string>
+    <string name="enter_workout_text">Enter Workout Text</string>
 </resources>

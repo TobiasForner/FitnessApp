@@ -2,16 +2,19 @@ package com.example.fitnessapp3;
 
 public class Exercise {
     public enum EXTYPE {
-        WEIGHT, DURATION, REST
+        WEIGHT, DURATION, REST, REPS
     }
 
     private String name;
     private EXTYPE type;
     private int parameter;//weight for weighted exercises, duration for duration-based exercises
+    private boolean weighted;
+    private String abbrev;
 
-    public Exercise(String name, EXTYPE type) {
+    public Exercise(String name, EXTYPE type, boolean weighted) {
         this.name = name;
         this.type = type;
+        this.weighted = true;
     }
 
     public String getName() {
@@ -28,5 +31,13 @@ public class Exercise {
 
     public int getParameter() {
         return this.parameter;
+    }
+
+    public void setAbbrev(String abbrev) {
+        this.abbrev = abbrev;
+    }
+
+    public boolean isWeighted(){
+        return weighted;
     }
 }
