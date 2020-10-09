@@ -63,18 +63,16 @@ public class ExerciseManager {
                     String[] details = exerciseDet[1].split(";");
                     if (details.length < 2) {
                         Log.e("ExerciseManager", "Details length invalid (smaller than 2).");
+                    }
+                    if (exerciseDet[0].equals("Rest")) {
+                        nameToEx.put(exerciseDet[0], new Rest(180000));
                     } else {
-                        if (exerciseDet[0].equals("Rest")) {
-                            nameToEx.put(exerciseDet[0], new Rest(180000));
-                        }
                         String exTypeString = details[0].split("=")[1];
                         boolean weighted = details[1].split("=")[1].equals("true");
-                        Exercise exercise = getExerciseFromDetails(exerciseDet[0], exTypeString, weighted, "");
-                        if (exercise.getType() == Exercise.EXTYPE.REST) {
-                            exercise.setParameter(180000);
-                        }
-                        nameToEx.put(exerciseDet[0], exercise);
+                        WorkoutComponent component = getExerciseFromDetails(exerciseDet[0], exTypeString, weighted, "");
+                        nameToEx.put(exerciseDet[0], component);
                         if (details.length == 3) {
+                            Exercise exercise = (Exercise) component;
                             String abbrev = details[2].split("=")[1];
                             exercise.setAbbrev(abbrev);
                             updateAbbreviations(abbrev, exercise.getName());
@@ -100,12 +98,12 @@ public class ExerciseManager {
         }
     }
 
-    private Exercise getExerciseFromDetails(String exName, String exType, boolean weighted, String abbrev) {
+    private WorkoutComponent getExerciseFromDetails(String exName, String exType, boolean weighted, String abbrev) {
         Exercise.EXTYPE type = Exercise.EXTYPE.WEIGHT;
         if (exType.equals("Duration")) {
             type = Exercise.EXTYPE.DURATION;
         } else if (exType.equals("Rest")) {
-            type = Exercise.EXTYPE.REST;
+            return new Rest(180000);
         }
         Exercise exercise = new Exercise(exName, type, weighted);
         exercise.setAbbrev(abbrev);

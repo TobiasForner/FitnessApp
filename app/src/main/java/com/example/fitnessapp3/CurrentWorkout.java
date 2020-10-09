@@ -81,7 +81,7 @@ public class CurrentWorkout {
         position = 0;
 
         currentWorkout = new String[exStrings.length];
-        workoutComponents = new Exercise[exStrings.length];
+        workoutComponents = new WorkoutComponent[exStrings.length];
         setStrings = new String[exStrings.length];
         numberOfExercise = new int[exStrings.length];
         Map<String, Integer> exCounts = new HashMap<>();
