@@ -1,6 +1,6 @@
 package com.example.fitnessapp3;
 
-public class Exercise {
+public class Exercise extends WorkoutComponent {
     public enum EXTYPE {
         WEIGHT, DURATION, REST, REPS
     }
@@ -14,7 +14,9 @@ public class Exercise {
     public Exercise(String name, EXTYPE type, boolean weighted) {
         this.name = name;
         this.type = type;
-        this.weighted = true;
+        this.weighted = weighted;
+        this.parameter = 0;
+        this.abbrev = "";
     }
 
     public String getName() {
@@ -37,7 +39,19 @@ public class Exercise {
         this.abbrev = abbrev;
     }
 
-    public boolean isWeighted(){
+    public String getAbbrev() {
+        return this.abbrev;
+    }
+
+    public boolean isWeighted() {
         return weighted;
+    }
+
+    public boolean isExercise() {
+        return true;
+    }
+
+    public boolean isRest() {
+        return false;
     }
 }

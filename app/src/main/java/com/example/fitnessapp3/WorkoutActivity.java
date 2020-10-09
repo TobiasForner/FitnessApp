@@ -1,6 +1,5 @@
 package com.example.fitnessapp3;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -32,30 +31,33 @@ public class WorkoutActivity extends AppCompatActivity {
     public void refreshExercise() {
         TextView exName = findViewById(R.id.exerciseName);
         TextView setProg = findViewById(R.id.setProgressText);
-        exName.setText(CurrentWorkout.exercises[CurrentWorkout.position].getName());
-        if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.WEIGHT) {
-            if (CurrentWorkout.useLastWorkout) {
-                String[] prevNums = CurrentWorkout.lastWorkout[CurrentWorkout.position].split(",");
-                if (prevNums.length == 2) {
-                    TextView exNum = findViewById(R.id.exerciseNumberInput);
-                    exNum.setText(prevNums[0]);
-                    TextView repNum = findViewById(R.id.repNumberInput);
-                    repNum.setText(prevNums[1]);
+        exName.setText(CurrentWorkout.workoutComponents[CurrentWorkout.position].getName());
+        WorkoutComponent nextWorkoutComponent = CurrentWorkout.getNextWorkoutComponent();
+        if (nextWorkoutComponent.isExercise()) {
+            Exercise exercise = (Exercise) nextWorkoutComponent;
+            if (exercise.isWeighted()) {
+                if (CurrentWorkout.useLastWorkout) {
+                    String[] prevNums = CurrentWorkout.lastWorkout[CurrentWorkout.position].split(",");
+                    if (prevNums.length == 2) {
+                        TextView exNum = findViewById(R.id.exerciseNumberInput);
+                        exNum.setText(prevNums[0]);
+                        TextView repNum = findViewById(R.id.repNumberInput);
+                        repNum.setText(prevNums[1]);
+                    }
                 }
+                String prevResults = CurrentWorkout.getPrevResultsInWorkout();
+                TextView prevResultsView = findViewById(R.id.prev_results_body);
+                if (prevResults.length() > 0) {
+                    prevResultsView.setText(prevResults);
+                } else {
+                    TextView prevResultsHeaderView = findViewById(R.id.prev_results_header);
+                    prevResultsView.setVisibility(View.INVISIBLE);
+                    prevResultsHeaderView.setVisibility(View.INVISIBLE);
+                }
+            } else if (exercise.getType() == Exercise.EXTYPE.DURATION) {
+                TextView exNum = findViewById(R.id.exerciseNumberInput);
+                exNum.setHint("Duration");
             }
-            String prevResults = CurrentWorkout.getPrevResultsInWorkout();
-            TextView prevResultsView = findViewById(R.id.prev_results_body);
-            if (prevResults.length() > 0) {
-                prevResultsView.setText(prevResults);
-            } else {
-                TextView prevResultsHeaderView = findViewById(R.id.prev_results_header);
-                prevResultsView.setVisibility(View.INVISIBLE);
-                prevResultsHeaderView.setVisibility(View.INVISIBLE);
-            }
-        }
-        if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.DURATION) {
-            TextView exNum = findViewById(R.id.exerciseNumberInput);
-            exNum.setHint("Duration");
         }
         setProg.setText(CurrentWorkout.setStrings[CurrentWorkout.position]);
     }
@@ -69,9 +71,9 @@ public class WorkoutActivity extends AppCompatActivity {
             return;
         }
         if (CurrentWorkout.hasNextExercise()) {
-            if (CurrentWorkout.getNextExercise().getType() == Exercise.EXTYPE.REST) {
+            if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
                 Intent intent = new Intent(this, RestActivity.class);
-                int time = CurrentWorkout.getNextExercise().getParameter();
+                int time = ((Rest) CurrentWorkout.getNextWorkoutComponent()).getRestTime();
                 intent.putExtra(MainActivity.EXTRA_MESSAGE, time);
                 intent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
                 startActivity(intent);
@@ -103,17 +105,18 @@ public class WorkoutActivity extends AppCompatActivity {
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
         boolean focusable = true; // lets taps outside the popup also dismiss it
         final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
-        TextView popUpText = findViewById(R.id.popup_text);
-        //popUpText.setText(text);
-
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window token
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        TextView popUpText = findViewById(R.id.popup_text);
+        popUpText.setText("Test");
 
         // dismiss the popup window when touched
         popupView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                v.performClick();
                 popupWindow.dismiss();
                 return true;
             }

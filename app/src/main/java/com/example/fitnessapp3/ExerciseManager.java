@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ExerciseManager {
-    private Map<String, Exercise> nameToEx;
+    private Map<String, WorkoutComponent> nameToEx;
     private Map<String, String> abbrevToFullName;
 
     public ExerciseManager(Context context) {
@@ -64,6 +64,9 @@ public class ExerciseManager {
                     if (details.length < 2) {
                         Log.e("ExerciseManager", "Details length invalid (smaller than 2).");
                     } else {
+                        if (exerciseDet[0].equals("Rest")) {
+                            nameToEx.put(exerciseDet[0], new Rest(180000));
+                        }
                         String exTypeString = details[0].split("=")[1];
                         boolean weighted = details[1].split("=")[1].equals("true");
                         Exercise exercise = getExerciseFromDetails(exerciseDet[0], exTypeString, weighted, "");
@@ -87,7 +90,7 @@ public class ExerciseManager {
         }
     }
 
-    public Exercise getExercise(String exName) {
+    public WorkoutComponent getExercise(String exName) {
         String name = abbrevToFullName.getOrDefault(exName, exName);
         if (nameToEx.containsKey(name)) {
             return nameToEx.get(name);

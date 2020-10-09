@@ -17,7 +17,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class CurrentWorkout {
-    public static Exercise[] exercises;
+    public static WorkoutComponent[] workoutComponents;
     public static int position = 0;
     public static String[] lastWorkout;
     public static String workoutName;
@@ -52,7 +52,7 @@ public class CurrentWorkout {
 
     }
 
-    private static Exercise getExerciseFromManager(String exString) {
+    private static WorkoutComponent getNextWorkoutComponentFromManager(String exString) {
         String[] info = exString.split(",");
         return exerciseManager.getExercise(info[0]);
     }
@@ -81,27 +81,27 @@ public class CurrentWorkout {
         position = 0;
 
         currentWorkout = new String[exStrings.length];
-        exercises = new Exercise[exStrings.length];
+        workoutComponents = new Exercise[exStrings.length];
         setStrings = new String[exStrings.length];
         numberOfExercise = new int[exStrings.length];
         Map<String, Integer> exCounts = new HashMap<>();
         exToResults = new HashMap<>();
         for (int i = 0; i < exStrings.length; i++) {
-            exercises[i] = processExercise(exStrings[i]);
-            Exercise exercise=getExerciseFromManager(exStrings[i]);
-            exercises[i] = exercise;
-            exCounts.putIfAbsent(exercises[i].getName(), 0);
+            workoutComponents[i] = processExercise(exStrings[i]);
+            WorkoutComponent component = getNextWorkoutComponentFromManager(exStrings[i]);
+            workoutComponents[i] = component;
+            exCounts.putIfAbsent(workoutComponents[i].getName(), 0);
             try {
-                int newCount = Objects.requireNonNull(exCounts.getOrDefault(exercises[i].getName(), 0)) + 1;
+                int newCount = Objects.requireNonNull(exCounts.getOrDefault(workoutComponents[i].getName(), 0)) + 1;
                 numberOfExercise[i] = newCount - 1;
-                exCounts.put(exercises[i].getName(), newCount);
+                exCounts.put(workoutComponents[i].getName(), newCount);
             } catch (NullPointerException e) {
                 Log.e("CurrentWorkout", e.toString());
             }
-            setStrings[i] = "" + exCounts.getOrDefault(exercises[i].getName(), 0) + "/";
+            setStrings[i] = "" + exCounts.getOrDefault(workoutComponents[i].getName(), 0) + "/";
         }
         for (int i = 0; i < exStrings.length; i++) {
-            String exName = exercises[i].getName();
+            String exName = workoutComponents[i].getName();
             int exCount = Objects.requireNonNull(exCounts.get(exName));
             if (!exToResults.containsKey(exName) && !exName.equals("Rest")) {
                 String[] res = new String[exCount];
@@ -119,14 +119,14 @@ public class CurrentWorkout {
     }
 
     public static boolean hasNextExercise() {
-        return position < exercises.length;
+        return position < workoutComponents.length;
     }
 
-    public static Exercise getNextExercise() throws IllegalArgumentException {
+    public static WorkoutComponent getNextWorkoutComponent() throws IllegalArgumentException {
         if (!hasNextExercise()) {
             throw new IllegalArgumentException("No next exercise!");
         }
-        return exercises[position];
+        return workoutComponents[position];
     }
 
     public static void goBack() {
@@ -140,13 +140,13 @@ public class CurrentWorkout {
             return false;
         }
         currentWorkout[position] = exNum + "," + repNum;
-        Objects.requireNonNull(exToResults.get(exercises[position].getName()))[numberOfExercise[position]] = "+" + exNum + "kg x " + repNum;
+        Objects.requireNonNull(exToResults.get(workoutComponents[position].getName()))[numberOfExercise[position]] = "+" + exNum + "kg x " + repNum;
         position += 1;
         return true;
     }
 
     public static String getPrevResultsInWorkout() {
-        String[] prevResults = exToResults.getOrDefault(exercises[position].getName(), null);
+        String[] prevResults = exToResults.getOrDefault(workoutComponents[position].getName(), null);
         if (prevResults == null || prevResults[0] == null) {
             return "";
         }

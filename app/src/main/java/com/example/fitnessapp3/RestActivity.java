@@ -65,9 +65,11 @@ public class RestActivity extends AppCompatActivity {
                     ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                     toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
                 }
+                if (CurrentWorkout.hasNextExercise() && CurrentWorkout.getNextWorkoutComponent().isRest()) {
+                    restartActivity();
+                }
                 startActivity(nextIntent);
             }
-
         }.start();
     }
 
@@ -87,6 +89,11 @@ public class RestActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putInt("timeElapsed", timeElapsed);
 
+    }
+
+    private void restartActivity() {
+        nextIntent = new Intent(this, RestActivity.class);
+        startActivity(nextIntent);
     }
 
 
