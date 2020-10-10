@@ -1,6 +1,5 @@
 package com.example.fitnessapp3;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
@@ -88,7 +87,7 @@ public class ExerciseManager {
         }
     }
 
-    public WorkoutComponent getExercise(String exName) {
+    public WorkoutComponent getWorkoutComponent(String exName) {
         String name = abbrevToFullName.getOrDefault(exName, exName);
         if (nameToEx.containsKey(name)) {
             return nameToEx.get(name);
@@ -115,5 +114,9 @@ public class ExerciseManager {
         for (String abbreviation : abbreviations) {
             abbrevToFullName.put(abbreviation, name);
         }
+    }
+
+    public boolean exerciseExists(String exName) {
+        return getWorkoutComponent(exName) != null;
     }
 }

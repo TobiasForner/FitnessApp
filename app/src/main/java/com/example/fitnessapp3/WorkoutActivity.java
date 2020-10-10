@@ -31,13 +31,13 @@ public class WorkoutActivity extends AppCompatActivity {
     public void refreshExercise() {
         TextView exName = findViewById(R.id.exerciseName);
         TextView setProg = findViewById(R.id.setProgressText);
-        exName.setText(CurrentWorkout.workoutComponents[CurrentWorkout.position].getName());
+        exName.setText(CurrentWorkout.getWorkoutComponentName());
         WorkoutComponent nextWorkoutComponent = CurrentWorkout.getNextWorkoutComponent();
         if (nextWorkoutComponent.isExercise()) {
             Exercise exercise = (Exercise) nextWorkoutComponent;
             if (exercise.isWeighted()) {
                 if (CurrentWorkout.useLastWorkout) {
-                    String[] prevNums = CurrentWorkout.lastWorkout[CurrentWorkout.position].split(",");
+                    String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
                     if (prevNums.length == 2) {
                         TextView exNum = findViewById(R.id.exerciseNumberInput);
                         exNum.setText(prevNums[0]);
@@ -59,7 +59,7 @@ public class WorkoutActivity extends AppCompatActivity {
                 exNum.setHint("Duration");
             }
         }
-        setProg.setText(CurrentWorkout.setStrings[CurrentWorkout.position]);
+        setProg.setText(CurrentWorkout.getSetString());
     }
 
     public void logExercise(View view) {

@@ -31,6 +31,11 @@ public class Startup extends Application {
             workoutNames.add("RR");
             editor.putStringSet("Workouts", workoutNames);
             StringBuilder rrString = new StringBuilder();
+            StringBuilder rrForFile = new StringBuilder();
+            rrForFile.append("[Pull Up,Rest]x5").append(System.getProperty("line.separator"));
+            rrForFile.append("[Ring Dip,Rest]x3").append(System.getProperty("line.separator"));
+            rrForFile.append("[Row,Rest,Push Up,Rest]x2").append(System.getProperty("line.separator"));
+            rrForFile.append("Row,Rest,Push Up").append(System.getProperty("line.separator"));
             for (int i = 0; i < 5; i++) {
                 rrString.append("Pull Up,WEIGHT;");
                 rrString.append("Rest,REST,180000;");
@@ -53,6 +58,11 @@ public class Startup extends Application {
             initWorkoutNamesFile(context);
             ExerciseManager exerciseManager = new ExerciseManager(context);
             exerciseManager.initExerciseDetails(context);
+            WorkoutManager.init(this);
+            String rrForFileString=rrForFile.toString();
+            WorkoutManager.addWorkout("RR", rrForFileString, this);
+        } else {
+            WorkoutManager.init(this);
         }
     }
 
@@ -66,7 +76,7 @@ public class Startup extends Application {
 
     public static void initWorkoutNamesFile(Context context) {
         String filename = "workout_names.txt";
-        String fileContents = "RR";
+        String fileContents = "RR" + System.getProperty("line.separator");
         try (FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE)) {
             fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
