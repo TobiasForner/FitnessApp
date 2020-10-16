@@ -20,8 +20,6 @@ import java.util.Objects;
 
 public class RestActivity extends AppCompatActivity {
     CountDownTimer timer;
-    Intent nextIntent;
-    int millisForTimer;
     int timeElapsed = 0;
     boolean playSound;
 
@@ -34,42 +32,8 @@ public class RestActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             timeElapsed = savedInstanceState.getInt("timeElapsed");
         }
-
         Intent intent = getIntent();
-        if ("WorkoutActivity".equals(Objects.requireNonNull(intent.getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
-            nextIntent = new Intent(this, WorkoutActivity.class);
-        } else {
-            nextIntent = new Intent(this, MainActivity.class);
-        }
-
-        millisForTimer = intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000) - timeElapsed;
-        final TextView timeRemaining = findViewById(R.id.textView5);
-        timer = new CountDownTimer(millisForTimer, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                Date date = new Date(millisUntilFinished);
-                timeElapsed += 1000;
-                String formattedDate = new SimpleDateFormat("mm:ss", Locale.GERMAN).format(date);
-                timeRemaining.setText(formattedDate);
-
-            }
-
-            public void onFinish() {
-
-                if ("WorkoutActivity".equals(Objects.requireNonNull(getIntent().getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
-                    CurrentWorkout.logRest(millisForTimer);
-                }
-                timeRemaining.setText(getResources().getString(R.string.done));
-                if (playSound) {
-                    ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
-                    toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
-                }
-                if (CurrentWorkout.hasNextExercise() && CurrentWorkout.getNextWorkoutComponent().isRest()) {
-                    restartActivity();
-                }
-                startActivity(nextIntent);
-            }
-        }.start();
+        startTimer( intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000) - timeElapsed);
     }
 
     public void skipTimer(View view) {
@@ -91,8 +55,57 @@ public class RestActivity extends AppCompatActivity {
     }
 
     private void restartActivity() {
-        nextIntent = new Intent(this, RestActivity.class);
+        Intent nextIntent = new Intent(this, RestActivity.class);
         startActivity(nextIntent);
+    }
+
+    private void logRest(int millis) {
+        CurrentWorkout.logRest(millis, this);
+    }
+
+    private void goToNextActivity() {
+        Intent intent = getIntent();
+        if ("MainActivity".equals(Objects.requireNonNull(intent.getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
+            Intent nextIntent = new Intent(this, MainActivity.class);
+            startActivity(nextIntent);
+        } else if (CurrentWorkout.hasNextExercise()) {
+            if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
+                restartActivity();
+            }else{
+                Intent nextIntent = new Intent(this, WorkoutActivity.class);
+                startActivity(nextIntent);
+            }
+        }
+    }
+
+    private void startTimer(final int millisForTimer){
+        final TextView timeRemaining = findViewById(R.id.textView5);
+        timer = new CountDownTimer(millisForTimer, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+                Date date = new Date(millisUntilFinished);
+                timeElapsed += 1000;
+                String formattedDate = new SimpleDateFormat("mm:ss", Locale.GERMAN).format(date);
+                timeRemaining.setText(formattedDate);
+
+            }
+
+            public void onFinish() {
+
+                if ("WorkoutActivity".equals(Objects.requireNonNull(getIntent().getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
+                    logRest(millisForTimer);
+                }
+                timeRemaining.setText(getResources().getString(R.string.done));
+                if (playSound) {
+                    ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+                    toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
+                }
+                if (CurrentWorkout.hasNextExercise() && CurrentWorkout.getNextWorkoutComponent().isRest()) {
+                    restartActivity();
+                }
+                goToNextActivity();
+            }
+        }.start();
     }
 
 

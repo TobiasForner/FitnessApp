@@ -3,6 +3,7 @@ package com.example.fitnessapp3;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -19,7 +20,7 @@ public class Startup extends Application {
         super.onCreate();
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("FIRSTRUN", true);
+        //editor.putBoolean("FIRSTRUN", true);
         editor.apply();
         if (sharedPreferences.getBoolean("FIRSTRUN", true)) {
             // Code to run once
@@ -31,11 +32,6 @@ public class Startup extends Application {
             workoutNames.add("RR");
             editor.putStringSet("Workouts", workoutNames);
             StringBuilder rrString = new StringBuilder();
-            StringBuilder rrForFile = new StringBuilder();
-            rrForFile.append("[Pull Up,Rest]x5").append(System.getProperty("line.separator"));
-            rrForFile.append("[Ring Dip,Rest]x3").append(System.getProperty("line.separator"));
-            rrForFile.append("[Row,Rest,Push Up,Rest]x2").append(System.getProperty("line.separator"));
-            rrForFile.append("Row,Rest,Push Up").append(System.getProperty("line.separator"));
             for (int i = 0; i < 5; i++) {
                 rrString.append("Pull Up,WEIGHT;");
                 rrString.append("Rest,REST,180000;");
@@ -59,10 +55,18 @@ public class Startup extends Application {
             ExerciseManager exerciseManager = new ExerciseManager(context);
             exerciseManager.initExerciseDetails(context);
             WorkoutManager.init(this);
-            String rrForFileString=rrForFile.toString();
+            String rrForFileString = "[Pull Up,Rest]x5" + System.getProperty("line.separator") +
+                    "[Ring Dip,Rest]x3" + System.getProperty("line.separator") +
+                    "[Row,Rest,Push Up,Rest]x2" + System.getProperty("line.separator") +
+                    "Row,Rest,Push Up" + System.getProperty("line.separator");
             WorkoutManager.addWorkout("RR", rrForFileString, this);
         } else {
             WorkoutManager.init(this);
+        }
+        if (sharedPreferences.getBoolean("workout_is_in_progress", false)) {
+            Intent intent = new Intent(this, ResumeWorkoutActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
     }
 

@@ -2,6 +2,8 @@ package com.example.fitnessapp3;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -25,56 +27,6 @@ public class WorkoutManager {
         exerciseManager = new ExerciseManager(context);
     }
 
-    public static boolean checkWorkoutString(String text) {
-        String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
-        for (String line : lines) {
-            if (!checkWorkoutLine(line)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private static boolean checkWorkoutLine(String line) {
-        if (line.equals("")) {
-            return false;
-        }
-        String[] parts = line.split("\\[");
-        if (parts.length != 1 && parts.length != 2) {
-            return false;
-        }
-        if (parts.length == 2 && !parts[0].equals("")) {
-            return false;
-        }
-        String[] bodyAndTimes;
-        if (parts.length == 2) {
-            bodyAndTimes = parts[1].split("]");
-        } else {
-            bodyAndTimes = parts[0].split("]");
-        }
-        if (bodyAndTimes.length == 0) {
-            return false;
-        }
-        String[] exerciseNames = bodyAndTimes[0].split(",");
-        for (String exName : exerciseNames) {
-
-            if (!exerciseManager.exerciseExists(exName)) {
-                //TODO open popup that asks whether to create the exercise
-                return false;
-            }
-        }
-        if (bodyAndTimes.length == 2 && bodyAndTimes[1].length() >= 2) {
-            if (bodyAndTimes[1].charAt(0) == 'x' | bodyAndTimes[1].charAt(0) == 'X') {
-                String timesString = bodyAndTimes[1].substring(1);
-                try {
-                    Integer.parseInt(timesString);
-                } catch (NumberFormatException nfe) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
 
     public static void addWorkout(String name, String workoutBody, Context context) {
         addWorkoutName(name, context);
@@ -105,9 +57,6 @@ public class WorkoutManager {
         String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
         for (String line : lines) {
             parseWorkoutLine(line, workout);
-            if (!checkWorkoutLine(line)) {
-                return null;
-            }
         }
         return workout;
     }
@@ -185,12 +134,41 @@ public class WorkoutManager {
         return workoutNames;
     }
 
+    public static String getWorkoutTextFromFile(String workoutName, Context context) {
+        if (!Arrays.asList(workoutNames).contains(workoutName)) {
+            Log.e("WorkoutManager", "Workout name is not valid.");
+            return null;
+        }
+        String contents;
+        try {
+            FileInputStream fis = context.openFileInput(workoutName + "_workout.txt");
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(fis, StandardCharsets.UTF_8);
+            StringBuilder stringBuilder = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                String line = reader.readLine();
+                while (line != null) {
+                    stringBuilder.append(line).append(Objects.requireNonNull(System.getProperty("line.separator")));
+                    line = reader.readLine();
+                }
+            } catch (IOException e) {
+                // Error occurred when opening raw file for reading.
+            } finally {
+                contents = stringBuilder.toString();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("WorkoutManager", "Workout Names file workout_names not found.");
+            return null;
+        }
+        return contents;
+    }
+
     public static Workout getWorkoutFromFile(String workoutName, Context context) {
         if (!Arrays.asList(workoutNames).contains(workoutName)) {
             Log.e("WorkoutManager", "Workout name is not valid.");
             return null;
         }
-        String contents = "";
+        String contents;
         try {
             FileInputStream fis = context.openFileInput(workoutName + "_workout.txt");
             InputStreamReader inputStreamReader =
@@ -212,5 +190,22 @@ public class WorkoutManager {
             return null;
         }
         return generateWorkoutFromString(contents, workoutName);
+    }
+
+    public static boolean workoutExists(String name) {
+        return Arrays.asList(workoutNames).contains(name);
+    }
+
+    public static boolean exerciseExists(String exName) {
+        return exerciseManager.exerciseExists(exName);
+    }
+
+    public static String getWorkoutNameInProgress(Activity activity) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        if (!sharedPreferences.getBoolean("workout_is_in_progress", false)) {
+            return null;
+        }
+        String[] workout_details = Objects.requireNonNull(sharedPreferences.getString("workout_in_progress", "")).split(Objects.requireNonNull(System.getProperty("line.separator")));
+        return workout_details[0];
     }
 }

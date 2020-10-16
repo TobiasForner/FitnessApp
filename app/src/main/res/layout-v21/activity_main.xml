@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_constraint_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
@@ -19,6 +20,29 @@
         app:layout_constraintStart_toEndOf="@+id/initWorkoutsButton"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
+    <Button
+        android:id="@+id/go_to_add_exercise_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToAddExercise"
+        android:text="@string/add_exercise"
+        app:layout_constraintBottom_toBottomOf="@+id/timerButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.538"
+        app:layout_constraintStart_toEndOf="@+id/timerButton"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="1.0" />
+
+    <Button
+        android:id="@+id/initWorkoutsButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="initWorkoutNamesFile"
+        android:text="@string/initWorkouts"
+        app:layout_constraintBottom_toBottomOf="@+id/timerButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/timerButton" />
+
     <ScrollView
         style="@android:style/Widget.Material.ScrollView"
         android:layout_width="0dp"
@@ -34,7 +58,7 @@
             android:id="@+id/workout_linear_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"/>
+            android:orientation="vertical" />
     </ScrollView>
 
     <TextView
@@ -80,28 +104,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timerButton" />
-
-    <Button
-        android:id="@+id/go_to_add_exercise_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="goToAddExercise"
-        android:text="@string/add_exercise"
-        app:layout_constraintBottom_toBottomOf="@+id/timerButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.538"
-        app:layout_constraintStart_toEndOf="@+id/timerButton"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <Button
-        android:id="@+id/initWorkoutsButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="initWorkoutNamesFile"
-        android:text="@string/initWorkouts"
-        app:layout_constraintBottom_toBottomOf="@+id/timerButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/timerButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -8,6 +8,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -66,8 +67,8 @@ public class WorkoutActivity extends AppCompatActivity {
 
         TextView exNum = findViewById(R.id.exerciseNumberInput);
         TextView repNum = findViewById(R.id.repNumberInput);
-        if (!CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString())) {
-            showPopupWindowClick(exNum);
+        if (!CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString(), this)) {
+            showPopupWindowClick(exNum, getString(R.string.popup));
             return;
         }
         if (CurrentWorkout.hasNextExercise()) {
@@ -93,12 +94,12 @@ public class WorkoutActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-    public void showPopupWindowClick(View view) {
+    public void showPopupWindowClick(View view, String text) {
 
-        // inflate the layout of the popup window
+        // inflate the popup_continue_previous_workout.xml of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_window, null);
+        View popupView = inflater.inflate(R.layout.popup_window, (ViewGroup) findViewById(android.R.id.content));
 
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -109,8 +110,8 @@ public class WorkoutActivity extends AppCompatActivity {
         // which view you pass in doesn't matter, it is only used for the window token
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
-        TextView popUpText = findViewById(R.id.popup_text);
-        popUpText.setText("Test");
+        TextView popUpText = popupView.findViewById(R.id.popup_text);
+        popUpText.setText(text);
 
         // dismiss the popup window when touched
         popupView.setOnTouchListener(new View.OnTouchListener() {

@@ -3,6 +3,7 @@ package com.example.fitnessapp3;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -21,6 +22,14 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_exercise);
+        Intent intent = getIntent();
+        String exName = intent.getStringExtra(AddWorkoutActivity.EXNAME);
+        TextView exerciseName = findViewById(R.id.editTextExName);
+        if (exName == null) {
+            exerciseName.setText("");
+        } else {
+            exerciseName.setText(exName);
+        }
 
         weighted = false;
         exType = "";
@@ -29,7 +38,7 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
         exerciseTypeSpinner.setOnItemSelectedListener(this);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.exercise_types_array, android.R.layout.simple_spinner_item);
-        // Specify the layout to use when the list of choices appears
+        // Specify the popup_continue_previous_workout.xml to use when the list of choices appears
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         // Apply the adapter to the spinner
         exerciseTypeSpinner.setAdapter(adapter);
@@ -62,5 +71,6 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(exName.getText().toString(), exDetails);
         editor.apply();
+        finish();
     }
 }
