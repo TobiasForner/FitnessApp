@@ -63,11 +63,12 @@ public class Startup extends Application {
         } else {
             WorkoutManager.init(this);
         }
+        /*
         if (sharedPreferences.getBoolean("workout_is_in_progress", false)) {
             Intent intent = new Intent(this, ResumeWorkoutActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        }
+        }*/
     }
 
     public static void initExercises(SharedPreferences.Editor editor) {

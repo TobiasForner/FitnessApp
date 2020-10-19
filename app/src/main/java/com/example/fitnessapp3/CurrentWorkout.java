@@ -113,6 +113,7 @@ public class CurrentWorkout {
             lastWorkout = lastWorkoutString.split(";");
             useLastWorkout = lastWorkout.length == workoutLength;
         }
+        saveProgress(activity);
     }
 
     public static boolean hasNextExercise() {
