@@ -59,9 +59,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startWorkout(View view) {
-        String workoutName = ((Button) view).getText().toString();
-        CurrentWorkout.init(workoutName, this);
-        startWorkout(workoutName);
+        CurrentWorkout.init(((Button) view).getText().toString(), this);
+        startWorkout();
     }
 
     public void startTimer(View view) {
@@ -81,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         Startup.initWorkoutNamesFile(this);
     }
 
-    private void startWorkout(String workoutName) {
+    private void startWorkout() {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("workout_is_in_progress", true);
