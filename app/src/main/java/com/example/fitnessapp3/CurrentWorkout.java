@@ -235,4 +235,12 @@ public class CurrentWorkout {
     public static String getWorkoutName() {
         return workoutName;
     }
+
+    public static int getWorkoutLength() {
+        return workout.getLength();
+    }
+
+    public static int getWorkoutPosition() {
+        return workout.getPosition();
+    }
 }

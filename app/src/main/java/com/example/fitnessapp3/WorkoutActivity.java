@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
@@ -27,6 +28,12 @@ public class WorkoutActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
+
+        ProgressBar progressBar = findViewById(R.id.progressBar_workout);
+        progressBar.setMin(0);
+        progressBar.setMax(CurrentWorkout.getWorkoutLength());
+        progressBar.setIndeterminate(false);
+        progressBar.setProgress(CurrentWorkout.getWorkoutPosition() + 1);
     }
 
     public void refreshExercise() {

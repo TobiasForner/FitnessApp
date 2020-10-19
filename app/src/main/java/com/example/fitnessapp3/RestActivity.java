@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
@@ -33,7 +34,13 @@ public class RestActivity extends AppCompatActivity {
             timeElapsed = savedInstanceState.getInt("timeElapsed");
         }
         Intent intent = getIntent();
-        startTimer( intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000) - timeElapsed);
+        startTimer(intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000) - timeElapsed);
+
+        ProgressBar progressBar = findViewById(R.id.progressbar_rest);
+        progressBar.setMin(0);
+        progressBar.setMax(CurrentWorkout.getWorkoutLength());
+        progressBar.setIndeterminate(false);
+        progressBar.setProgress(CurrentWorkout.getWorkoutPosition() + 1);
     }
 
     public void skipTimer(View view) {
@@ -71,14 +78,14 @@ public class RestActivity extends AppCompatActivity {
         } else if (CurrentWorkout.hasNextExercise()) {
             if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
                 restartActivity();
-            }else{
+            } else {
                 Intent nextIntent = new Intent(this, WorkoutActivity.class);
                 startActivity(nextIntent);
             }
         }
     }
 
-    private void startTimer(final int millisForTimer){
+    private void startTimer(final int millisForTimer) {
         final TextView timeRemaining = findViewById(R.id.textView5);
         timer = new CountDownTimer(millisForTimer, 1000) {
 
