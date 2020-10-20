@@ -2,13 +2,13 @@ package com.example.fitnessapp3;
 
 public class Exercise extends WorkoutComponent {
     public enum EXTYPE {
-        WEIGHT, DURATION, REST, REPS
+        WEIGHT, DURATION, REST
     }
 
-    private String name;
-    private EXTYPE type;
+    private final String name;
+    private final EXTYPE type;
     private int parameter;//weight for weighted exercises, duration for duration-based exercises
-    private boolean weighted;
+    private final boolean weighted;
     private String abbrev;
 
     public Exercise(String name, EXTYPE type, boolean weighted) {

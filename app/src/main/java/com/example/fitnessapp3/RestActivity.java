@@ -71,18 +71,7 @@ public class RestActivity extends AppCompatActivity {
     }
 
     private void goToNextActivity() {
-        Intent intent = getIntent();
-        if ("MainActivity".equals(Objects.requireNonNull(intent.getStringExtra(MainActivity.EXTRA_RETURN_DEST)))) {
-            Intent nextIntent = new Intent(this, MainActivity.class);
-            startActivity(nextIntent);
-        } else if (CurrentWorkout.hasNextExercise()) {
-            if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
-                restartActivity();
-            } else {
-                Intent nextIntent = new Intent(this, WorkoutActivity.class);
-                startActivity(nextIntent);
-            }
-        }
+        startActivity(ActivityTransition.goToNextActivityInWorkout(this));
     }
 
     private void startTimer(final int millisForTimer) {
@@ -114,6 +103,4 @@ public class RestActivity extends AppCompatActivity {
             }
         }.start();
     }
-
-
 }

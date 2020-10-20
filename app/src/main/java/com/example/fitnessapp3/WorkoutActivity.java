@@ -23,20 +23,17 @@ public class WorkoutActivity extends AppCompatActivity {
         setContentView(R.layout.activity_workout);
 
         if (CurrentWorkout.hasNextExercise()) {
-            refreshExercise();
+            init();
         } else {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
 
         ProgressBar progressBar = findViewById(R.id.progressBar_workout);
-        progressBar.setMin(0);
-        progressBar.setMax(CurrentWorkout.getWorkoutLength());
-        progressBar.setIndeterminate(false);
-        progressBar.setProgress(CurrentWorkout.getWorkoutPosition() + 1);
+        CurrentWorkout.setProgress(progressBar);
     }
 
-    public void refreshExercise() {
+    public void init() {
         TextView exName = findViewById(R.id.exerciseName);
         TextView setProg = findViewById(R.id.setProgressText);
         exName.setText(CurrentWorkout.getWorkoutComponentName());
@@ -65,6 +62,11 @@ public class WorkoutActivity extends AppCompatActivity {
             } else if (exercise.getType() == Exercise.EXTYPE.DURATION) {
                 TextView exNum = findViewById(R.id.exerciseNumberInput);
                 exNum.setHint("Duration");
+            } else {
+                TextView weight_header = findViewById(R.id.text_weight_header);
+                weight_header.setVisibility(View.GONE);
+                TextView weight_input = findViewById(R.id.exerciseNumberInput);
+                weight_input.setVisibility(View.GONE);
             }
         }
         setProg.setText(CurrentWorkout.getSetString());
@@ -79,16 +81,7 @@ public class WorkoutActivity extends AppCompatActivity {
             return;
         }
         if (CurrentWorkout.hasNextExercise()) {
-            if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
-                Intent intent = new Intent(this, RestActivity.class);
-                int time = ((Rest) CurrentWorkout.getNextWorkoutComponent()).getRestTime();
-                intent.putExtra(MainActivity.EXTRA_MESSAGE, time);
-                intent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
-                startActivity(intent);
-            } else {
-                refreshExercise();
-            }
-
+            startActivity(ActivityTransition.goToNextActivityInWorkout(this));
         } else {
             CurrentWorkout.finishWorkout(this);
             Intent intent = new Intent(this, MainActivity.class);

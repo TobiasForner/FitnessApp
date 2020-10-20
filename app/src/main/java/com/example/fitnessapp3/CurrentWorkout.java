@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import android.widget.ProgressBar;
 
 
 import java.text.SimpleDateFormat;
@@ -150,6 +151,13 @@ public class CurrentWorkout {
         saveProgress(activity);
     }
 
+
+    public static void logDuration(int duration, Activity activity){
+        currentWorkout[workout.getPosition()] = "" + duration;
+        workout.proceed();
+        saveProgress(activity);
+    }
+
     public static String getPrevResultsInWorkout() {
         String[] prevResults = exToResults.getOrDefault(workout.getCurrentComponent().getName(), null);
         if (prevResults == null || prevResults[0] == null) {
@@ -242,5 +250,12 @@ public class CurrentWorkout {
 
     public static int getWorkoutPosition() {
         return workout.getPosition();
+    }
+
+    public static void setProgress(ProgressBar progressBar){
+        progressBar.setMin(0);
+        progressBar.setMax(getWorkoutLength());
+        progressBar.setIndeterminate(false);
+        progressBar.setProgress(getWorkoutPosition() + 1);
     }
 }
