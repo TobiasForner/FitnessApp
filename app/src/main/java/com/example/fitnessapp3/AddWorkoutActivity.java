@@ -38,7 +38,8 @@ public class AddWorkoutActivity extends AppCompatActivity {
         if (workoutName.getText().equals("")) {
             return;
         }
-        TextView workoutText = findViewById(R.id.text_workout_body);
+        //TextView workoutText = findViewById(R.id.text_workout_body);
+        TextView workoutText = findViewById(R.id.editText_workout_body);
         if (workoutText.getText().equals("")) {
             return;
         }
@@ -209,7 +210,8 @@ public class AddWorkoutActivity extends AppCompatActivity {
         title.setText(R.string.edit_workout);
         TextView workoutNameText = findViewById(R.id.text_workout_name);
         workoutNameText.setText(workoutName);
-        TextView workoutText = findViewById(R.id.text_workout_body);
+        //TextView workoutText = findViewById(R.id.text_workout_body);
+        TextView workoutText = findViewById(R.id.editText_workout_body);
         String workoutBody = WorkoutManager.getWorkoutTextFromFile(workoutName, this);
         workoutText.setText(workoutBody);
     }

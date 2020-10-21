@@ -44,6 +44,7 @@
         app:layout_constraintTop_toTopOf="@+id/timerButton" />
 
     <ScrollView
+        android:id="@+id/scrollView2"
         style="@android:style/Widget.Material.ScrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -104,5 +105,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timerButton" />
+
+    <ImageButton
+        android:id="@+id/imageButton_edit_workouts"
+        android:layout_width="37dp"
+        android:layout_height="37dp"
+        android:background="#FFFFFF"
+        android:contentDescription="@string/opens_an_activity_for_managing_editing_workouts"
+        android:onClick="openEditWorkouts"
+        app:layout_constraintBottom_toBottomOf="@+id/textView2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/textView2"
+        app:layout_constraintTop_toTopOf="@+id/textView2"
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@android:drawable/ic_menu_edit" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

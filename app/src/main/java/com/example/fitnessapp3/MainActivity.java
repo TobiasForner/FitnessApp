@@ -94,4 +94,9 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
+    public void openEditWorkouts(View view){
+        Intent intent=new Intent(this, WorkoutEditActivity.class);
+        startActivity(intent);
+    }
 }

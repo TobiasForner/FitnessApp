@@ -6,6 +6,57 @@
     android:layout_height="match_parent"
     tools:context=".AddWorkoutActivity">
 
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="addWorkout"
+        android:text="@string/add_workout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayout"
+        style="@style/Widget.Design.TextInputLayout"
+        android:layout_width="421dp"
+        android:layout_height="269dp"
+        android:layout_marginTop="88dp"
+        android:hint="@string/enter_workout_text"
+        app:boxCornerRadiusBottomEnd="5dp"
+        app:boxCornerRadiusBottomStart="5dp"
+        app:boxCornerRadiusTopEnd="5dp"
+        app:boxCornerRadiusTopStart="5dp"
+        app:layout_constraintEnd_toEndOf="@+id/text_workout_name"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/text_workout_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_workout_name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editText_workout_body"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            tools:ignore="KeyboardInaccessibleWidget" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <EditText
+        android:id="@+id/text_workout_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/workout_name"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.079"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_add_title" />
+
     <TextView
         android:id="@+id/text_add_title"
         android:layout_width="wrap_content"
@@ -16,46 +67,4 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/text_workout_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:ems="10"
-        android:hint="@string/workout_name"
-        android:inputType="textPersonName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.079"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_add_title"
-        android:autofillHints="" />
-
-    <EditText
-        android:id="@+id/text_workout_body"
-        android:layout_width="383dp"
-        android:layout_height="41dp"
-        android:layout_marginTop="64dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:gravity="start|top"
-        android:hint="@string/enter_workout_text"
-        android:inputType="textMultiLine"
-        app:layout_constraintEnd_toEndOf="@+id/text_workout_name"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/text_workout_name"
-        app:layout_constraintTop_toBottomOf="@+id/text_workout_name" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="360dp"
-        android:onClick="addWorkout"
-        android:text="@string/add_workout"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_workout_body"
-        app:layout_constraintVertical_bias="0.506" />
 </androidx.constraintlayout.widget.ConstraintLayout>

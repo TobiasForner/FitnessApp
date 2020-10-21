@@ -37,4 +37,8 @@ public class WorkoutEditActivity extends AppCompatActivity {
         intent.putExtra(AddWorkoutActivity.WORKOUT_NAME, button.getText());
         startActivity(intent);
     }
+
+    public void goBack(View v) {
+        finish();
+    }
 }

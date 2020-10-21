@@ -36,4 +36,6 @@
     <string name="choose_workout_to_edit">Choose workout to edit</string>
     <string name="duration">Duration</string>
     <string name="start">Start</string>
+    <string name="manage_workouts">Manage Workouts</string>
+    <string name="opens_an_activity_for_managing_editing_workouts">opens an activity for managing/editing workouts</string>
 </resources>
