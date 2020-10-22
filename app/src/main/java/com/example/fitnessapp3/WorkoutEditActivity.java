@@ -41,4 +41,9 @@ public class WorkoutEditActivity extends AppCompatActivity {
     public void goBack(View v) {
         finish();
     }
+
+    public void goToAddWorkout(View v) {
+        Intent intent = new Intent(this, AddWorkoutActivity.class);
+        startActivity(intent);
+    }
 }

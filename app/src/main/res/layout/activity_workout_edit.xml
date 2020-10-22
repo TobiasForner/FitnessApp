@@ -37,6 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:contentDescription="@string/goes_back"
         android:onClick="goBack"
         app:layout_constraintBottom_toTopOf="@+id/scrollview_workout_edit"
         app:layout_constraintEnd_toStartOf="@+id/textView11"
@@ -45,5 +46,16 @@
         app:layout_constraintTop_toTopOf="@+id/textView11"
         app:layout_constraintVertical_bias="0.0"
         app:srcCompat="@drawable/abc_vector_test" />
+
+    <Button
+        android:id="@+id/button6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToAddWorkout"
+        android:text="@string/add"
+        app:layout_constraintBottom_toBottomOf="@+id/imageButton_back"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView11"
+        app:layout_constraintTop_toTopOf="@+id/imageButton_back" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
