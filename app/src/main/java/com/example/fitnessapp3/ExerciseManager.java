@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,8 +16,8 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ExerciseManager {
-    private Map<String, WorkoutComponent> nameToEx;
-    private Map<String, String> abbrevToFullName;
+    private final Map<String, WorkoutComponent> nameToEx;
+    private final Map<String, String> abbrevToFullName;
 
     public ExerciseManager(Context context) {
         nameToEx = new HashMap<>();
@@ -36,7 +37,9 @@ public class ExerciseManager {
         if (nameToEx.containsKey(name)) {
             return;
         }
-        try (FileOutputStream fos = context.openFileOutput("exercise_details.txt", Context.MODE_PRIVATE + Context.MODE_APPEND)) {
+        try {
+            File file = new File(context.getFilesDir(), "exercise_details.txt");
+            FileOutputStream fos = new FileOutputStream(file, true);
             String sep = Objects.requireNonNull(System.getProperty("line.separator"));
             String abbrevString = "";
             if (!abbrev.equals("")) {
@@ -52,7 +55,8 @@ public class ExerciseManager {
 
     public void readExerciseDetails(Context context) {
         try {
-            FileInputStream fis = context.openFileInput("exercise_details.txt");
+            File file = new File(context.getFilesDir(), "exercise_details.txt");
+            FileInputStream fis = new FileInputStream(file);
             InputStreamReader inputStreamReader =
                     new InputStreamReader(fis, StandardCharsets.UTF_8);
             try (BufferedReader reader = new BufferedReader(inputStreamReader)) {

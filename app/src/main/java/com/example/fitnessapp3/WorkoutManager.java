@@ -45,7 +45,8 @@ public class WorkoutManager {
         }
         String filename = "workout_names.txt";
         String fileContents = name + System.getProperty("line.separator");
-        try (FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE)) {
+        File file = new File(context.getFilesDir(), filename);
+        try (FileOutputStream fos = new FileOutputStream(file, true)) {
             fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
@@ -107,7 +108,8 @@ public class WorkoutManager {
 
     private static void readWorkoutNames(Context context) {
         try {
-            FileInputStream fis = context.openFileInput("workout_names.txt");
+            File file = new File(context.getFilesDir(), "workout_names.txt");
+            FileInputStream fis = new FileInputStream(file);
             InputStreamReader inputStreamReader =
                     new InputStreamReader(fis, StandardCharsets.UTF_8);
             StringBuilder stringBuilder = new StringBuilder();
@@ -141,7 +143,8 @@ public class WorkoutManager {
         }
         String contents;
         try {
-            FileInputStream fis = context.openFileInput(workoutName + "_workout.txt");
+            File file = new File(context.getFilesDir(), workoutName + "_workout.txt");
+            FileInputStream fis = new FileInputStream(file);
             InputStreamReader inputStreamReader =
                     new InputStreamReader(fis, StandardCharsets.UTF_8);
             StringBuilder stringBuilder = new StringBuilder();
@@ -170,7 +173,8 @@ public class WorkoutManager {
         }
         String contents;
         try {
-            FileInputStream fis = context.openFileInput(workoutName + "_workout.txt");
+            File file = new File(context.getFilesDir(), workoutName + "_workout.txt");
+            FileInputStream fis = new FileInputStream(file);
             InputStreamReader inputStreamReader =
                     new InputStreamReader(fis, StandardCharsets.UTF_8);
             StringBuilder stringBuilder = new StringBuilder();

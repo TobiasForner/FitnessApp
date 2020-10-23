@@ -1,13 +1,11 @@
 package com.example.fitnessapp3;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import java.io.FileNotFoundException;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -63,12 +61,6 @@ public class Startup extends Application {
         } else {
             WorkoutManager.init(this);
         }
-        /*
-        if (sharedPreferences.getBoolean("workout_is_in_progress", false)) {
-            Intent intent = new Intent(this, ResumeWorkoutActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }*/
     }
 
     public static void initExercises(SharedPreferences.Editor editor) {
@@ -80,9 +72,9 @@ public class Startup extends Application {
     }
 
     public static void initWorkoutNamesFile(Context context) {
-        String filename = "workout_names.txt";
+        File file = new File(context.getFilesDir(), "workout_names.txt");
         String fileContents = "RR" + System.getProperty("line.separator");
-        try (FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE)) {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
