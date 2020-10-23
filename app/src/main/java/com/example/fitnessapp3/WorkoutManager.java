@@ -212,4 +212,8 @@ public class WorkoutManager {
         String[] workout_details = Objects.requireNonNull(sharedPreferences.getString("workout_in_progress", "")).split(Objects.requireNonNull(System.getProperty("line.separator")));
         return workout_details[0];
     }
+
+    public static void addExercise(String name, String exType, boolean weighted, String abbrev, Context context) {
+        exerciseManager.addExercise(name, exType, weighted, abbrev, context);
+    }
 }
