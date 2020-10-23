@@ -1,7 +1,7 @@
 package com.example.fitnessapp3;
 
 public class Rest extends WorkoutComponent {
-    private int restTime;
+    private final int restTime;
 
     Rest(int restTime) {
         this.restTime = restTime;

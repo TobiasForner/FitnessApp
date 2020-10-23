@@ -22,15 +22,11 @@ public class MainActivity extends AppCompatActivity {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        //int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
 
         int buttonWidth = width / 3 - 20;
 
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
-        //SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        //List<String> workoutList = new ArrayList<>(Objects.requireNonNull(sharedPreferences.getStringSet("Workouts", new HashSet<String>())));
-        //linear.removeAllViews();
         for (String s : WorkoutManager.getWorkoutNames()) {
             Button b = new Button(this);
             b.setText(s);
@@ -49,13 +45,6 @@ public class MainActivity extends AppCompatActivity {
         addExercise.setWidth(buttonWidth);
         timerButton.setWidth(buttonWidth);
         initWorkoutsButton.setWidth(buttonWidth);
-        /*
-        int buttonHeight = Collections.max(Arrays.asList(addExercise.getHeight(), timerButton.getHeight(), initWorkoutsButton.getHeight()));
-        addExercise.setHeight(buttonHeight);
-        timerButton.setHeight(buttonHeight);
-        initWorkoutsButton.setHeight(buttonHeight);
-         */
-
     }
 
     public void startWorkout(View view) {

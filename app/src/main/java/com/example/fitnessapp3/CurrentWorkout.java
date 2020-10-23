@@ -8,7 +8,6 @@ import android.widget.ProgressBar;
 
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,7 +25,6 @@ public class CurrentWorkout {
     public static String[] setStrings;
     protected static int[] numberOfExercise;
     protected static Map<String, String[]> exToResults;
-    //protected static ExerciseManager exerciseManager;
     private static Workout workout;
 
     private static Exercise processExercise(String exString) {
@@ -70,24 +68,19 @@ public class CurrentWorkout {
     }
 
     public static void init(String workoutName, Activity activity) {
-        //exerciseManager.initExerciseDetails(activity);
         useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         String[] exStrings = Objects.requireNonNull(sharedPreferences.getString(workoutName, "")).split(";");
-        //position = 0;
         workout = WorkoutManager.getWorkoutFromFile(workoutName, activity);
         int workoutLength = exStrings.length;
 
         currentWorkout = new String[workoutLength];
-        //workoutComponents = new WorkoutComponent[workoutLength];
         setStrings = new String[workoutLength];
         numberOfExercise = new int[workoutLength];
         Map<String, Integer> exCounts = new HashMap<>();
         exToResults = new HashMap<>();
         for (int i = 0; i < workoutLength; i++) {
-            //workoutComponents[i] = processExercise(exStrings[i]);
-            //workoutComponents[i] = getNextWorkoutComponentFromManager(exStrings[i]);
             String compName = workout.getComponentAt(i).getName();
             exCounts.putIfAbsent(compName, 0);
             try {
@@ -144,8 +137,6 @@ public class CurrentWorkout {
     }
 
     public static void logRest(int millis, Activity activity) {
-        //String compName=workout.getCurrentComponent().getName();
-        //Objects.requireNonNull(exToResults.get(compName))[numberOfExercise[workout.getPosition()]] = "" + millis;
         currentWorkout[workout.getPosition()] = "" + millis;
         workout.proceed();
         saveProgress(activity);
@@ -238,10 +229,6 @@ public class CurrentWorkout {
                 }
             }
         }
-    }
-
-    public static String getWorkoutName() {
-        return workoutName;
     }
 
     public static int getWorkoutLength() {
