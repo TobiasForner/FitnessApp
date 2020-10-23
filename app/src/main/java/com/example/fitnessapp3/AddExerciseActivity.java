@@ -4,9 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -66,11 +64,7 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
 
     public void addExercise(View view) {
         TextView exName = findViewById(R.id.exerciseName);
-        String exDetails = "ExerciseType=" + exType + ";" + "Weighted=" + weighted + ";" + "Abbreviation=" + exName;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(exName.getText().toString(), exDetails);
-        editor.apply();
+        WorkoutManager.addExercise(exName.getText().toString(), exType, weighted, exName.getText().toString(), this);
         finish();
     }
 }
