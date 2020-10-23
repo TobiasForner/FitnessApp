@@ -29,8 +29,11 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
             exerciseName.setText(exName);
         }
 
-        weighted = false;
-        exType = "";
+        weighted = intent.getBooleanExtra(ManageExercisesActivity.WEIGHTED, true);
+        exType = intent.getStringExtra(ManageExercisesActivity.TYPE);
+        if (exType == null) {
+            exType = "";
+        }
 
         Spinner exerciseTypeSpinner = findViewById(R.id.spinner_extype);
         exerciseTypeSpinner.setOnItemSelectedListener(this);
@@ -43,6 +46,7 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
 
         SwitchCompat weightedSwitch = findViewById(R.id.switch1);
         weightedSwitch.setOnCheckedChangeListener(this);
+        weightedSwitch.setChecked(weighted);
     }
 
     public void onItemSelected(AdapterView<?> parent, View view,

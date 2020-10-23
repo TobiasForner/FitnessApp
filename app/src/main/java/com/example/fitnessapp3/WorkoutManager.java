@@ -14,6 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -215,5 +216,13 @@ public class WorkoutManager {
 
     public static void addExercise(String name, String exType, boolean weighted, String abbrev, Context context) {
         exerciseManager.addExercise(name, exType, weighted, abbrev, context);
+    }
+
+    public static ArrayList<String> getExerciseNames() {
+        return exerciseManager.getExerciseNames();
+    }
+
+    public static WorkoutComponent getWorkoutComponentFromName(String name) {
+        return exerciseManager.getWorkoutComponent(name);
     }
 }

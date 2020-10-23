@@ -100,7 +100,7 @@
         android:id="@+id/divider"
         android:layout_width="409dp"
         android:layout_height="1dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="48dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -120,5 +120,16 @@
         app:layout_constraintTop_toTopOf="@+id/textView2"
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@android:drawable/ic_menu_edit" />
+
+    <Button
+        android:id="@+id/button_go_to_manage_exercises"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToManageExercises"
+        android:text="@string/manage_exercises"
+        app:layout_constraintBottom_toTopOf="@+id/divider"
+        app:layout_constraintEnd_toEndOf="@+id/initWorkoutsButton"
+        app:layout_constraintStart_toStartOf="@+id/initWorkoutsButton"
+        app:layout_constraintTop_toBottomOf="@+id/initWorkoutsButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

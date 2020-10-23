@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -122,5 +123,9 @@ public class ExerciseManager {
 
     public boolean exerciseExists(String exName) {
         return getWorkoutComponent(exName) != null;
+    }
+
+    public ArrayList<String> getExerciseNames(){
+        return new ArrayList<>(nameToEx.keySet());
     }
 }

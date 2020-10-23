@@ -20,6 +20,10 @@ public class ResumeWorkoutActivity extends AppCompatActivity {
     }
 
     public void goToMainActivity(View view) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("workout_is_in_progress", false);
+        editor.apply();
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }

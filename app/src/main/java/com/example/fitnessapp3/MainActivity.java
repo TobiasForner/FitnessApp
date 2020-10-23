@@ -84,8 +84,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void openEditWorkouts(View view){
-        Intent intent=new Intent(this, WorkoutEditActivity.class);
+    public void openEditWorkouts(View view) {
+        Intent intent = new Intent(this, WorkoutEditActivity.class);
+        startActivity(intent);
+    }
+
+    public void goToManageExercises(View v) {
+        Intent intent = new Intent(this, ManageExercisesActivity.class);
         startActivity(intent);
     }
 }
