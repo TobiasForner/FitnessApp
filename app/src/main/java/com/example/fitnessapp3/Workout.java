@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Workout {
     private int position;
-    private List<WorkoutComponent> workoutComponents;
-    private String workoutName;
+    private final List<WorkoutComponent> workoutComponents;
+    private final String workoutName;
 
     public Workout(String name) {
         this.workoutName = name;
