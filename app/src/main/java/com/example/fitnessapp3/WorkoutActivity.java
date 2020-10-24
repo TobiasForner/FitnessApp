@@ -99,7 +99,8 @@ public class WorkoutActivity extends AppCompatActivity {
         // inflate the popup_continue_previous_workout.xml of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        View popupView = inflater.inflate(R.layout.popup_window, (ViewGroup) findViewById(android.R.id.content));
+        ViewGroup viewGroup = findViewById(android.R.id.content);
+        View popupView = inflater.inflate(R.layout.popup_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;

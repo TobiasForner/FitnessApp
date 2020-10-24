@@ -122,10 +122,10 @@ public class ExerciseManager {
     }
 
     public boolean exerciseExists(String exName) {
-        return getWorkoutComponent(exName) != null;
+        return nameToEx.containsKey(exName);
     }
 
-    public ArrayList<String> getExerciseNames(){
+    public ArrayList<String> getExerciseNames() {
         return new ArrayList<>(nameToEx.keySet());
     }
 }
