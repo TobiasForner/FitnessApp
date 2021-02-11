@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void startTimer(View view) {
-        Intent intent = new Intent(this, RestActivity.class);
+        Intent intent = new Intent(this, TimerActivity.class);
         int time = 180000;
         intent.putExtra(EXTRA_MESSAGE, time);
         intent.putExtra(EXTRA_RETURN_DEST, "MainActivity");
