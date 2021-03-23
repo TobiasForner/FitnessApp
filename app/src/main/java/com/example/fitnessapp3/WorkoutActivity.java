@@ -73,13 +73,22 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
     public void logExercise(View view) {
-
-        TextView exNum = findViewById(R.id.exerciseNumberInput);
+        Exercise exercise = (Exercise) CurrentWorkout.getNextWorkoutComponent();
         TextView repNum = findViewById(R.id.repNumberInput);
-        if (!CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString(), this)) {
-            showPopupWindowClick(exNum, getString(R.string.popup));
-            return;
+        if(exercise.isWeighted()){
+            TextView exNum = findViewById(R.id.exerciseNumberInput);
+            if (!CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString(), this)) {
+                showPopupWindowClick(exNum, getString(R.string.popup));
+                return;
+            }
+        }else{
+            if (!CurrentWorkout.logExercise("0", repNum.getText().toString(), this)){
+                //TODO add message without exnum
+                showPopupWindowClick(repNum, getString(R.string.popup));
+                return;
+            }
         }
+
         if (CurrentWorkout.hasNextExercise()) {
             startActivity(ActivityTransition.goToNextActivityInWorkout(this));
         } else {

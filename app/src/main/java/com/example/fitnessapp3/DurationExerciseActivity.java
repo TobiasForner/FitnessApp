@@ -70,9 +70,8 @@ public class DurationExerciseActivity extends AppCompatActivity {
                     toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
                 }
                 if (CurrentWorkout.hasNextExercise()) {
-                    if( CurrentWorkout.getNextWorkoutComponent().isExercise() && ((Exercise) CurrentWorkout.getNextWorkoutComponent()).getType() == Exercise.EXTYPE.DURATION)
-                    restartActivity();
-                } else {
+                    goToNextActivity();
+                }else {
                     finishWorkout();
                 }
             }
