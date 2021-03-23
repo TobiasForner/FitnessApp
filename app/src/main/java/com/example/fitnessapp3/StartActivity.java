@@ -20,6 +20,7 @@ public class StartActivity extends AppCompatActivity {
             Intent intent = new Intent(this, ResumeWorkoutActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+            finish();
         } else {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);

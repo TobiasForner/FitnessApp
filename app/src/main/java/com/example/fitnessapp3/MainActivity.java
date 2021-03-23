@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("workout_is_in_progress", true);
         editor.apply();
+        /*
         if (CurrentWorkout.getNextWorkoutComponent().isExercise()) {
             Intent intent = new Intent(this, WorkoutActivity.class);
             startActivity(intent);
@@ -81,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, RestActivity.class);
             intent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
             startActivity(intent);
-        }
+        }*/
+        startActivity(ActivityTransition.goToNextActivityInWorkout(this));
     }
 
     public void openEditWorkouts(View view) {

@@ -71,9 +71,9 @@ public class CurrentWorkout {
         useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        String[] exStrings = Objects.requireNonNull(sharedPreferences.getString(workoutName, "")).split(";");
+        //String[] exStrings = Objects.requireNonNull(sharedPreferences.getString(workoutName, "")).split(";");
         workout = WorkoutManager.getWorkoutFromFile(workoutName, activity);
-        int workoutLength = exStrings.length;
+        int workoutLength = workout.getLength();
 
         currentWorkout = new String[workoutLength];
         setStrings = new String[workoutLength];
