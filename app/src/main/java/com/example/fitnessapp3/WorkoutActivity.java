@@ -40,26 +40,25 @@ public class WorkoutActivity extends AppCompatActivity {
         WorkoutComponent nextWorkoutComponent = CurrentWorkout.getNextWorkoutComponent();
         if (nextWorkoutComponent.isExercise()) {
             Exercise exercise = (Exercise) nextWorkoutComponent;
-            if (exercise.isWeighted()) {
-                if (CurrentWorkout.useLastWorkout) {
+            TextView exNum = findViewById(R.id.exerciseNumberInput);
+            if (CurrentWorkout.useLastWorkout) {
                     String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
-                    if (prevNums.length == 2) {
-                        TextView exNum = findViewById(R.id.exerciseNumberInput);
-                        exNum.setText(prevNums[0]);
+                    if (prevNums.length >= 1) {
+                        if(exercise.isWeighted() && prevNums.length==2){
+                            exNum.setText(prevNums[0]);
+                        }
                         TextView repNum = findViewById(R.id.repNumberInput);
                         repNum.setText(prevNums[1]);
                     }
                 }
-                setPrevResults();
-            } else if (exercise.getType() == Exercise.EXTYPE.DURATION) {
-                TextView exNum = findViewById(R.id.exerciseNumberInput);
+            if (exercise.getType() == Exercise.EXTYPE.DURATION) {
                 exNum.setHint("Duration");
-            } else {
+            } else if(!exercise.isWeighted()) {
                 TextView weight_header = findViewById(R.id.text_weight_header);
                 weight_header.setVisibility(View.GONE);
-                TextView weight_input = findViewById(R.id.exerciseNumberInput);
-                weight_input.setVisibility(View.GONE);
+                exNum.setVisibility(View.GONE);
             }
+            setPrevResults();
         }
         setProg.setText(CurrentWorkout.getSetString());
     }
