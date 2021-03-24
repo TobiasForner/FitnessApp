@@ -102,4 +102,34 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/editText_duration"
         app:layout_constraintTop_toTopOf="@+id/editText_duration" />
+
+    <TextView
+        android:id="@+id/duration_exercise_set_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TextView"
+        app:layout_constraintEnd_toEndOf="@+id/duration_exercise_name"
+        app:layout_constraintStart_toStartOf="@+id/duration_exercise_name"
+        app:layout_constraintTop_toBottomOf="@+id/duration_exercise_name" />
+
+    <TextView
+        android:id="@+id/duration_exercise_prev_results_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/prev_results"
+        app:layout_constraintEnd_toEndOf="@+id/duration_exercise_prev_results_body"
+        app:layout_constraintStart_toStartOf="@+id/duration_exercise_prev_results_body"
+        app:layout_constraintTop_toBottomOf="@+id/button5" />
+
+    <TextView
+        android:id="@+id/duration_exercise_prev_results_body"
+        android:layout_width="241dp"
+        android:layout_height="127dp"
+        android:text="@string/prev_results"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/duration_exercise_name"
+        app:layout_constraintStart_toStartOf="@+id/duration_exercise_name"
+        app:layout_constraintTop_toBottomOf="@+id/duration_exercise_prev_results_header"
+        app:layout_constraintVertical_bias="0.277" />
 </androidx.constraintlayout.widget.ConstraintLayout>

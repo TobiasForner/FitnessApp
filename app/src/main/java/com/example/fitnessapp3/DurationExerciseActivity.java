@@ -39,8 +39,25 @@ public class DurationExerciseActivity extends AppCompatActivity {
     public void init() {
         String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
         TextView dur = findViewById(R.id.editText_duration);
+
+        TextView setProg = findViewById(R.id.duration_exercise_set_progress);
         if(prevNums.length>0){
             dur.setText(prevNums[0]);
+        }
+
+        setProg.setText(CurrentWorkout.getSetString());
+        setPrevResults();
+    }
+
+    private void setPrevResults(){
+        String prevResults = CurrentWorkout.getPrevResultsInWorkout();
+        TextView prevResultsView = findViewById(R.id.duration_exercise_prev_results_body);
+        if (prevResults.length() > 0) {
+            prevResultsView.setText(prevResults);
+        } else {
+            TextView prevResultsHeaderView = findViewById(R.id.duration_exercise_prev_results_header);
+            prevResultsView.setVisibility(View.INVISIBLE);
+            prevResultsHeaderView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -81,11 +98,6 @@ public class DurationExerciseActivity extends AppCompatActivity {
 
     private void logDuration(int duration) {
         CurrentWorkout.logDuration(duration, this);
-    }
-
-    private void restartActivity() {
-        Intent intent = new Intent(this, DurationExerciseActivity.class);
-        startActivity(intent);
     }
 
     private void goToNextActivity() {

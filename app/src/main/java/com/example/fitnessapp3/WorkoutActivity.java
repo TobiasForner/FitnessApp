@@ -50,15 +50,7 @@ public class WorkoutActivity extends AppCompatActivity {
                         repNum.setText(prevNums[1]);
                     }
                 }
-                String prevResults = CurrentWorkout.getPrevResultsInWorkout();
-                TextView prevResultsView = findViewById(R.id.prev_results_body);
-                if (prevResults.length() > 0) {
-                    prevResultsView.setText(prevResults);
-                } else {
-                    TextView prevResultsHeaderView = findViewById(R.id.prev_results_header);
-                    prevResultsView.setVisibility(View.INVISIBLE);
-                    prevResultsHeaderView.setVisibility(View.INVISIBLE);
-                }
+                setPrevResults();
             } else if (exercise.getType() == Exercise.EXTYPE.DURATION) {
                 TextView exNum = findViewById(R.id.exerciseNumberInput);
                 exNum.setHint("Duration");
@@ -70,6 +62,18 @@ public class WorkoutActivity extends AppCompatActivity {
             }
         }
         setProg.setText(CurrentWorkout.getSetString());
+    }
+
+    private void setPrevResults(){
+        String prevResults = CurrentWorkout.getPrevResultsInWorkout();
+        TextView prevResultsView = findViewById(R.id.prev_results_body);
+        if (prevResults.length() > 0) {
+            prevResultsView.setText(prevResults);
+        } else {
+            TextView prevResultsHeaderView = findViewById(R.id.prev_results_header);
+            prevResultsView.setVisibility(View.INVISIBLE);
+            prevResultsHeaderView.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void logExercise(View view) {
