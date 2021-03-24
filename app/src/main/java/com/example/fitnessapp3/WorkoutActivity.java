@@ -86,8 +86,7 @@ public class WorkoutActivity extends AppCompatActivity {
             }
         }else{
             if (!CurrentWorkout.logExercise("0", repNum.getText().toString(), this)){
-                //TODO add message without exnum
-                showPopupWindowClick(repNum, getString(R.string.popup));
+                showPopupWindowClick(repNum, getString(R.string.popup_unweighted));
                 return;
             }
         }

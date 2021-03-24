@@ -17,6 +17,7 @@
     <string name="reps">Reps</string>
     <string name="prev_results">Previous Results</string>
     <string name="popup">Please enter a valid rep number and weight.</string>
+    <string name="popup_unweighted">Please enter a valid rep number.</string>
     <string name="add_exercise">Add Exercise</string>
     <string name="exercise_type">Exercise Type</string>
     <string name="weighted">weighted</string>
