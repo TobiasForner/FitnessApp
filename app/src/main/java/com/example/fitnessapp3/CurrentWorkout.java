@@ -150,6 +150,12 @@ public class CurrentWorkout {
         saveProgress(activity);
     }
 
+    public static void logWeightedDuration(int duration, int weight, Activity activity){
+        currentWorkout[workout.getPosition()] = "" + duration + "," + weight;
+        workout.proceed();
+        saveProgress(activity);
+    }
+
     public static String getPrevResultsInWorkout() {
         String[] prevResults = exToResults.getOrDefault(workout.getCurrentComponent().getName(), null);
         if (prevResults == null || prevResults[0] == null) {

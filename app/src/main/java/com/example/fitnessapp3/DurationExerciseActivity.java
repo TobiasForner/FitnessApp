@@ -122,10 +122,14 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void logDuration(int duration) {
-        CurrentWorkout.logDuration(duration, this);
+        if(((Exercise)CurrentWorkout.getNextWorkoutComponent()).isWeighted()){
+            TextView weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
+            int weight = Integer.parseInt(weight_text.getText().toString());
+            CurrentWorkout.logWeightedDuration(duration, weight, this);
+        }else{
+            CurrentWorkout.logDuration(duration, this);
+        }
     }
-
-
 
     private void finishWorkout(){
         CurrentWorkout.finishWorkout(this);
