@@ -13,10 +13,7 @@ public class ActivityTransition {
             nextIntent = new Intent(origin, MainActivity.class);
         } else if (CurrentWorkout.hasNextExercise()) {
             if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
-                nextIntent = new Intent(origin, RestActivity.class);
-                int time = ((Rest) CurrentWorkout.getNextWorkoutComponent()).getRestTime();
-                nextIntent.putExtra(MainActivity.EXTRA_MESSAGE, time);
-                nextIntent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
+                nextIntent= restIntent(origin);
             } else if (((Exercise) CurrentWorkout.getNextWorkoutComponent()).getType() == Exercise.EXTYPE.DURATION) {
                 nextIntent = new Intent(origin, DurationExerciseActivity.class);
             } else {
@@ -25,6 +22,14 @@ public class ActivityTransition {
         } else {
             nextIntent = new Intent(origin, MainActivity.class);
         }
+        return nextIntent;
+    }
+
+    private static Intent restIntent(Activity origin){
+        Intent nextIntent = new Intent(origin, RestActivity.class);
+        int time = ((Rest) CurrentWorkout.getNextWorkoutComponent()).getRestTime();
+        nextIntent.putExtra(MainActivity.EXTRA_MESSAGE, time);
+        nextIntent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
         return nextIntent;
     }
 }

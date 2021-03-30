@@ -32,21 +32,32 @@ public class DurationExerciseActivity extends AppCompatActivity {
         playSound = getIntent().getBooleanExtra("playSound", true);
         TextView exName= findViewById(R.id.duration_exercise_name);
         exName.setText(CurrentWorkout.getWorkoutComponentName());
-        timer=null;
+        timer = null;
         init();
     }
 
     public void init() {
-        String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
-        TextView dur = findViewById(R.id.editText_duration);
+        setSetProgress();
+        setPrevResults();
+        copyPreviousNumbers();
+        setWeightInvisibleIfUnweighted();
+    }
 
+    private void setSetProgress(){
         TextView setProg = findViewById(R.id.duration_exercise_set_progress);
+        setProg.setText(CurrentWorkout.getSetString());
+    }
+
+    private void copyPreviousNumbers(){
+        String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
         if(prevNums.length>0){
+            TextView dur = findViewById(R.id.editText_duration);
             dur.setText(prevNums[0]);
         }
-
-        setProg.setText(CurrentWorkout.getSetString());
-        setPrevResults();
+        if(prevNums.length>1){
+            EditText weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
+            weight_text.setText(prevNums[1]);
+        }
     }
 
     private void setPrevResults(){
@@ -61,15 +72,30 @@ public class DurationExerciseActivity extends AppCompatActivity {
         }
     }
 
+    private void setWeightInvisibleIfUnweighted(){
+        if(!((Exercise)CurrentWorkout.getNextWorkoutComponent()).isWeighted()){
+            View weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
+            View weight_header = findViewById(R.id.duration_exercise_weight_header);
+            weight_header.setVisibility(View.INVISIBLE);
+            weight_text.setVisibility(View.INVISIBLE);
+        }
+    }
+
     public void startDuration(View view) {
         final EditText durationText = findViewById(R.id.editText_duration);
-        final int duration = Integer.parseInt(durationText.getText().toString());
         durationText.setEnabled(false);
         durationText.setClickable(false);
         durationText.setFocusable(false);
         Button skipButton = findViewById(R.id.duration_exercise_skip_button);
         skipButton.setVisibility(View.VISIBLE);
 
+        createTimer();
+        timer.start();
+    }
+
+    private void createTimer(){
+        final EditText durationText = findViewById(R.id.editText_duration);
+        final int duration = Integer.parseInt(durationText.getText().toString());
         timer= new CountDownTimer(duration * 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
@@ -92,21 +118,22 @@ public class DurationExerciseActivity extends AppCompatActivity {
                     finishWorkout();
                 }
             }
-        }.start();
-
+        };
     }
 
     private void logDuration(int duration) {
         CurrentWorkout.logDuration(duration, this);
     }
 
-    private void goToNextActivity() {
-        startActivity(ActivityTransition.goToNextActivityInWorkout(this));
-    }
+
 
     private void finishWorkout(){
         CurrentWorkout.finishWorkout(this);
         goToNextActivity();
+    }
+
+    private void goToNextActivity() {
+        startActivity(ActivityTransition.goToNextActivityInWorkout(this));
     }
 
     public void skipTimer(View view){
