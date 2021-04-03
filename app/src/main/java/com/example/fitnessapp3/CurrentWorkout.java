@@ -27,30 +27,6 @@ public class CurrentWorkout {
     protected static Map<String, String[]> exToResults;
     private static Workout workout;
 
-    private static Exercise processExercise(String exString) {
-        String[] info = exString.split(",");
-        if (info.length < 2) {
-            Log.e("CurrentWorkout", "empty exercise");
-        }
-        Exercise.EXTYPE type;
-        switch (info[1]) {
-            case "REST":
-                type = Exercise.EXTYPE.REST;
-                break;
-            case "DUR":
-                type = Exercise.EXTYPE.DURATION;
-                break;
-            default:
-                type = Exercise.EXTYPE.WEIGHT;
-        }
-        Exercise ex = new Exercise(info[0], type, true);
-        if (info[1].equals("REST")) {
-            ex.setParameter(Integer.parseInt(info[2]));
-        }
-        return ex;
-
-    }
-
     public static void finishWorkout(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         Set<String> lastWorkoutDef = new HashSet<>();
@@ -71,9 +47,12 @@ public class CurrentWorkout {
         useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        //String[] exStrings = Objects.requireNonNull(sharedPreferences.getString(workoutName, "")).split(";");
+
         workout = WorkoutManager.getWorkoutFromFile(workoutName, activity);
-        assert workout != null;
+        if(workout ==null){
+            handleWorkoutDoesNotExist();
+            return;
+        }
         int workoutLength = workout.getLength();
 
         currentWorkout = new String[workoutLength];
@@ -109,6 +88,10 @@ public class CurrentWorkout {
             useLastWorkout = lastWorkout.length == workoutLength;
         }
         saveProgress(activity);
+    }
+
+    private static void handleWorkoutDoesNotExist(){
+        //TODO handle sensibly
     }
 
     public static boolean hasNextExercise() {
@@ -197,7 +180,7 @@ public class CurrentWorkout {
 
     public static void restoreWorkoutInProgress(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        if (sharedPreferences.getBoolean("workout_is_in_progress", false)) {
+        if (workoutIsInProgress(activity)) {
             String[] workout_details = Objects.requireNonNull(sharedPreferences.getString("workout_in_progress", "")).split(Objects.requireNonNull(System.getProperty("line.separator")));
             if (workout_details.length < 4) {
                 Log.e("CurrentWorkout", "workout details of workout in progress do not have the required format");
@@ -236,6 +219,11 @@ public class CurrentWorkout {
                 }
             }
         }
+    }
+
+    private static boolean workoutIsInProgress(Activity activity){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        return sharedPreferences.getBoolean("workout_is_in_progress", false);
     }
 
     public static int getWorkoutLength() {
