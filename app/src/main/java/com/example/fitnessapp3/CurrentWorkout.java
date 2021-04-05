@@ -8,22 +8,27 @@ import android.widget.ProgressBar;
 
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class CurrentWorkout {
     public static String[] lastWorkout;
     public static String workoutName;
     public static boolean useLastWorkout;
     public static String[] currentWorkout;
-    public static String[] setStrings;
-    protected static int[] numberOfExercise;
+    public static List<String> setStrings;
+    protected static List<Integer> numberOfExercise;
     protected static Map<String, String[]> exToResults;
     private static Workout workout;
 
@@ -44,54 +49,53 @@ public class CurrentWorkout {
     }
 
     public static void init(String workoutName, Activity activity) {
-        useLastWorkout = false;
         CurrentWorkout.workoutName = workoutName;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-
         workout = WorkoutManager.getWorkoutFromFile(workoutName, activity);
-        if(workout ==null){
+        if (workout == null) {
             handleWorkoutDoesNotExist();
             return;
         }
         int workoutLength = workout.getLength();
+        initFields(workoutLength);
 
-        currentWorkout = new String[workoutLength];
-        setStrings = new String[workoutLength];
-        numberOfExercise = new int[workoutLength];
-        Map<String, Integer> exCounts = new HashMap<>();
-        exToResults = new HashMap<>();
-        for (int i = 0; i < workoutLength; i++) {
-            String compName = workout.getComponentAt(i).getName();
-            exCounts.putIfAbsent(compName, 0);
-            try {
-                int newCount = Objects.requireNonNull(exCounts.getOrDefault(compName, 0)) + 1;
-                numberOfExercise[i] = newCount - 1;
-                exCounts.put(compName, newCount);
-            } catch (NullPointerException e) {
-                Log.e("CurrentWorkout", e.toString());
-            }
-            setStrings[i] = "" + exCounts.getOrDefault(compName, 0) + "/";
-        }
-        for (int i = 0; i < workoutLength; i++) {
-            String exName = workout.getComponentAt(i).getName();
-            int exCount = Objects.requireNonNull(exCounts.get(exName));
-            if (!exToResults.containsKey(exName) && !exName.equals("Rest")) {
-                String[] res = new String[exCount];
-                exToResults.put(exName, res);
-            }
-            setStrings[i] += "" + exCount;
-        }
+        StringOccurrenceCounter counter = new StringOccurrenceCounter();
+
+        numberOfExercise = workout.getCompNamesStream().mapToInt(counter).boxed().collect(Collectors.toList());
+
+        Map<String, Integer> exCounts = counter.getCountMap();
+        setStrings = IntStream.range(0, numberOfExercise.size()).mapToObj(i -> formatSetString(i, exCounts)).collect(Collectors.toList());
+
+        exToResults = exCounts.entrySet().stream().filter(e -> !e.getKey().equals("Rest")).collect(Collectors.toMap(Map.Entry::getKey, e -> new String[e.getValue()]));
+        tryInitLastWorkout(activity, workoutLength);
+        saveProgress(activity);
+    }
+
+    private static String formatSetString(int workoutPos, Map<String, Integer> exCounts){
+        int setNum = numberOfExercise.get(workoutPos) + 1;
+        String compName = workout.getComponentAt(workoutPos).getName();
+        int maxSet = exCounts.get(compName);
+        return setNum + "/" + maxSet;
+    }
+
+    private static void tryInitLastWorkout(Activity activity, int workoutLength){
+        useLastWorkout = false;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         String lastWorkoutString = sharedPreferences.getString(workoutName + "last_result", "");
         assert lastWorkoutString != null;
         if (lastWorkoutString.length() > 0) {
             lastWorkout = lastWorkoutString.split(";");
             useLastWorkout = lastWorkout.length == workoutLength;
         }
-        saveProgress(activity);
     }
 
-    private static void handleWorkoutDoesNotExist(){
+    private static void handleWorkoutDoesNotExist() {
         //TODO handle sensibly
+    }
+
+    private static void initFields(int workoutLength) {
+        currentWorkout = new String[workoutLength];
+        setStrings = new ArrayList<>(workoutLength);
+        numberOfExercise = new ArrayList<>(workoutLength);
     }
 
     public static boolean hasNextExercise() {
@@ -114,7 +118,9 @@ public class CurrentWorkout {
             return false;
         }
         currentWorkout[workout.getPosition()] = exNum + "," + repNum;
-        Objects.requireNonNull(exToResults.get(workout.getCurrentComponent().getName()))[numberOfExercise[workout.getPosition()]] = "+" + exNum + "kg x " + repNum;
+        String compName = workout.getCurrentComponent().getName();
+        String[] exRes = Objects.requireNonNull(exToResults.get(compName));
+        exRes[numberOfExercise.get(workout.getPosition())] = "+" + exNum + "kg x " + repNum;
         workout.proceed();
         saveProgress(activity);
         return true;
@@ -127,25 +133,26 @@ public class CurrentWorkout {
     }
 
 
-    public static void logDuration(int duration, Activity activity){
+    public static void logDuration(int duration, Activity activity) {
         currentWorkout[workout.getPosition()] = "" + duration;
         workout.proceed();
         saveProgress(activity);
     }
 
-    public static void logWeightedDuration(int duration, int weight, Activity activity){
+    public static void logWeightedDuration(int duration, int weight, Activity activity) {
         currentWorkout[workout.getPosition()] = "" + duration + "," + weight;
         workout.proceed();
         saveProgress(activity);
     }
 
     public static String getPrevResultsInWorkout() {
-        String[] prevResults = exToResults.getOrDefault(workout.getCurrentComponent().getName(), null);
+        String compName = workout.getCurrentComponent().getName();
+        String[] prevResults = exToResults.getOrDefault(compName, null);
         if (prevResults == null || prevResults[0] == null) {
             return "";
         }
         StringBuilder res = new StringBuilder();
-        for (int i = 0; i < numberOfExercise[workout.getPosition()]; i++) {
+        for (int i = 0; i < numberOfExercise.get(workout.getPosition()); i++) {
             res.append("Set ").append(i + 1).append(":\t").append(prevResults[i]);
             res.append(System.getProperty("line.separator"));
         }
@@ -161,7 +168,7 @@ public class CurrentWorkout {
     }
 
     public static String getSetString() {
-        return setStrings[workout.getPosition()];
+        return setStrings.get(workout.getPosition());
     }
 
     private static void saveProgress(Activity activity) {
@@ -221,7 +228,7 @@ public class CurrentWorkout {
         }
     }
 
-    private static boolean workoutIsInProgress(Activity activity){
+    private static boolean workoutIsInProgress(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         return sharedPreferences.getBoolean("workout_is_in_progress", false);
     }
@@ -234,7 +241,7 @@ public class CurrentWorkout {
         return workout.getPosition();
     }
 
-    public static void setProgress(ProgressBar progressBar){
+    public static void setProgress(ProgressBar progressBar) {
         progressBar.setMin(0);
         progressBar.setMax(getWorkoutLength());
         progressBar.setIndeterminate(false);

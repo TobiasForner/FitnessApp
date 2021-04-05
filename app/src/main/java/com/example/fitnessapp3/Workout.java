@@ -2,6 +2,7 @@ package com.example.fitnessapp3;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class Workout {
     private int position;
@@ -52,5 +53,9 @@ public class Workout {
 
     public int getPosition(){
         return position;
+    }
+
+    public Stream<String> getCompNamesStream(){
+        return workoutComponents.stream().map(WorkoutComponent::getName);
     }
 }
