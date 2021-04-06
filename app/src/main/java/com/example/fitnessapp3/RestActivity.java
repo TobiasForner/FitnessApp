@@ -99,8 +99,19 @@ public class RestActivity extends AppCompatActivity {
                 if (CurrentWorkout.hasNextExercise() && CurrentWorkout.getNextWorkoutComponent().isRest()) {
                     restartActivity();
                 }
-                goToNextActivity();
+                finishActivity();
             }
         }.start();
+    }
+
+    private void finishActivity(){
+        if (CurrentWorkout.hasNextExercise()) {
+            goToNextActivity();
+        } else {
+            CurrentWorkout.finishWorkout(this);
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 }

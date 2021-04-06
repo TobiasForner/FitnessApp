@@ -137,6 +137,11 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void goToNextActivity() {
+        if(!CurrentWorkout.hasNextExercise()){
+            CurrentWorkout.finishWorkout(this);
+            startActivity(ActivityTransition.goToNextActivityInWorkout(this));
+            finish();
+        }
         startActivity(ActivityTransition.goToNextActivityInWorkout(this));
     }
 

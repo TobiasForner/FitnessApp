@@ -102,6 +102,7 @@ public class WorkoutActivity extends AppCompatActivity {
             CurrentWorkout.finishWorkout(this);
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 
