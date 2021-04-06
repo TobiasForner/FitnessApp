@@ -13,7 +13,6 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 public class TimerActivity extends AppCompatActivity {
     CountDownTimer timer;
