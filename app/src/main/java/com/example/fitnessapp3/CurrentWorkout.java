@@ -9,6 +9,7 @@ import android.widget.ProgressBar;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,8 @@ public class CurrentWorkout {
     protected static List<Integer> numberOfExercise;
     protected static Map<String, String[]> exToResults;
     private static Workout workout;
+
+    private static int currentWorkoutEnqueuePos;
 
     public static void finishWorkout(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -188,49 +191,60 @@ public class CurrentWorkout {
     public static void restoreWorkoutInProgress(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         if (workoutIsInProgress(activity)) {
-            String[] workout_details = Objects.requireNonNull(sharedPreferences.getString("workout_in_progress", "")).split(Objects.requireNonNull(System.getProperty("line.separator")));
-            if (workout_details.length < 4) {
-                Log.e("CurrentWorkout", "workout details of workout in progress do not have the required format");
-                return;
-            }
-            init(workout_details[0], activity);
-            String[] wip = workout_details[1].split(";");
-            for (int i = 0; i < wip.length; i++) {
-                if (wip[i].equals("null")) {
-                    break;
-                }
-                currentWorkout[i] = wip[i];
-            }
-            while (workout.getPosition() < Integer.parseInt(workout_details[2])) {
-                workout.proceed();
-            }
-            for (int i = 3; i < workout_details.length; i++) {
-                if (workout_details[i].equals("")) {
-                    continue;
-                }
-                String[] nameToVal = workout_details[i].split(":");
-                if (nameToVal.length < 2) {
-                    continue;
-                }
-                String[] results = nameToVal[1].split(";");
-                for (int j = 0; j < results.length; j++) {
-                    if (results[j].equals("null")) {
-                        continue;
-                    }
-                    String[] tmp = exToResults.get(nameToVal[0]);
-                    assert tmp != null;
-                    if (tmp.length != results.length) {
-                        Log.e("CurrentWorkout", "length mismatch");
-                    }
-                    tmp[j] = results[j];
-                }
-            }
+            String[] workoutDetails = sharedPreferences.getString("workout_in_progress", "").split(System.getProperty("line.separator"));
+            restoreWorkoutFromString(workoutDetails, activity);
         }
     }
 
     private static boolean workoutIsInProgress(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         return sharedPreferences.getBoolean("workout_is_in_progress", false);
+    }
+
+    public static void restoreWorkoutFromString(String[] workoutDetails, Activity activity){
+        if (workoutDetails.length < 4) {
+            Log.e("CurrentWorkout", "workout details of workout in progress do not have the required format");
+            return;
+        }
+        init(workoutDetails[0], activity);
+        List<String> wip = Arrays.asList(workoutDetails[1].split(";"));
+        currentWorkoutEnqueuePos = 0;
+        wip.forEach(CurrentWorkout::tryAddToWorkout);
+        while (workout.getPosition() < Integer.parseInt(workoutDetails[2])) {
+            workout.proceed();
+        }
+        checkPrevWorkoutParse(workoutDetails);
+    }
+
+    private static void tryAddToWorkout(String resString){
+        if(!resString.equals("null")){
+            currentWorkout[currentWorkoutEnqueuePos] = resString;
+        }
+        currentWorkoutEnqueuePos++;
+    }
+
+    private static void checkPrevWorkoutParse(String[] workoutDetails){
+        for (int i = 3; i < workoutDetails.length; i++) {
+            if (workoutDetails[i].equals("")) {
+                continue;
+            }
+            String[] nameToVal = workoutDetails[i].split(":");
+            if (nameToVal.length < 2) {
+                continue;
+            }
+            String[] results = nameToVal[1].split(";");
+            for (String result : results) {
+                if (result.equals("null")) {
+                    continue;
+                }
+                String[] tmp = exToResults.get(nameToVal[0]);
+                assert tmp != null;
+                if (tmp.length != results.length) {
+                    Log.e("CurrentWorkout", "length mismatch");
+                    throw new RuntimeException("Parse of previous workout failed due to length mismatch.");
+                }
+            }
+        }
     }
 
     public static int getWorkoutLength() {
