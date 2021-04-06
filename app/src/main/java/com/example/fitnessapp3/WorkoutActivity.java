@@ -57,6 +57,8 @@ public class WorkoutActivity extends AppCompatActivity {
                 TextView weight_header = findViewById(R.id.text_weight_header);
                 weight_header.setVisibility(View.GONE);
                 exNum.setVisibility(View.GONE);
+                View kg = findViewById(R.id.textView6);
+                kg.setVisibility(View.GONE);
             }
             setPrevResults();
         }
