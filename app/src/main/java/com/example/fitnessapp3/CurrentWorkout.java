@@ -234,7 +234,8 @@ public class CurrentWorkout {
             }
             String[] results = nameToVal[1].split(";");
             for (String result : results) {
-                if (result.equals("null")) { continue;
+                if (result.equals("null")) {
+                    continue;
                 }
                 String[] tmp = exToResults.get(nameToVal[0]);
                 assert tmp != null;
