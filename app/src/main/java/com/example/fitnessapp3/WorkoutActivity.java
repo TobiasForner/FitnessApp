@@ -6,9 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
@@ -54,15 +52,20 @@ public class WorkoutActivity extends AppCompatActivity {
             if (exercise.getType() == Exercise.EXTYPE.DURATION) {
                 exNum.setHint("Duration");
             } else if(!exercise.isWeighted()) {
-                TextView weight_header = findViewById(R.id.text_weight_header);
-                weight_header.setVisibility(View.GONE);
-                exNum.setVisibility(View.GONE);
-                View kg = findViewById(R.id.textView6);
-                kg.setVisibility(View.GONE);
+                hideWeightElements();
             }
             setPrevResults();
         }
         setProg.setText(CurrentWorkout.getSetString());
+    }
+
+    private void hideWeightElements(){
+        View weight_header = findViewById(R.id.text_weight_header);
+        weight_header.setVisibility(View.GONE);
+        View exNum = findViewById(R.id.exerciseNumberInput);
+        exNum.setVisibility(View.GONE);
+        View kg = findViewById(R.id.textView6);
+        kg.setVisibility(View.GONE);
     }
 
     private void setPrevResults(){
@@ -112,14 +115,12 @@ public class WorkoutActivity extends AppCompatActivity {
         // inflate the popup_continue_previous_workout.xml of the popup window
         LayoutInflater inflater = (LayoutInflater)
                 getSystemService(LAYOUT_INFLATER_SERVICE);
-        ViewGroup viewGroup = findViewById(android.R.id.content);
         View popupView = inflater.inflate(R.layout.popup_window, null);
 
         // create the popup window
         int width = LinearLayout.LayoutParams.WRAP_CONTENT;
         int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-        boolean focusable = true; // lets taps outside the popup also dismiss it
-        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, focusable);
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
         // show the popup window
         // which view you pass in doesn't matter, it is only used for the window token
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
@@ -128,13 +129,10 @@ public class WorkoutActivity extends AppCompatActivity {
         popUpText.setText(text);
 
         // dismiss the popup window when touched
-        popupView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                v.performClick();
-                popupWindow.dismiss();
-                return true;
-            }
+        popupView.setOnTouchListener((v, event) -> {
+            v.performClick();
+            popupWindow.dismiss();
+            return true;
         });
     }
 
