@@ -35,21 +35,8 @@ public class ResumeWorkoutActivity extends AppCompatActivity {
             SharedPreferences.Editor editor = sharedPreferences.edit();
             editor.putBoolean("workout_is_in_progress", true);
             editor.apply();
-            WorkoutComponent nextComp = CurrentWorkout.getNextWorkoutComponent();
-            if (nextComp.isExercise()) {
-                Exercise nextExercise = (Exercise) nextComp;
-                if(nextExercise.getType()== Exercise.EXTYPE.WEIGHT){
-                Intent intent = new Intent(this, WorkoutActivity.class);
-                startActivity(intent);}
-                else if (nextExercise.getType()== Exercise.EXTYPE.DURATION){
-                    Intent intent = new Intent(this, DurationExerciseActivity.class);
-                    startActivity(intent);
-                }
-            } else {
-                Intent intent = new Intent(this, RestActivity.class);
-                intent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
-                startActivity(intent);
-            }
+            Intent nextIntent = ActivityTransition.goToNextActivityInWorkout(this);
+            startActivity(nextIntent);
         }
     }
 }

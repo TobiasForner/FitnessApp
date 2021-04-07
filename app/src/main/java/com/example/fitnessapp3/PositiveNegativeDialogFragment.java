@@ -3,7 +3,6 @@ package com.example.fitnessapp3;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -43,16 +42,8 @@ public class PositiveNegativeDialogFragment extends DialogFragment {
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(message)
-                .setPositiveButton(positiveTextID, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        listener.onDialogPositiveClick(PositiveNegativeDialogFragment.this);
-                    }
-                })
-                .setNegativeButton(negativeTextID, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        listener.onDialogNegativeClick(PositiveNegativeDialogFragment.this);
-                    }
-                });
+                .setPositiveButton(positiveTextID, (dialog, id) -> listener.onDialogPositiveClick(PositiveNegativeDialogFragment.this))
+                .setNegativeButton(negativeTextID, (dialog, id) -> listener.onDialogNegativeClick(PositiveNegativeDialogFragment.this));
         // Create the AlertDialog object and return it
         return builder.create();
     }

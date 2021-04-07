@@ -25,12 +25,7 @@ public class ManageExercisesActivity extends AppCompatActivity {
             }
             Button b = new Button(this);
             b.setText(s);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    editExercise(v);
-                }
-            });
+            b.setOnClickListener(this::editExercise);
             linear.addView(b);
         }
     }

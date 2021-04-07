@@ -20,24 +20,19 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
-
-        int buttonWidth = width / 3 - 20;
-
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         for (String s : WorkoutManager.getWorkoutNames()) {
             Button b = new Button(this);
             b.setText(s);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startWorkout(v);
-                }
-            });
+            b.setOnClickListener(this::startWorkout);
             linear.addView(b);
         }
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int width = displayMetrics.widthPixels;
+        int buttonWidth = width / 3 - 20;
 
         Button addExercise = findViewById(R.id.go_to_add_exercise_button);
         Button timerButton = findViewById(R.id.timerButton);
@@ -74,15 +69,6 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("workout_is_in_progress", true);
         editor.apply();
-        /*
-        if (CurrentWorkout.getNextWorkoutComponent().isExercise()) {
-            Intent intent = new Intent(this, WorkoutActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(this, RestActivity.class);
-            intent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
-            startActivity(intent);
-        }*/
         startActivity(ActivityTransition.goToNextActivityInWorkout(this));
     }
 

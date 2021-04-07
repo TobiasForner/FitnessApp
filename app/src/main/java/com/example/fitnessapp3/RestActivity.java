@@ -37,10 +37,7 @@ public class RestActivity extends AppCompatActivity {
         startTimer(intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000) - timeElapsed);
 
         ProgressBar progressBar = findViewById(R.id.progressbar_rest);
-        progressBar.setMin(0);
-        progressBar.setMax(CurrentWorkout.getWorkoutLength());
-        progressBar.setIndeterminate(false);
-        progressBar.setProgress(CurrentWorkout.getWorkoutPosition() + 1);
+        CurrentWorkout.setProgress(progressBar);
     }
 
     public void skipTimer(View view) {

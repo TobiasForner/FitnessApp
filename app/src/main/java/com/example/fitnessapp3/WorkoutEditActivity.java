@@ -20,12 +20,7 @@ public class WorkoutEditActivity extends AppCompatActivity {
         for (String s : workoutNames) {
             Button b = new Button(this);
             b.setText(s);
-            b.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    editWorkout(v);
-                }
-            });
+            b.setOnClickListener(this::editWorkout);
             linear.addView(b);
         }
     }
