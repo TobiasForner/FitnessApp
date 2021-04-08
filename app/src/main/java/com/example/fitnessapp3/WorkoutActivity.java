@@ -61,11 +61,11 @@ public class WorkoutActivity extends AppCompatActivity {
 
     private void hideWeightElements(){
         View weight_header = findViewById(R.id.text_weight_header);
-        weight_header.setVisibility(View.GONE);
+        weight_header.setVisibility(View.INVISIBLE);
         View exNum = findViewById(R.id.exerciseNumberInput);
-        exNum.setVisibility(View.GONE);
+        exNum.setVisibility(View.INVISIBLE);
         View kg = findViewById(R.id.textView6);
-        kg.setVisibility(View.GONE);
+        kg.setVisibility(View.INVISIBLE);
     }
 
     private void setPrevResults(){
