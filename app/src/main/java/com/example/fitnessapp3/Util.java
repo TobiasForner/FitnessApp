@@ -1,5 +1,17 @@
 package com.example.fitnessapp3;
 
+import android.content.Context;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 public class Util {
     static boolean isInt(String s)  // assuming integer is in decimal number system
     {
@@ -9,5 +21,39 @@ public class Util {
             if( !Character.isDigit(s.charAt(a)) ) return false;
         }
         return true;
+    }
+
+    public static void writeFileOnInternalStorage(Context context, String filename, String fileContents){
+        try (FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE)) {
+            fos.write(fileContents.getBytes());
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    public static String readFromInternal(String filename, Context context){
+        FileInputStream fis;
+        String contents;
+        try{
+        fis = context.openFileInput(filename);}
+        catch(FileNotFoundException e){
+            e.printStackTrace();
+            return null;
+        }
+        InputStreamReader inputStreamReader =
+                new InputStreamReader(fis, StandardCharsets.UTF_8);
+        StringBuilder stringBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+            String line = reader.readLine();
+            while (line != null) {
+                stringBuilder.append(line).append('\n');
+                line = reader.readLine();
+            }
+        } catch (IOException e) {
+            // Error occurred when opening raw file for reading.
+        } finally {
+            contents = stringBuilder.toString().trim();
+        }
+        return contents;
     }
 }

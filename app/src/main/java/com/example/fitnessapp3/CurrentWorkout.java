@@ -41,12 +41,15 @@ public class CurrentWorkout {
         Date today = Calendar.getInstance().getTime();
         String date = dateFormat.format(today);
         workoutResults.add(date + String.join(";", currentWorkout));
+
+        String lastResults = String.join(";", currentWorkout);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("workout_is_in_progress", false);
         editor.putString("workout_in_progress", "");
-        editor.putString(workoutName + "last_result", String.join(";", currentWorkout));
+        editor.putString(workoutName + "last_result", lastResults);
         editor.putStringSet(workoutName + "_results", workoutResults);
         editor.apply();
+        Util.writeFileOnInternalStorage(activity, workoutName + "last_result.txt", lastResults);
     }
 
     public static void init(String workoutName, Activity activity) {
@@ -80,9 +83,10 @@ public class CurrentWorkout {
 
     private static void tryInitLastWorkout(Activity activity, int workoutLength){
         useLastWorkout = false;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        String lastWorkoutString = sharedPreferences.getString(workoutName + "last_result", "");
-        assert lastWorkoutString != null;
+        String lastWorkoutString = Util.readFromInternal(workoutName + "last_result.txt", activity);
+        if(lastWorkoutString == null){
+            return;
+        }
         if (lastWorkoutString.length() > 0) {
             lastWorkout = lastWorkoutString.split(";");
             useLastWorkout = lastWorkout.length == workoutLength;
@@ -182,14 +186,15 @@ public class CurrentWorkout {
         for (String ex : exToResults.keySet()) {
             ex_to_res.append(ex).append(":").append(String.join(";", exToResults.get(ex))).append(sep);
         }
-        editor.putString("workout_in_progress", workoutName + sep + String.join(";", currentWorkout) + sep + workout.getPosition() + sep + ex_to_res);
+        String progress = workoutName + sep + String.join(";", currentWorkout) + sep + workout.getPosition() + sep + ex_to_res;
         editor.apply();
+        Util.writeFileOnInternalStorage(activity, "workout_in_progress.txt", progress);
     }
 
     public static void restoreWorkoutInProgress(Activity activity) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         if (workoutIsInProgress(activity)) {
-            String[] workoutDetails = sharedPreferences.getString("workout_in_progress", "").split(System.getProperty("line.separator"));
+            String[] workoutDetails;
+            workoutDetails = Util.readFromInternal("workout_in_progress.txt", activity).split(System.getProperty("line.separator"));
             restoreWorkoutFromString(workoutDetails, activity);
         }
     }
