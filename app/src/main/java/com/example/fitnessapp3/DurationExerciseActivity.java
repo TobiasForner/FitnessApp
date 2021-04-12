@@ -145,6 +145,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     public void skipTimer(View view){
+        playSound = false;
         timer.onFinish();
         timer.cancel();
     }
