@@ -80,7 +80,6 @@ public class RestActivity extends AppCompatActivity {
                 timeElapsed += 1000;
                 String formattedDate = new SimpleDateFormat("mm:ss", Locale.GERMAN).format(date);
                 timeRemaining.setText(formattedDate);
-
             }
 
             public void onFinish() {

@@ -68,8 +68,9 @@ public class ExerciseManager {
                     if (details.length < 2) {
                         Log.e("ExerciseManager", "Details length invalid (smaller than 2).");
                     }
-                    if (exerciseDet[0].equals("Rest")) {
-                        nameToEx.put(exerciseDet[0], new Rest(180000));
+                    if (isRest(exerciseDet[0])) {
+                        Rest rest = parseRest(exerciseDet[0]);
+                        nameToEx.put(exerciseDet[0], rest);
                     } else {
                         String exTypeString = details[0].split("=")[1];
                         boolean weighted = details[1].split("=")[1].equals("true");
@@ -92,9 +93,31 @@ public class ExerciseManager {
         }
     }
 
+    private boolean isRest(String exName){
+        if(exName.length()>=4){
+            String start = exName.substring(0,4);
+            return start.equals("Rest");
+        }
+        return false;
+    }
+
+    private Rest parseRest(String exName){
+        if(exName.length()>=5) {
+            String start = exName.substring(0, 5);
+            if (start.equals("Rest:")) {
+                int time = Integer.parseInt(exName.substring(5));
+                return new Rest(time);
+            }
+        }
+        return new Rest(180000);
+    }
+
     public WorkoutComponent getWorkoutComponent(String exName) {
         String name = abbrevToFullName.getOrDefault(exName, exName);
-        if (nameToEx.containsKey(name)) {
+        if(isRest(name)){
+            return parseRest(name);
+        }
+        else if (nameToEx.containsKey(name)) {
             return nameToEx.get(name);
         } else {
             Log.e("ExerciseManager", "Exercise " + exName + " not defined.");
@@ -122,7 +145,7 @@ public class ExerciseManager {
     }
 
     public boolean exerciseExists(String exName) {
-        return nameToEx.containsKey(exName);
+        return isRest(exName) | nameToEx.containsKey(exName);
     }
 
     public ArrayList<String> getExerciseNames() {
