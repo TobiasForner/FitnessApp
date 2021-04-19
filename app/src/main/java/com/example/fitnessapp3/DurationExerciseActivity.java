@@ -48,6 +48,9 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void copyPreviousNumbers(){
+        if(!CurrentWorkout.useLastWorkout){
+            return;
+        }
         String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
         if(prevNums.length>0){
             TextView dur = findViewById(R.id.editText_duration);
