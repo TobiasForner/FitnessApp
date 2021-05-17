@@ -90,6 +90,8 @@ public class DurationExerciseActivity extends AppCompatActivity {
         durationText.setFocusable(false);
         Button skipButton = findViewById(R.id.duration_exercise_skip_button);
         skipButton.setVisibility(View.VISIBLE);
+        Button startButton = findViewById(R.id.button_start_duration);
+        startButton.setVisibility(View.INVISIBLE);
 
         createTimer();
         timer.start();
