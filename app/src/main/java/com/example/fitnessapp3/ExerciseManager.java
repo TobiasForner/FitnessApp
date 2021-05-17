@@ -36,6 +36,9 @@ public class ExerciseManager {
 
     public void addExercise(String name, String exType, boolean weighted, String abbrev, Context context) {
         if (nameToEx.containsKey(name)) {
+            //TODO ask whether user wants to overwrite
+            nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
+            writeExercisesToFile(context);
             return;
         }
         try {
@@ -52,6 +55,42 @@ public class ExerciseManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void writeExercisesToFile(Context context){
+        StringBuilder out = new StringBuilder();
+        for(String name: nameToEx.keySet()){
+            WorkoutComponent current = nameToEx.get(name);
+            String fileContents = componentToString(current);
+            out.append(fileContents);
+        }
+        File file = new File(context.getFilesDir(), "exercise_details.txt");
+        try{
+        FileOutputStream fos = new FileOutputStream(file, true);
+            fos.write(out.toString().getBytes(StandardCharsets.UTF_8));
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String componentToString(WorkoutComponent comp){
+        String sep = Objects.requireNonNull(System.getProperty("line.separator"));
+        if(comp.isRest()){
+            Rest r = (Rest) comp;
+            return "Rest:"+r.getRestTime()+sep;
+        }else{
+            Exercise e = (Exercise) comp;
+            String exType;
+            if (e.getType() == Exercise.EXTYPE.DURATION) {
+                exType = "Duration";
+            } else {
+                exType = "Reps";
+            }
+            String name = e.getName();
+            boolean weighted = e.isWeighted();
+            return name + ":ExerciseType=" + exType + ";Weighted=" + weighted + sep;
+        }
+
     }
 
     public void readExerciseDetails(Context context) {
