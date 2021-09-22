@@ -210,7 +210,8 @@ public class WorkoutManager {
         if (!sharedPreferences.getBoolean("workout_is_in_progress", false)) {
             return null;
         }
-        String[] workout_details = Objects.requireNonNull(sharedPreferences.getString("workout_in_progress", "")).split(Objects.requireNonNull(System.getProperty("line.separator")));
+        String progress = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS, activity);
+        String[] workout_details = Objects.requireNonNull(progress).split(Objects.requireNonNull(System.getProperty("line.separator")));
         return workout_details[0];
     }
 

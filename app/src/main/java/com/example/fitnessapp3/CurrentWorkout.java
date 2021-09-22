@@ -188,13 +188,13 @@ public class CurrentWorkout {
         }
         String progress = workoutName + sep + String.join(";", currentWorkout) + sep + workout.getPosition() + sep + ex_to_res;
         editor.apply();
-        Util.writeFileOnInternalStorage(activity, "workout_in_progress.txt", progress);
+        Util.writeFileOnInternalStorage(activity, Util.WORKOUT_IN_PROGRESS, progress);
     }
 
     public static void restoreWorkoutInProgress(Activity activity) {
         if (workoutIsInProgress(activity)) {
             String[] workoutDetails;
-            workoutDetails = Util.readFromInternal("workout_in_progress.txt", activity).split(System.getProperty("line.separator"));
+            workoutDetails = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS, activity).split(System.getProperty("line.separator"));
             restoreWorkoutFromString(workoutDetails, activity);
         }
     }

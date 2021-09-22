@@ -1,15 +1,19 @@
 package com.example.fitnessapp3;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.Space;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
@@ -19,13 +23,28 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        LinearLayout.LayoutParams params = new
+                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
+        linear.setGravity(Gravity.CENTER);
         for (String s : WorkoutManager.getWorkoutNames()) {
             Button b = new Button(this);
             b.setText(s);
-            b.setOnClickListener(this::startWorkout);
-            linear.addView(b);
+            b.setOnClickListener((v) -> startWorkout(v, s));
+
+            TextView t = new TextView(this);
+            t.setText(s);
+            t.setTextSize(20);
+            t.setGravity(Gravity.CENTER);
+
+            CardView c = new CardView(this);
+            Util.setMargins(c, 100, 100, 100, 100);
+            //c.addView(b, params);
+            c.addView(t, params);
+            c. setOnClickListener((v) -> startWorkout(v, s));
+            linear.addView(c);
+            Space space = new Space(this);
+            linear.addView(space);
         }
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -42,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
         initWorkoutsButton.setWidth(buttonWidth);
     }
 
-    public void startWorkout(View view) {
-        CurrentWorkout.init(((Button) view).getText().toString(), this);
+    public void startWorkout(View view, String workoutName) {
+        CurrentWorkout.init(workoutName, this);
         startWorkout();
     }
 

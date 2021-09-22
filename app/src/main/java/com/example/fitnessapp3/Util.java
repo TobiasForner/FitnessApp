@@ -1,6 +1,8 @@
 package com.example.fitnessapp3;
 
 import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -13,6 +15,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class Util {
+    public static String WORKOUT_IN_PROGRESS="workout_in_progress.txt";
     static boolean isInt(String s)  // assuming integer is in decimal number system
     {
         for(int a=0;a<s.length();a++)
@@ -55,5 +58,14 @@ public class Util {
             contents = stringBuilder.toString().trim();
         }
         return contents;
+    }
+
+    public static void setMargins (View v, int l, int t, int r, int b) {
+        if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            p.setMargins(l, t, r, b);
+            v.requestLayout();
+            v.requestLayout();
+        }
     }
 }
