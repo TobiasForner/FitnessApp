@@ -36,6 +36,7 @@ public class ResumeWorkoutActivity extends AppCompatActivity {
             editor.putBoolean("workout_is_in_progress", true);
             editor.apply();
             Intent nextIntent = ActivityTransition.goToNextActivityInWorkout(this);
+            nextIntent.setFlags(nextIntent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(nextIntent);
         }
     }

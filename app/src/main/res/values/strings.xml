@@ -43,4 +43,5 @@
     <string name="goes_back">goes back by finishing the activity</string>
     <string name="choose_exercise_to_edit">Choose exercise to edit</string>
     <string name="manage_exercises">Manage Exercises</string>
+    <string name="exercise_scroll_view_description">Scrollable surface with buttons for workouts to start</string>
 </resources>

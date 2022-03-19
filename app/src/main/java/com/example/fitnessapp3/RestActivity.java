@@ -35,6 +35,7 @@ public class RestActivity extends AppCompatActivity {
         }
         Intent intent = getIntent();
         startTimer(intent.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000) - timeElapsed);
+        this.setTitle(CurrentWorkout.workoutName);
 
         ProgressBar progressBar = findViewById(R.id.progressbar_rest);
         CurrentWorkout.setProgress(progressBar);

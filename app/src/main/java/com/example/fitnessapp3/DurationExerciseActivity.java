@@ -28,6 +28,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
 
         ProgressBar progressBar = findViewById(R.id.progressBar_duration_exercise);
         CurrentWorkout.setProgress(progressBar);
+        this.setTitle(CurrentWorkout.workoutName);
         playSound = getIntent().getBooleanExtra("playSound", true);
         TextView exName= findViewById(R.id.duration_exercise_name);
         exName.setText(CurrentWorkout.getWorkoutComponentName());

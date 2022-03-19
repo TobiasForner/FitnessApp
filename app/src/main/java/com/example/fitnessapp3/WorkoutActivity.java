@@ -12,6 +12,8 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.android.material.navigation.NavigationView;
+
 
 public class WorkoutActivity extends AppCompatActivity {
 
@@ -19,6 +21,8 @@ public class WorkoutActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout);
+
+        this.setTitle(CurrentWorkout.workoutName);
 
         if (CurrentWorkout.hasNextExercise()) {
             init();

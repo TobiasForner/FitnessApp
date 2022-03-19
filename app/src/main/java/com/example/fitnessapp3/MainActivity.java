@@ -5,6 +5,7 @@ import androidx.cardview.widget.CardView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -28,18 +29,16 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         linear.setGravity(Gravity.CENTER);
         for (String s : WorkoutManager.getWorkoutNames()) {
-            Button b = new Button(this);
-            b.setText(s);
-            b.setOnClickListener((v) -> startWorkout(v, s));
-
             TextView t = new TextView(this);
             t.setText(s);
             t.setTextSize(20);
             t.setGravity(Gravity.CENTER);
+            t.setTextColor(Color.CYAN);
 
             CardView c = new CardView(this);
+            c.setForegroundGravity(Gravity.CENTER);
+            c.setBackgroundColor(Color.TRANSPARENT);
             Util.setMargins(c, 100, 100, 100, 100);
-            //c.addView(b, params);
             c.addView(t, params);
             c. setOnClickListener((v) -> startWorkout(v, s));
             linear.addView(c);
