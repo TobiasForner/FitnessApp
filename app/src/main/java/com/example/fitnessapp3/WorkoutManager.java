@@ -158,7 +158,7 @@ public class WorkoutManager {
             } catch (IOException e) {
                 // Error occurred when opening raw file for reading.
             } finally {
-                contents = stringBuilder.toString();
+                contents = stringBuilder.toString().trim();
             }
         } catch (FileNotFoundException e) {
             Log.e("WorkoutManager", "Workout Names file workout_names not found.");

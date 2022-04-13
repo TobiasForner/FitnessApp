@@ -3,9 +3,12 @@ package com.example.fitnessapp3;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import java.util.Objects;
@@ -22,6 +25,17 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
         setContentView(R.layout.activity_add_workout);
         Intent intent = getIntent();
         edit = intent.getBooleanExtra(EDIT, false);
+
+        //hide keyboard if edit text not focussed
+        EditText editText = findViewById(R.id.editText_workout_body);
+        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    hideKeyboard(v);
+                }
+            }
+        });
         if (edit) {
             switchToEdit(intent.getStringExtra(WORKOUT_NAME));
         }
@@ -153,5 +167,8 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
         dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
     }
 
-
+    public void hideKeyboard(View view) {
+        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
 }
