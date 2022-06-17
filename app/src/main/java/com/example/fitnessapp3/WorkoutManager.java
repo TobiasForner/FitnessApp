@@ -52,6 +52,7 @@ public class WorkoutManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        readWorkoutNames(context);
     }
 
     public static Workout generateWorkoutFromString(String text, String name) {

@@ -11,9 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight">
-        <activity android:name=".TimerActivity" />
-        <activity android:name=".ManageExercisesActivity" />
-        <activity android:name=".DurationExerciseActivity" />
+        <activity android:name=".TimerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ManageExercisesActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".DurationExerciseActivity" android:screenOrientation="portrait"/>
         <activity android:name=".StartActivity"
             android:exported="true">
             <intent-filter>
@@ -21,13 +21,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WorkoutEditActivity" />
-        <activity android:name=".ResumeWorkoutActivity" />
-        <activity android:name=".AddWorkoutActivity" />
-        <activity android:name=".AddExerciseActivity" />
-        <activity android:name=".WorkoutActivity" />
-        <activity android:name=".RestActivity" />
-        <activity android:name=".MainActivity" />
+        <activity android:name=".WorkoutEditActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ResumeWorkoutActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".AddWorkoutActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".AddExerciseActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".WorkoutActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".RestActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
