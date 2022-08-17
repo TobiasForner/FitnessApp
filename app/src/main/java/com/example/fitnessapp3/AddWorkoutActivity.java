@@ -75,6 +75,8 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
     }
 
     private boolean checkWorkoutLine(String line) {
+        // TODO use regex
+        line = Util.strip(line);
         if (line.equals("")) {
             return false;
         }
@@ -96,9 +98,10 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
         }
         String[] exerciseNames = bodyAndTimes[0].split(",");
         for (String exName : exerciseNames) {
+            String strippedName = Util.strip(exName);
 
-            if (!WorkoutManager.exerciseExists(exName)) {
-                openDialog(exName, 1);
+            if (!WorkoutManager.exerciseExists(strippedName)) {
+                openDialog(strippedName, 1);
                 return false;
             }
         }

@@ -68,4 +68,15 @@ public class Util {
             v.requestLayout();
         }
     }
+
+    public static String strip(String s){
+        String result = s;
+        while(result.length()>0 && result.charAt(0)==' '){
+            result = result.substring(1);
+        }
+        while(result.length()>0 && result.charAt(result.length()-1)==' '){
+            result = result.substring(0,result.length()-1);
+        }
+        return result;
+    }
 }

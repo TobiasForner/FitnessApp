@@ -2,7 +2,16 @@ package com.example.fitnessapp3;
 
 public class Exercise extends WorkoutComponent {
     public enum EXTYPE {
-        WEIGHT, DURATION, REST
+        DURATION, REPS
+    }
+
+    public static String typeToString(EXTYPE type){
+        if(type==EXTYPE.DURATION){
+            return "Duration";
+        }
+        else {
+            return "Reps";
+        }
     }
 
     private final String name;

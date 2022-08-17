@@ -55,16 +55,16 @@ public class WorkoutManager {
         readWorkoutNames(context);
     }
 
-    public static Workout generateWorkoutFromString(String text, String name) {
+    public static Workout generateWorkoutFromString(String text, String name, Context context) {
         Workout workout = new Workout(name);
         String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
         for (String line : lines) {
-            parseWorkoutLine(line, workout);
+            parseWorkoutLine(line, workout, context);
         }
         return workout;
     }
 
-    private static void parseWorkoutLine(String line, Workout workout) {
+    private static void parseWorkoutLine(String line, Workout workout, Context context) {
         if (line.equals("")) {
             return;
         }
@@ -86,6 +86,11 @@ public class WorkoutManager {
             if (!exerciseManager.exerciseExists(exName)) {
                 return;
             }
+
+            String strippedName = Util.strip(exName);
+            if (!exerciseManager.exerciseExists(strippedName)) {
+                exerciseManager.addStrippedExercise(exName, context);
+            }
         }
         if (bodyAndTimes.length == 2 && bodyAndTimes[1].length() >= 2) {
             if (bodyAndTimes[1].charAt(0) == 'x' | bodyAndTimes[1].charAt(0) == 'X') {
@@ -94,7 +99,8 @@ public class WorkoutManager {
                     int times = Integer.parseInt(timesString);
                     for (int i = 0; i < times; i++) {
                         for (String exName : exerciseNames) {
-                            workout.addComponent(exerciseManager.getWorkoutComponent(exName));
+                            String strippedName = Util.strip(exName);
+                            workout.addComponent(exerciseManager.getWorkoutComponent(strippedName));
                         }
                     }
                 } catch (NumberFormatException nfe) {
@@ -103,7 +109,8 @@ public class WorkoutManager {
             }
         } else {
             for (String exName : exerciseNames) {
-                workout.addComponent(exerciseManager.getWorkoutComponent(exName));
+                String strippedName = Util.strip(exName);
+                workout.addComponent(exerciseManager.getWorkoutComponent(strippedName));
             }
         }
     }
@@ -195,7 +202,7 @@ public class WorkoutManager {
             Log.e("WorkoutManager", "Workout Names file workout_names not found.");
             return null;
         }
-        return generateWorkoutFromString(contents, workoutName);
+        return generateWorkoutFromString(contents, workoutName, context);
     }
 
     public static boolean workoutExists(String name) {

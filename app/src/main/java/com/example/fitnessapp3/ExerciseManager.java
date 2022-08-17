@@ -27,6 +27,7 @@ public class ExerciseManager {
     }
 
     public void initExerciseDetails(Context context) {
+        //TODO: use enum asap instead of hardcoded Strings
         addExercise("Pull Up", "Reps", true, "PU", context);
         addExercise("Ring Dip", "Reps", true, "RD", context);
         addExercise("Push Up", "Reps", true, "PshU", context);
@@ -55,6 +56,14 @@ public class ExerciseManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void addStrippedExercise(String exName, Context context) {
+        String strippedName = Util.strip(exName);
+        WorkoutComponent comp = getWorkoutComponent(exName);
+        if(comp.isExercise()){
+            Exercise ex = (Exercise) comp;
+        addExercise(strippedName, Exercise.typeToString(ex.getType()), ex.isWeighted(), ex.getAbbrev(), context);}
     }
 
     private void writeExercisesToFile(Context context){
@@ -165,7 +174,7 @@ public class ExerciseManager {
     }
 
     private WorkoutComponent getExerciseFromDetails(String exName, String exType, boolean weighted, String abbrev) {
-        Exercise.EXTYPE type = Exercise.EXTYPE.WEIGHT;
+        Exercise.EXTYPE type = Exercise.EXTYPE.REPS;
         if (exType.equals("Duration")) {
             type = Exercise.EXTYPE.DURATION;
         } else if (exType.equals("Rest")) {
