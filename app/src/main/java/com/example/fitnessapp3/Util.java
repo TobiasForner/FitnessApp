@@ -1,6 +1,9 @@
 package com.example.fitnessapp3;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.DocumentsContract;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -78,5 +81,20 @@ public class Util {
             result = result.substring(0,result.length()-1);
         }
         return result;
+    }
+
+    private static final int CREATE_FILE = 1;
+
+    public static Intent createFile() {
+        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("application/txt");
+        intent.putExtra(Intent.EXTRA_TITLE, "test.txt");
+
+        // Optionally, specify a URI for the directory that should be opened in
+        // the system file picker when your app creates the document.
+        //intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
+
+        return intent;
     }
 }

@@ -213,6 +213,11 @@ public class WorkoutManager {
         return exerciseManager.exerciseExists(exName);
     }
 
+    public static void BackupWorkouts(Context context){
+        WorkoutManager.readWorkoutNames(context);
+        //TODO store workout content in e.g. json format
+    }
+
     public static String getWorkoutNameInProgress(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         if (!sharedPreferences.getBoolean("workout_is_in_progress", false)) {

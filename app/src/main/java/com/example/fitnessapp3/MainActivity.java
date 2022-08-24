@@ -6,6 +6,7 @@ import androidx.cardview.widget.CardView;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
@@ -97,6 +98,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToManageExercises(View v) {
         Intent intent = new Intent(this, ManageExercisesActivity.class);
+        startActivity(intent);
+    }
+
+    public void createFile(View v) {
+        Intent intent = Util.createFile();
         startActivity(intent);
     }
 }
