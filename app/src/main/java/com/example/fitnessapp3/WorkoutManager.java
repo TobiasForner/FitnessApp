@@ -3,6 +3,7 @@ package com.example.fitnessapp3;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ParseException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -65,14 +66,17 @@ public class WorkoutManager {
     }
 
     private static void parseWorkoutLine(String line, Workout workout, Context context) {
+        Log.d("WorkoutManager", "parseWorkoutLine: start");
         if (line.equals("")) {
             return;
         }
         String[] parts = line.split("\\[");
         if (parts.length != 1 && parts.length != 2) {
+            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: "+line);
             return;
         }
         if (parts.length == 2 && !parts[0].equals("")) {
+            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: "+line);
             return;
         }
         String[] bodyAndTimes;
@@ -84,6 +88,7 @@ public class WorkoutManager {
         String[] exerciseNames = bodyAndTimes[0].split(",");
         for (String exName : exerciseNames) {
             if (!exerciseManager.exerciseExists(exName)) {
+                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise: "+line);
                 return;
             }
 
@@ -92,6 +97,7 @@ public class WorkoutManager {
                 exerciseManager.addStrippedExercise(exName, context);
             }
         }
+        bodyAndTimes[1]=Util.strip(bodyAndTimes[1]);
         if (bodyAndTimes.length == 2 && bodyAndTimes[1].length() >= 2) {
             if (bodyAndTimes[1].charAt(0) == 'x' | bodyAndTimes[1].charAt(0) == 'X') {
                 String timesString = bodyAndTimes[1].substring(1);
