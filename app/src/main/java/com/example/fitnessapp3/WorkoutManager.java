@@ -96,13 +96,18 @@ public class WorkoutManager {
                 exerciseManager.addStrippedExercise(exName, context);
             }
         }
-        if (bodyAndTimes.length<=1){
-            Log.e("WorkoutManager", "parseWorkoutLine: body and times too short: "+bodyAndTimes, null);
+        String timesStr;
+        if (bodyAndTimes.length>=2){
+            timesStr=bodyAndTimes[1];
+
+        }else {
+            // pattern without [...] x ..., default times to 1
+            timesStr = "x1";
         }
-        bodyAndTimes[1]=Util.strip(bodyAndTimes[1]);
-        if (bodyAndTimes.length == 2 && bodyAndTimes[1].length() >= 2) {
-            if (bodyAndTimes[1].charAt(0) == 'x' | bodyAndTimes[1].charAt(0) == 'X') {
-                String timesString = bodyAndTimes[1].substring(1);
+        timesStr=Util.strip(timesStr);
+        if (timesStr.length() >= 2) {
+            if (timesStr.charAt(0) == 'x' | timesStr.charAt(0) == 'X') {
+                String timesString = timesStr.substring(1);
                 try {
                     int times = Integer.parseInt(timesString);
                     for (int i = 0; i < times; i++) {
