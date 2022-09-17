@@ -6,7 +6,6 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ProgressBar;
 
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +27,7 @@ public class CurrentWorkout {
     public static String[] currentWorkout;
     public static List<String> setStrings;
     protected static List<Integer> numberOfExercise;
-    protected static Map<String, String[]> exToResults;
+    protected static Map<String, ArrayList<SetResult>> exToResults;
     private static Workout workout;
 
     private static int currentWorkoutEnqueuePos;
@@ -69,22 +68,31 @@ public class CurrentWorkout {
         Map<String, Integer> exCounts = counter.getCountMap();
         setStrings = IntStream.range(0, numberOfExercise.size()).mapToObj(i -> formatSetString(i, exCounts)).collect(Collectors.toList());
 
-        exToResults = exCounts.entrySet().stream().filter(e -> !e.getKey().equals("Rest")).collect(Collectors.toMap(Map.Entry::getKey, e -> new String[e.getValue()]));
+        exToResults = exCounts.entrySet().stream().filter(e -> !e.getKey().equals("Rest"))
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> new ArrayList<>()));
+        for (Map.Entry<String, Integer> pair : exCounts.entrySet()) {
+            if (!pair.getKey().equals("Rest")) {
+                for (int i = 0; i < pair.getValue(); i++) {
+                    exToResults.get(pair.getKey()).add(new SetResult(0, 0));
+                }
+            }
+
+        }
         tryInitLastWorkout(activity, workoutLength);
         saveProgress(activity);
     }
 
-    private static String formatSetString(int workoutPos, Map<String, Integer> exCounts){
+    private static String formatSetString(int workoutPos, Map<String, Integer> exCounts) {
         int setNum = numberOfExercise.get(workoutPos) + 1;
         String compName = workout.getComponentAt(workoutPos).getName();
-        int maxSet = exCounts.get(compName);
-        return setNum + "/" + maxSet;
+        int finalSetNumber = exCounts.get(compName);
+        return setNum + "/" + finalSetNumber;
     }
 
-    private static void tryInitLastWorkout(Activity activity, int workoutLength){
+    private static void tryInitLastWorkout(Activity activity, int workoutLength) {
         useLastWorkout = false;
         String lastWorkoutString = Util.readFromInternal(workoutName + "last_result.txt", activity);
-        if(lastWorkoutString == null){
+        if (lastWorkoutString == null) {
             return;
         }
         if (lastWorkoutString.length() > 0) {
@@ -118,14 +126,11 @@ public class CurrentWorkout {
         workout.goBack();
     }
 
-    public static boolean logExercise(String exNum, String repNum, Activity activity) {
-        if (exNum == null || repNum == null || exNum.equals("") || repNum.equals("")) {
-            return false;
-        }
+    public static boolean logExercise(int exNum, int repNum, Activity activity) {
         currentWorkout[workout.getPosition()] = exNum + "," + repNum;
         String compName = workout.getCurrentComponent().getName();
-        String[] exRes = Objects.requireNonNull(exToResults.get(compName));
-        exRes[numberOfExercise.get(workout.getPosition())] = "+" + exNum + "kg x " + repNum;
+        ArrayList<SetResult> setResults = exToResults.get(compName);
+        setResults.set((numberOfExercise.get(workout.getPosition())), new SetResult(exNum, repNum));
         workout.proceed();
         saveProgress(activity);
         return true;
@@ -152,13 +157,20 @@ public class CurrentWorkout {
 
     public static String getPrevResultsInWorkout() {
         String compName = workout.getCurrentComponent().getName();
-        String[] prevResults = exToResults.getOrDefault(compName, null);
-        if (prevResults == null || prevResults[0] == null) {
+        ArrayList<SetResult> prevResults = exToResults.getOrDefault(compName, null);
+        if (prevResults == null || prevResults.get(0) == null) {
             return "";
         }
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < numberOfExercise.get(workout.getPosition()); i++) {
-            res.append("Set ").append(i + 1).append(":\t").append(prevResults[i]);
+
+            res.append("Set ").append(i + 1).append(":\t");
+            SetResult ithResult = prevResults.get(i);
+            int weightNum = ithResult.getAddedWeight();
+            if (weightNum > 0) {
+                res.append("+").append(weightNum).append("kg x ");
+            }
+            res.append(ithResult.getRepNr()).append(" Reps");
             res.append(System.getProperty("line.separator"));
         }
         return res.toString();
@@ -184,7 +196,7 @@ public class CurrentWorkout {
         String sep = System.getProperty("line.separator");
         StringBuilder ex_to_res = new StringBuilder();
         for (String ex : exToResults.keySet()) {
-            ex_to_res.append(ex).append(":").append(String.join(";", exToResults.get(ex))).append(sep);
+            ex_to_res.append(ex).append(":").append(String.join(";", exToResults.get(ex).toString())).append(sep);
         }
         String progress = workoutName + sep + String.join(";", currentWorkout) + sep + workout.getPosition() + sep + ex_to_res;
         editor.apply();
@@ -204,7 +216,7 @@ public class CurrentWorkout {
         return sharedPreferences.getBoolean("workout_is_in_progress", false);
     }
 
-    public static void restoreWorkoutFromString(String[] workoutDetails, Activity activity){
+    public static void restoreWorkoutFromString(String[] workoutDetails, Activity activity) {
         if (workoutDetails.length < 4) {
             Log.e("CurrentWorkout", "workout details of workout in progress do not have the required format");
             return;
@@ -219,14 +231,14 @@ public class CurrentWorkout {
         checkPrevWorkoutParse(workoutDetails);
     }
 
-    private static void tryAddToWorkout(String resString){
-        if(!resString.equals("null")){
+    private static void tryAddToWorkout(String resString) {
+        if (!resString.equals("null")) {
             currentWorkout[currentWorkoutEnqueuePos] = resString;
         }
         currentWorkoutEnqueuePos++;
     }
 
-    private static void checkPrevWorkoutParse(String[] workoutDetails){
+    private static void checkPrevWorkoutParse(String[] workoutDetails) {
         for (int i = 3; i < workoutDetails.length; i++) {
             if (workoutDetails[i].equals("")) {
                 continue;
@@ -240,9 +252,9 @@ public class CurrentWorkout {
                 if (result.equals("null")) {
                     continue;
                 }
-                String[] tmp = exToResults.get(nameToVal[0]);
+                ArrayList<SetResult> tmp = exToResults.get(nameToVal[0]);
                 assert tmp != null;
-                if (tmp.length != results.length) {
+                if (tmp.size() != results.length) {
                     Log.e("CurrentWorkout", "length mismatch");
                     throw new RuntimeException("Parse of previous workout failed due to length mismatch.");
                 }

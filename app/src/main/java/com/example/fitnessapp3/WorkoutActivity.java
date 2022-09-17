@@ -87,14 +87,17 @@ public class WorkoutActivity extends AppCompatActivity {
     public void logExercise(View view) {
         Exercise exercise = (Exercise) CurrentWorkout.getNextWorkoutComponent();
         TextView repNum = findViewById(R.id.repNumberInput);
+        int repNumInt = Integer.parseInt(repNum.getText().toString());
         if(exercise.isWeighted()){
             TextView exNum = findViewById(R.id.exerciseNumberInput);
-            if (!CurrentWorkout.logExercise(exNum.getText().toString(), repNum.getText().toString(), this)) {
+            int exNumInt = Integer.parseInt(exNum.getText().toString());
+
+            if (!CurrentWorkout.logExercise(exNumInt, repNumInt, this)) {
                 showPopupWindowClick(exNum, getString(R.string.popup));
                 return;
             }
         }else{
-            if (!CurrentWorkout.logExercise("0", repNum.getText().toString(), this)){
+            if (!CurrentWorkout.logExercise(0, repNumInt, this)){
                 showPopupWindowClick(repNum, getString(R.string.popup_unweighted));
                 return;
             }
