@@ -1,5 +1,8 @@
 package com.example.fitnessapp3;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
@@ -8,14 +11,20 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
+
+import java.io.File;
+import java.io.FileWriter;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
@@ -59,6 +68,53 @@ public class MainActivity extends AppCompatActivity {
         addExercise.setWidth(buttonWidth);
         timerButton.setWidth(buttonWidth);
         initWorkoutsButton.setWidth(buttonWidth);
+
+
+        //register callback for backup directory
+        // GetContent creates an ActivityResultLauncher<String> to allow you to pass
+// in the mime type you'd like to allow the user to select
+        ActivityResultLauncher<Uri> mGetContent = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        // Handle the returned Uri
+                        Log.d("MainActivity", "onActivityResult: "+uri.getPath());
+                        try {
+
+                            String treePath = uri.getPath();
+
+                            String[] parts = treePath.split(":");
+                            String relativeDirName = parts[parts.length-1];
+                            File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
+                            //String fullDirPath = "documents/"+relativeDirName;
+                            //File treeRoot=new File(uri.getPath());
+                            File treeRoot=new File(docsDir.getPath(), relativeDirName);
+
+                            if (!treeRoot.exists()) {
+                                boolean success=treeRoot.mkdirs();
+                                if(!success){
+                                    //TODO: surface warning to user
+                                }
+                            }
+                            File backupFile = new File(treeRoot, "workoutBackup.txt");
+                            Log.d("MainActivity", "onActivityResult: writing to "+backupFile.getPath());
+                            FileWriter writer = new FileWriter(backupFile);
+                            writer.append("test backup");
+                            writer.flush();
+                            writer.close();
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+        Button selectDirButton = findViewById(R.id.selectDirectoryButton);
+        selectDirButton.setOnClickListener(v -> {
+            File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
+            //File file = new File("documents");
+            Uri uri = Uri.fromFile(docsDir);
+            mGetContent.launch(uri);
+        });
     }
 
     public void startWorkout(View view, String workoutName) {
