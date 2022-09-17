@@ -3,7 +3,6 @@ package com.example.fitnessapp3;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.net.ParseException;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
@@ -96,6 +95,9 @@ public class WorkoutManager {
             if (!exerciseManager.exerciseExists(strippedName)) {
                 exerciseManager.addStrippedExercise(exName, context);
             }
+        }
+        if (bodyAndTimes.length<=1){
+            Log.e("WorkoutManager", "parseWorkoutLine: body and times too short: "+bodyAndTimes, null);
         }
         bodyAndTimes[1]=Util.strip(bodyAndTimes[1]);
         if (bodyAndTimes.length == 2 && bodyAndTimes[1].length() >= 2) {
