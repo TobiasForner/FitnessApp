@@ -6,6 +6,8 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ProgressBar;
 
+import com.example.fitnessapp3.SetResults.SetResult;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -130,7 +132,10 @@ public class CurrentWorkout {
         currentWorkout[workout.getPosition()] = exNum + "," + repNum;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
-        setResults.set((numberOfExercise.get(workout.getPosition())), new SetResult(exNum, repNum));
+        SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
+        currentSetResult.setRepNr(repNum);
+        currentSetResult.setAddedWeight(exNum);
+        //setResults.set((numberOfExercise.get(workout.getPosition())), new SetResult(exNum, repNum));
         workout.proceed();
         saveProgress(activity);
         return true;
@@ -145,12 +150,24 @@ public class CurrentWorkout {
 
     public static void logDuration(int duration, Activity activity) {
         currentWorkout[workout.getPosition()] = "" + duration;
+        String compName = workout.getCurrentComponent().getName();
+        ArrayList<SetResult> setResults = exToResults.get(compName);
+        SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
+        currentSetResult.setRepNr(duration);
+        currentSetResult.setAddedWeight(0);
+        currentSetResult.setIsDuration(true);
         workout.proceed();
         saveProgress(activity);
     }
 
     public static void logWeightedDuration(int duration, int weight, Activity activity) {
         currentWorkout[workout.getPosition()] = "" + duration + "," + weight;
+        String compName = workout.getCurrentComponent().getName();
+        ArrayList<SetResult> setResults = exToResults.get(compName);
+        SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
+        currentSetResult.setRepNr(duration);
+        currentSetResult.setAddedWeight(weight);
+        currentSetResult.setIsDuration(true);
         workout.proceed();
         saveProgress(activity);
     }
@@ -170,7 +187,13 @@ public class CurrentWorkout {
             if (weightNum > 0) {
                 res.append("+").append(weightNum).append("kg x ");
             }
-            res.append(ithResult.getRepNr()).append(" Reps");
+            if (ithResult.isDuration()){
+                res.append(ithResult.getRepNr()).append(" s");
+            }
+            else{
+                res.append(ithResult.getRepNr()).append(" Reps");
+            }
+
             res.append(System.getProperty("line.separator"));
         }
         return res.toString();
