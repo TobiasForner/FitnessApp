@@ -219,7 +219,10 @@ public class CurrentWorkout {
         String sep = System.getProperty("line.separator");
         StringBuilder ex_to_res = new StringBuilder();
         for (String ex : exToResults.keySet()) {
-            ex_to_res.append(ex).append(":").append(String.join(";", exToResults.get(ex).toString())).append(sep);
+            ArrayList<SetResult> setResults=exToResults.get(ex);
+            String setResStr=setResults.toString().replace(',',';');
+
+            ex_to_res.append(ex).append(":").append(setResStr).append(sep);
         }
         String progress = workoutName + sep + String.join(";", currentWorkout) + sep + workout.getPosition() + sep + ex_to_res;
         editor.apply();
@@ -279,7 +282,7 @@ public class CurrentWorkout {
                 assert tmp != null;
                 if (tmp.size() != results.length) {
                     Log.e("CurrentWorkout", "length mismatch");
-                    throw new RuntimeException("Parse of previous workout failed due to length mismatch.");
+                    throw new RuntimeException("Parse of previous workout failed due to length mismatch: expected "+tmp.size()+" but got "+results.length);
                 }
             }
         }
