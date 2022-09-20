@@ -14,10 +14,12 @@ public class StringOccurrenceCounter implements ToIntFunction<String> {
     public int applyAsInt(String s){
         if (s==null){
             throw new NullPointerException();
+        }else{
+            int prev = sToCount.getOrDefault(s, 0);
+            sToCount.put(s, prev + 1);
+            return prev;
         }
-        int prev = sToCount.getOrDefault(s, 0);
-        sToCount.put(s, prev + 1);
-        return prev;
+
     }
 
     public Map<String, Integer> getCountMap(){

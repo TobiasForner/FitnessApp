@@ -24,7 +24,6 @@ public class RestActivity extends AppCompatActivity {
     int timeElapsed = 0;
     boolean playSound;
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         playSound = true;

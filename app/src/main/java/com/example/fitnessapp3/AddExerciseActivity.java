@@ -12,6 +12,8 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.util.Objects;
+
 public class AddExerciseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
     private String exType;
     private boolean weighted;
@@ -23,11 +25,7 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
         Intent intent = getIntent();
         String exName = intent.getStringExtra(AddWorkoutActivity.EXNAME);
         TextView exerciseName = findViewById(R.id.editTextExName);
-        if (exName == null) {
-            exerciseName.setText("");
-        } else {
-            exerciseName.setText(exName);
-        }
+        exerciseName.setText(Objects.requireNonNullElse(exName, ""));
 
         weighted = intent.getBooleanExtra(ManageExercisesActivity.WEIGHTED, true);
         exType = intent.getStringExtra(ManageExercisesActivity.TYPE);

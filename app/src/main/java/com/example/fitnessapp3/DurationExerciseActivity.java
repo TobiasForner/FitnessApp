@@ -101,7 +101,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     private void createTimer(){
         final EditText durationText = findViewById(R.id.editText_duration);
         final int duration = Integer.parseInt(durationText.getText().toString());
-        timer= new CountDownTimer(duration * 1000, 1000) {
+        timer= new CountDownTimer(duration * 1000L, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);

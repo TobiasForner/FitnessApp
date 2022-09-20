@@ -1,33 +1,21 @@
 package com.example.fitnessapp3;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.DocumentsContract;
+
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.io.BufferedReader;
-import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class Util {
     public static String WORKOUT_IN_PROGRESS="workout_in_progress.txt";
-    static boolean isInt(String s)  // assuming integer is in decimal number system
-    {
-        for(int a=0;a<s.length();a++)
-        {
-            if(a==0 && s.charAt(a) == '-') continue;
-            if( !Character.isDigit(s.charAt(a)) ) return false;
-        }
-        return true;
-    }
 
     public static void writeFileOnInternalStorage(Context context, String filename, String fileContents){
         try (FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE)) {
@@ -81,20 +69,5 @@ public class Util {
             result = result.substring(0,result.length()-1);
         }
         return result;
-    }
-
-    private static final int CREATE_FILE = 1;
-
-    public static Intent createFile() {
-        Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
-        intent.addCategory(Intent.CATEGORY_OPENABLE);
-        intent.setType("application/txt");
-        intent.putExtra(Intent.EXTRA_TITLE, "test.txt");
-
-        // Optionally, specify a URI for the directory that should be opened in
-        // the system file picker when your app creates the document.
-        //intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, pickerInitialUri);
-
-        return intent;
     }
 }

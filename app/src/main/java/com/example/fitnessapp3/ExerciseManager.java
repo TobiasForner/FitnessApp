@@ -70,6 +70,7 @@ public class ExerciseManager {
         StringBuilder out = new StringBuilder();
         for(String name: nameToEx.keySet()){
             WorkoutComponent current = nameToEx.get(name);
+            assert current != null;
             String fileContents = componentToString(current);
             out.append(fileContents);
         }
@@ -162,6 +163,7 @@ public class ExerciseManager {
 
     public WorkoutComponent getWorkoutComponent(String exName) {
         String name = abbrevToFullName.getOrDefault(exName, exName);
+        assert name != null;
         if(isRest(name)){
             return parseRest(name);
         }

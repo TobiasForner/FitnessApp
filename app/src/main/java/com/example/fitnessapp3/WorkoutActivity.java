@@ -12,8 +12,6 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.google.android.material.navigation.NavigationView;
-
 
 public class WorkoutActivity extends AppCompatActivity {
 

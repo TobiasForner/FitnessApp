@@ -36,14 +36,6 @@ public class Exercise extends WorkoutComponent {
         return type;
     }
 
-    public void setParameter(int x) {
-        this.parameter = x;
-    }
-
-    public int getParameter() {
-        return this.parameter;
-    }
-
     public void setAbbrev(String abbrev) {
         this.abbrev = abbrev;
     }

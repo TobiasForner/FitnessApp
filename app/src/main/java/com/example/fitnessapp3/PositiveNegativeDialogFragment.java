@@ -59,7 +59,7 @@ public class PositiveNegativeDialogFragment extends DialogFragment {
             this.message = getString(messageID, messageExtra);
         } catch (ClassCastException e) {
             // The activity doesn't implement the interface, throw exception
-            throw new ClassCastException(context.toString()
+            throw new ClassCastException(context
                     + " must implement NoticeDialogListener");
         }
     }

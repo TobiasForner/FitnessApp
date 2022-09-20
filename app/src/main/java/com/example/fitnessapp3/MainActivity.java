@@ -1,6 +1,6 @@
 package com.example.fitnessapp3;
 
-import androidx.activity.result.ActivityResultCallback;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
-import android.provider.DocumentsContract;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -50,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
             c.setBackgroundColor(Color.TRANSPARENT);
             Util.setMargins(c, 100, 100, 100, 100);
             c.addView(t, params);
-            c. setOnClickListener((v) -> startWorkout(v, s));
+            c. setOnClickListener((v) -> startWorkout(s));
             linear.addView(c);
             Space space = new Space(this);
             linear.addView(space);
@@ -72,35 +71,33 @@ public class MainActivity extends AppCompatActivity {
 
         //register callback for backup directory
         ActivityResultLauncher<Uri> mGetContent = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(),
-                new ActivityResultCallback<Uri>() {
-                    @Override
-                    public void onActivityResult(Uri uri) {
-                        // Handle the returned Uri
-                        Log.d("MainActivity", "onActivityResult: "+uri.getPath());
-                        try {
+                uri -> {
+                    // Handle the returned Uri
+                    Log.d("MainActivity", "onActivityResult: "+uri.getPath());
+                    try {
 
-                            String treePath = uri.getPath();
+                        String treePath = uri.getPath();
 
-                            String[] parts = treePath.split(":");
-                            String relativeDirName = parts[parts.length-1];
-                            File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
-                            File treeRoot=new File(docsDir.getPath(), relativeDirName);
+                        assert treePath != null;
+                        String[] parts = treePath.split(":");
+                        String relativeDirName = parts[parts.length-1];
+                        File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
+                        File treeRoot=new File(docsDir.getPath(), relativeDirName);
 
-                            if (!treeRoot.exists()) {
-                                boolean success=treeRoot.mkdirs();
-                                if(!success){
-                                    //TODO: surface warning to user
-                                }
+                        if (!treeRoot.exists()) {
+                            boolean success=treeRoot.mkdirs();
+                            if(!success){
+                                //TODO: surface warning to user
                             }
-                            File backupFile = new File(treeRoot, "workoutBackup.txt");
-                            Log.d("MainActivity", "onActivityResult: writing to "+backupFile.getPath());
-                            FileWriter writer = new FileWriter(backupFile);
-                            writer.append("test backup");
-                            writer.flush();
-                            writer.close();
-                        } catch (Exception e){
-                            e.printStackTrace();
                         }
+                        File backupFile = new File(treeRoot, "workoutBackup.txt");
+                        Log.d("MainActivity", "onActivityResult: writing to "+backupFile.getPath());
+                        FileWriter writer = new FileWriter(backupFile);
+                        writer.append("test backup");
+                        writer.flush();
+                        writer.close();
+                    } catch (Exception e){
+                        e.printStackTrace();
                     }
                 });
 
@@ -112,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void startWorkout(View view, String workoutName) {
+    public void startWorkout( String workoutName) {
         CurrentWorkout.init(workoutName, this);
         startWorkout();
     }
@@ -149,11 +146,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void goToManageExercises(View v) {
         Intent intent = new Intent(this, ManageExercisesActivity.class);
-        startActivity(intent);
-    }
-
-    public void createFile(View v) {
-        Intent intent = Util.createFile();
         startActivity(intent);
     }
 }

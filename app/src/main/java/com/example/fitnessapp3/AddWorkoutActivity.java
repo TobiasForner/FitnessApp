@@ -29,12 +29,9 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
 
         //hide keyboard if edit text not focussed
         EditText editText = findViewById(R.id.editText_workout_body);
-        editText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    hideKeyboard(v);
-                }
+        editText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus) {
+                hideKeyboard(v);
             }
         });
         if (edit) {

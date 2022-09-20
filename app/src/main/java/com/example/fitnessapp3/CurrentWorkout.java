@@ -75,7 +75,7 @@ public class CurrentWorkout {
         for (Map.Entry<String, Integer> pair : exCounts.entrySet()) {
             if (!pair.getKey().equals("Rest")) {
                 for (int i = 0; i < pair.getValue(); i++) {
-                    exToResults.get(pair.getKey()).add(new SetResult(0, 0));
+                    Objects.requireNonNull(exToResults.get(pair.getKey())).add(new SetResult(0, 0));
                 }
             }
 
@@ -87,7 +87,13 @@ public class CurrentWorkout {
     private static String formatSetString(int workoutPos, Map<String, Integer> exCounts) {
         int setNum = numberOfExercise.get(workoutPos) + 1;
         String compName = workout.getComponentAt(workoutPos).getName();
-        int finalSetNumber = exCounts.get(compName);
+        Object finalSetNum=exCounts.get(compName);
+        int finalSetNumber;
+        if(finalSetNum==null){
+            finalSetNumber=-1;
+        }else{
+            finalSetNumber=(int)finalSetNum;
+        }
         return setNum + "/" + finalSetNumber;
     }
 
@@ -129,13 +135,16 @@ public class CurrentWorkout {
     }
 
     public static boolean logExercise(int exNum, int repNum, Activity activity) {
+        if (exNum<0||repNum<0){
+            return false;
+        }
         currentWorkout[workout.getPosition()] = exNum + "," + repNum;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
+        assert setResults != null;
         SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
         currentSetResult.setRepNr(repNum);
         currentSetResult.setAddedWeight(exNum);
-        //setResults.set((numberOfExercise.get(workout.getPosition())), new SetResult(exNum, repNum));
         workout.proceed();
         saveProgress(activity);
         return true;
@@ -152,6 +161,7 @@ public class CurrentWorkout {
         currentWorkout[workout.getPosition()] = "" + duration;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
+        assert setResults != null;
         SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
         currentSetResult.setRepNr(duration);
         currentSetResult.setAddedWeight(0);
@@ -164,6 +174,7 @@ public class CurrentWorkout {
         currentWorkout[workout.getPosition()] = "" + duration + "," + weight;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
+        assert setResults != null;
         SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
         currentSetResult.setRepNr(duration);
         currentSetResult.setAddedWeight(weight);
@@ -220,6 +231,7 @@ public class CurrentWorkout {
         StringBuilder ex_to_res = new StringBuilder();
         for (String ex : exToResults.keySet()) {
             ArrayList<SetResult> setResults=exToResults.get(ex);
+            assert setResults != null;
             String setResStr=setResults.toString().replace(',',';');
 
             ex_to_res.append(ex).append(":").append(setResStr).append(sep);
@@ -232,7 +244,7 @@ public class CurrentWorkout {
     public static void restoreWorkoutInProgress(Activity activity) {
         if (workoutIsInProgress(activity)) {
             String[] workoutDetails;
-            workoutDetails = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS, activity).split(System.getProperty("line.separator"));
+            workoutDetails = Objects.requireNonNull(Util.readFromInternal(Util.WORKOUT_IN_PROGRESS, activity)).split(Objects.requireNonNull(System.getProperty("line.separator")));
             restoreWorkoutFromString(workoutDetails, activity);
         }
     }
