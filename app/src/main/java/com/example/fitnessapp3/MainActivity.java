@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         //register callback for backup directory
-        // GetContent creates an ActivityResultLauncher<String> to allow you to pass
-// in the mime type you'd like to allow the user to select
         ActivityResultLauncher<Uri> mGetContent = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(),
                 new ActivityResultCallback<Uri>() {
                     @Override
@@ -86,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
                             String[] parts = treePath.split(":");
                             String relativeDirName = parts[parts.length-1];
                             File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
-                            //String fullDirPath = "documents/"+relativeDirName;
-                            //File treeRoot=new File(uri.getPath());
                             File treeRoot=new File(docsDir.getPath(), relativeDirName);
 
                             if (!treeRoot.exists()) {
@@ -111,7 +107,6 @@ public class MainActivity extends AppCompatActivity {
         Button selectDirButton = findViewById(R.id.selectDirectoryButton);
         selectDirButton.setOnClickListener(v -> {
             File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
-            //File file = new File("documents");
             Uri uri = Uri.fromFile(docsDir);
             mGetContent.launch(uri);
         });
