@@ -5,6 +5,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import com.google.android.material.card.MaterialCardView;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,15 +41,26 @@ public class MainActivity extends AppCompatActivity {
         for (String s : WorkoutManager.getWorkoutNames()) {
             TextView t = new TextView(this);
             t.setText(s);
-            t.setTextSize(20);
+            t.setTextSize(30);
             t.setGravity(Gravity.CENTER);
-            t.setTextColor(Color.CYAN);
+            t.setTextColor(Color.WHITE);
 
-            CardView c = new CardView(this);
+            CardView c = new MaterialCardView(this);
             c.setForegroundGravity(Gravity.CENTER);
             c.setBackgroundColor(Color.TRANSPARENT);
             Util.setMargins(c, 100, 100, 100, 100);
-            c.addView(t, params);
+            LinearLayout cLinear = new LinearLayout(this);
+            cLinear.setOrientation(LinearLayout.VERTICAL);
+            cLinear.addView(t, params);
+            c.addView(cLinear);
+
+            /*TextView test = new TextView(this);
+            test.setTextColor(Color.GREEN);
+            test.setGravity(Gravity.CENTER);
+            test.setText("blabla");
+            cLinear.addView(test, params);*/
+
+
             c. setOnClickListener((v) -> startWorkout(s));
             linear.addView(c);
             Space space = new Space(this);

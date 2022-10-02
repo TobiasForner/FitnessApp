@@ -18,7 +18,7 @@
         android:onClick="startTimer"
         android:text="@string/start_3min_timer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.059"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/initWorkoutsButton"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
 
@@ -31,7 +31,7 @@
         android:text="@string/add_exercise"
         app:layout_constraintBottom_toBottomOf="@+id/timerButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.538"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/timerButton"
         app:layout_constraintTop_toBottomOf="@+id/textView"
         app:layout_constraintVertical_bias="1.0" />
@@ -127,9 +127,11 @@
         android:id="@+id/selectDirectoryButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         android:onClick="Backup Workouts"
         android:text="CreateFile"
-        app:layout_constraintEnd_toEndOf="@+id/timerButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.494"
         app:layout_constraintStart_toEndOf="@+id/button_go_to_manage_exercises"
         app:layout_constraintTop_toBottomOf="@+id/timerButton" />
 
