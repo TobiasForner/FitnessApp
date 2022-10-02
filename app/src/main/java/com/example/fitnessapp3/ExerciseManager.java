@@ -23,8 +23,10 @@ import java.util.Objects;
 
 public class ExerciseManager {
     public final String typeJSON = "type";
+    public final String timeJSON = "time";
     public final String nameJSON = "name";
     public final String weightedJSON = "weighted";
+    public final String abbreviationsJSON = "abbreviations";
     private final Map<String, WorkoutComponent> nameToEx;
     private final Map<String, String> abbrevToFullName;
 
@@ -116,7 +118,7 @@ public class ExerciseManager {
 
                 exercises.add(fileContents);
             } catch (JSONException e) {
-                Log.e("ExerciseManager", "exercisesJson: failed to convert component with name '"+name+"' to JSON!");
+                Log.e("ExerciseManager", "exercisesJson: failed to convert component with name '" + name + "' to JSON!");
             }
         }
         return new JSONArray(exercises);
@@ -126,17 +128,26 @@ public class ExerciseManager {
         JSONObject res = new JSONObject();
         if (comp.isRest()) {
             Rest r = (Rest) comp;
+            res.put(nameJSON, "Rest");
             res.put(typeJSON, Exercise.ExType.REST.toString());
-            res.put("time", r.getRestTime());
+            res.put(timeJSON, r.getRestTime());
         } else {
             Exercise e = (Exercise) comp;
+            String name = e.getName();
+            res.put(nameJSON, name);
             String exType = e.getType().toString();
 
             res.put(typeJSON, exType);
-            String name = e.getName();
-            res.put(nameJSON, name);
+
             boolean weighted = e.isWeighted();
             res.put(weightedJSON, weighted);
+            List<String> abbreviations = new ArrayList<>();
+            for (Map.Entry<String, String> abbrevs : abbrevToFullName.entrySet()) {
+                if (Objects.equals(abbrevs.getValue(), name)) {
+                    abbreviations.add(abbrevs.getKey());
+                }
+            }
+            res.put(abbreviationsJSON, new JSONArray(abbreviations));
         }
         return res;
     }
@@ -213,7 +224,7 @@ public class ExerciseManager {
     }
 
     private WorkoutComponent getExerciseFromDetails(String exName, Exercise.ExType exType, boolean weighted, String abbrev) {
-        if (exType== Exercise.ExType.REST) {
+        if (exType == Exercise.ExType.REST) {
             return new Rest(180000);
         }
         Exercise exercise = new Exercise(exName, exType, weighted);

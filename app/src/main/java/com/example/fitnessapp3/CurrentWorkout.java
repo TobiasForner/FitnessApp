@@ -1,6 +1,7 @@
 package com.example.fitnessapp3;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -95,6 +96,15 @@ public class CurrentWorkout {
             finalSetNumber=(int)finalSetNum;
         }
         return setNum + "/" + finalSetNumber;
+    }
+
+    public static boolean hasLastWorkout(Context context){
+        useLastWorkout = false;
+        String lastWorkoutString = Util.readFromInternal(workoutName + "last_result.txt", context);
+        if (lastWorkoutString == null) {
+            return false;
+        }
+        return lastWorkoutString.length() > 0;
     }
 
     private static void tryInitLastWorkout(Activity activity, int workoutLength) {

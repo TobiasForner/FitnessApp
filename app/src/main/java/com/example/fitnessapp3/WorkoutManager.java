@@ -6,6 +6,10 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +20,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 public class WorkoutManager {
@@ -27,7 +32,6 @@ public class WorkoutManager {
         readWorkoutNames(context);
         exerciseManager = new ExerciseManager(context);
     }
-
 
     public static void addWorkout(String name, String workoutBody, Context context) {
         addWorkoutName(name, context);
@@ -71,11 +75,11 @@ public class WorkoutManager {
         }
         String[] parts = line.split("\\[");
         if (parts.length != 1 && parts.length != 2) {
-            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: "+line);
+            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: " + line);
             return;
         }
         if (parts.length == 2 && !parts[0].equals("")) {
-            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: "+line);
+            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: " + line);
             return;
         }
         String[] bodyAndTimes;
@@ -87,7 +91,7 @@ public class WorkoutManager {
         String[] exerciseNames = bodyAndTimes[0].split(",");
         for (String exName : exerciseNames) {
             if (!exerciseManager.exerciseExists(exName)) {
-                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise: "+line);
+                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise: " + line);
                 return;
             }
 
@@ -97,14 +101,14 @@ public class WorkoutManager {
             }
         }
         String timesStr;
-        if (bodyAndTimes.length>=2){
-            timesStr=bodyAndTimes[1];
+        if (bodyAndTimes.length >= 2) {
+            timesStr = bodyAndTimes[1];
 
-        }else {
+        } else {
             // pattern without [...] x ..., default times to 1
             timesStr = "x1";
         }
-        timesStr=Util.strip(timesStr);
+        timesStr = Util.strip(timesStr);
         if (timesStr.length() >= 2) {
             if (timesStr.charAt(0) == 'x' | timesStr.charAt(0) == 'X') {
                 String timesString = timesStr.substring(1);
@@ -226,7 +230,7 @@ public class WorkoutManager {
         return exerciseManager.exerciseExists(exName);
     }
 
-    public static void BackupWorkouts(Context context){
+    public static void BackupWorkouts(Context context) {
         WorkoutManager.readWorkoutNames(context);
         //TODO store workout content in e.g. json format
     }
@@ -251,5 +255,132 @@ public class WorkoutManager {
 
     public static WorkoutComponent getWorkoutComponentFromName(String name) {
         return exerciseManager.getWorkoutComponent(name);
+    }
+
+    public JSONArray workoutsJSON(Context context) throws JSONException {
+        List<JSONObject> workouts = new ArrayList<>();
+        for (String workoutName : workoutNames) {
+            JSONObject workout = getWorkoutJSONFromFile(workoutName, context);
+            workouts.add(workout);
+        }
+        return new JSONArray(workouts);
+    }
+
+    public static JSONObject getWorkoutJSONFromFile(String workoutName, Context context) throws JSONException {
+        if (!Arrays.asList(workoutNames).contains(workoutName)) {
+            throw new IllegalArgumentException("Workout name is not valid.");
+        }
+        String contents;
+        try {
+            File file = new File(context.getFilesDir(), workoutName + "_workout.txt");
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader inputStreamReader =
+                    new InputStreamReader(fis, StandardCharsets.UTF_8);
+            StringBuilder stringBuilder = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                String line = reader.readLine();
+                while (line != null) {
+                    stringBuilder.append(line).append(Objects.requireNonNull(System.getProperty("line.separator")));
+                    line = reader.readLine();
+                }
+            } catch (IOException e) {
+                // Error occurred when opening raw file for reading.
+            } finally {
+                contents = stringBuilder.toString();
+            }
+        } catch (FileNotFoundException e) {
+            Log.e("WorkoutManager", "Workout Names file workout_names not found.");
+            return null;
+        }
+        return generateWorkoutJSONFromString(contents, workoutName, context);
+    }
+
+    public static JSONObject generateWorkoutJSONFromString(String text, String name, Context context) throws JSONException {
+        String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
+        JSONObject workout = new JSONObject();
+        workout.put("name", name);
+        List<JSONObject> componentGroups = new ArrayList<>();
+        for (String line : lines) {
+            JSONObject group=parseWorkoutLineJSON(line, context);
+            componentGroups.add(group);
+        }
+        workout.put("componentGroups", new JSONArray(componentGroups));
+        return workout;
+    }
+
+    private static JSONObject parseWorkoutLineJSON(String line, Context context) throws JSONException {
+
+        Log.d("WorkoutManager", "parseWorkoutLine: start");
+        if (line.equals("")) {
+            throw new IllegalArgumentException("Empty workout line.");
+        }
+        String[] parts = line.split("\\[");
+        if (parts.length != 1 && parts.length != 2) {
+            throw new IllegalArgumentException("parseWorkoutLine: line has invalid format: " + line);
+        }
+        if (parts.length == 2 && !parts[0].equals("")) {
+            throw new IllegalArgumentException("parseWorkoutLine: line has invalid format: " + line);
+        }
+        String[] bodyAndTimes;
+        if (parts.length == 2) {
+            bodyAndTimes = parts[1].split("]");
+        } else {
+            bodyAndTimes = parts[0].split("]");
+        }
+        String[] exerciseNames = bodyAndTimes[0].split(",");
+        for (String exName : exerciseNames) {
+            if (!exerciseManager.exerciseExists(exName)) {
+                throw new IllegalArgumentException("parseWorkoutLine: line contains invalid exercise: " + line);
+            }
+
+            String strippedName = Util.strip(exName);
+            if (!exerciseManager.exerciseExists(strippedName)) {
+                exerciseManager.addStrippedExercise(exName, context);
+            }
+        }
+        String timesStr;
+        if (bodyAndTimes.length >= 2) {
+            timesStr = bodyAndTimes[1];
+
+        } else {
+            // pattern without [...] x ..., default times to 1
+            timesStr = "x1";
+        }
+        timesStr = Util.strip(timesStr);
+        if (timesStr.length() >= 2) {
+            if (timesStr.charAt(0) == 'x' | timesStr.charAt(0) == 'X') {
+                String timesString = timesStr.substring(1);
+                try {
+                    int times = Integer.parseInt(timesString);
+
+                    List<String> groupComponents = new ArrayList<>();
+                    for (String exName : exerciseNames) {
+                        String strippedName = Util.strip(exName);
+                        groupComponents.add(strippedName);
+                    }
+                    JSONObject group = new JSONObject();
+                    group.put("repetitions", times);
+                    group.put("components", new JSONArray(groupComponents));
+                    return group;
+
+                } catch (NumberFormatException nfe) {
+                    throw new RuntimeException("Error parsing number.");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("JSON error.");
+                }
+            }
+            throw new RuntimeException("Invalid state.");
+        } else {
+            List<String> groupComponents = new ArrayList<>();
+            for (String exName : exerciseNames) {
+                String strippedName = Util.strip(exName);
+                groupComponents.add(strippedName);
+            }
+            JSONObject group = new JSONObject();
+            group.put("repetitions", 1);
+            group.put("components", new JSONArray(groupComponents));
+            return group;
+        }
     }
 }

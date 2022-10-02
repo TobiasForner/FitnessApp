@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
+import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -23,8 +24,14 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
@@ -102,12 +109,13 @@ public class MainActivity extends AppCompatActivity {
                                 //TODO: surface warning to user
                             }
                         }
-                        File backupFile = new File(treeRoot, "workoutBackup.txt");
+                        File backupFile = new File(treeRoot, "workoutBackup.json");
                         Log.d("MainActivity", "onActivityResult: writing to "+backupFile.getPath());
                         FileWriter writer = new FileWriter(backupFile);
-                        writer.append("test backup");
-                        writer.flush();
-                        writer.close();
+                        BufferedWriter bw = new BufferedWriter(writer);
+                        JSONObject fullBackup = fullJSONData();
+                        bw.write(fullBackup.toString());
+                        bw.close();
                     } catch (Exception e){
                         e.printStackTrace();
                     }
@@ -119,6 +127,21 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = Uri.fromFile(docsDir);
             mGetContent.launch(uri);
         });
+    }
+
+    private JSONObject fullJSONData() throws JSONException {
+        JSONObject res = new JSONObject();
+        // store exercises
+        ExerciseManager exerciseManager=new ExerciseManager(this);
+        JSONArray exercises = exerciseManager.exercisesJson();
+        res.put("exercises", exercises);
+        // store workout details
+        WorkoutManager workoutManager = new WorkoutManager();
+        JSONArray workoutsJSON = workoutManager.workoutsJSON(this);
+        res.put("workouts", workoutsJSON);
+        // store results for last workouts (set strings)
+        // TODO
+        return res;
     }
 
     public void startWorkout( String workoutName) {
