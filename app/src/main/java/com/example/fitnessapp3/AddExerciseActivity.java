@@ -25,7 +25,7 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
         Intent intent = getIntent();
         String exName = intent.getStringExtra(AddWorkoutActivity.EXNAME);
         TextView exerciseName = findViewById(R.id.editTextExName);
-        exerciseName.setText(Objects.requireNonNullElse(exName, ""));
+        exerciseName.setText(exName);
 
         weighted = intent.getBooleanExtra(ManageExercisesActivity.WEIGHTED, true);
         exType = intent.getStringExtra(ManageExercisesActivity.TYPE);
