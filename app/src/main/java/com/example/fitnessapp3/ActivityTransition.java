@@ -14,7 +14,7 @@ public class ActivityTransition {
         } else if (CurrentWorkout.hasNextExercise()) {
             if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
                 nextIntent= restIntent(origin);
-            } else if (((Exercise) CurrentWorkout.getNextWorkoutComponent()).getType() == Exercise.EXTYPE.DURATION) {
+            } else if (((Exercise) CurrentWorkout.getNextWorkoutComponent()).getType() == Exercise.ExType.DURATION) {
                 nextIntent = new Intent(origin, DurationExerciseActivity.class);
             } else {
                 nextIntent = new Intent(origin, WorkoutActivity.class);
