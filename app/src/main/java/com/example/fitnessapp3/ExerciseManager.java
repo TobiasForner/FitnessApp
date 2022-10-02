@@ -3,6 +3,10 @@ package com.example.fitnessapp3;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,10 +17,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class ExerciseManager {
+    public final String typeJSON = "type";
+    public final String nameJSON = "name";
+    public final String weightedJSON = "weighted";
     private final Map<String, WorkoutComponent> nameToEx;
     private final Map<String, String> abbrevToFullName;
 
@@ -27,15 +35,14 @@ public class ExerciseManager {
     }
 
     public void initExerciseDetails(Context context) {
-        //TODO: use enum asap instead of hardcoded Strings
-        addExercise("Pull Up", "Reps", true, "PU", context);
-        addExercise("Ring Dip", "Reps", true, "RD", context);
-        addExercise("Push Up", "Reps", true, "PshU", context);
-        addExercise("Row", "Reps", true, "Row", context);
-        addExercise("Rest", "Rest", true, "Rest", context);
+        addExercise("Pull Up", Exercise.ExType.REPS, true, "PU", context);
+        addExercise("Ring Dip", Exercise.ExType.REPS, true, "RD", context);
+        addExercise("Push Up", Exercise.ExType.REPS, true, "PshU", context);
+        addExercise("Row", Exercise.ExType.REPS, true, "Row", context);
+        addExercise("Rest", Exercise.ExType.REST, true, "Rest", context);
     }
 
-    public void addExercise(String name, String exType, boolean weighted, String abbrev, Context context) {
+    public void addExercise(String name, Exercise.ExType exType, boolean weighted, String abbrev, Context context) {
         if (nameToEx.containsKey(name)) {
             //TODO ask whether user wants to overwrite
             nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
@@ -50,7 +57,7 @@ public class ExerciseManager {
             if (!abbrev.equals("")) {
                 updateAbbreviations(abbrev, name);
             }
-            String fileContents = name + ":ExerciseType=" + exType + ";Weighted=" + weighted + abbrevString + sep;
+            String fileContents = name + ":ExerciseType=" + exType.toString() + ";Weighted=" + weighted + abbrevString + sep;
             fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
             nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
         } catch (IOException e) {
@@ -61,46 +68,77 @@ public class ExerciseManager {
     public void addStrippedExercise(String exName, Context context) {
         String strippedName = Util.strip(exName);
         WorkoutComponent comp = getWorkoutComponent(exName);
-        if(comp.isExercise()){
+        if (comp.isExercise()) {
             Exercise ex = (Exercise) comp;
-        addExercise(strippedName, Exercise.typeToString(ex.getType()), ex.isWeighted(), ex.getAbbrev(), context);}
+            addExercise(strippedName, ex.getType(), ex.isWeighted(), ex.getAbbrev(), context);
+        }
     }
 
-    private void writeExercisesToFile(Context context){
+    private void writeExercisesToFile(Context context) {
         StringBuilder out = new StringBuilder();
-        for(String name: nameToEx.keySet()){
+        for (String name : nameToEx.keySet()) {
             WorkoutComponent current = nameToEx.get(name);
             assert current != null;
             String fileContents = componentToString(current);
             out.append(fileContents);
         }
         File file = new File(context.getFilesDir(), "exercise_details.txt");
-        try{
-        FileOutputStream fos = new FileOutputStream(file, true);
+        try {
+            FileOutputStream fos = new FileOutputStream(file, true);
             fos.write(out.toString().getBytes(StandardCharsets.UTF_8));
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String componentToString(WorkoutComponent comp){
+    private String componentToString(WorkoutComponent comp) {
         String sep = Objects.requireNonNull(System.getProperty("line.separator"));
-        if(comp.isRest()){
+        if (comp.isRest()) {
             Rest r = (Rest) comp;
-            return "Rest:"+r.getRestTime()+sep;
-        }else{
+            return "Rest:" + r.getRestTime() + sep;
+        } else {
             Exercise e = (Exercise) comp;
-            String exType;
-            if (e.getType() == Exercise.EXTYPE.DURATION) {
-                exType = "Duration";
-            } else {
-                exType = "Reps";
-            }
+            String exType = e.getType().toString();
             String name = e.getName();
             boolean weighted = e.isWeighted();
             return name + ":ExerciseType=" + exType + ";Weighted=" + weighted + sep;
         }
 
+    }
+
+    public JSONArray exercisesJson() {
+        List<JSONObject> exercises = new ArrayList<JSONObject>();
+        for (String name : nameToEx.keySet()) {
+            WorkoutComponent current = nameToEx.get(name);
+            assert current != null;
+            try {
+                JSONObject fileContents = componentToJson(current);
+
+                exercises.add(fileContents);
+            } catch (JSONException e) {
+                Log.e("ExerciseManager", "exercisesJson: failed to convert component with name '"+name+"' to JSON!");
+            }
+        }
+        return new JSONArray(exercises);
+    }
+
+    private JSONObject componentToJson(WorkoutComponent comp) throws JSONException {
+        JSONObject res = new JSONObject();
+        if (comp.isRest()) {
+            Rest r = (Rest) comp;
+            res.put(typeJSON, Exercise.ExType.REST.toString());
+            res.put("time", r.getRestTime());
+        } else {
+            Exercise e = (Exercise) comp;
+            String exType = e.getType().toString();
+
+            res.put(typeJSON, exType);
+            String name = e.getName();
+            res.put(nameJSON, name);
+            boolean weighted = e.isWeighted();
+            res.put(weightedJSON, weighted);
+        }
+        return res;
     }
 
     public void readExerciseDetails(Context context) {
@@ -123,7 +161,7 @@ public class ExerciseManager {
                     } else {
                         String exTypeString = details[0].split("=")[1];
                         boolean weighted = details[1].split("=")[1].equals("true");
-                        WorkoutComponent component = getExerciseFromDetails(exerciseDet[0], exTypeString, weighted, "");
+                        WorkoutComponent component = getExerciseFromDetails(exerciseDet[0], Exercise.ExType.fromString(exTypeString), weighted, "");
                         nameToEx.put(exerciseDet[0], component);
                         if (details.length == 3) {
                             Exercise exercise = (Exercise) component;
@@ -142,16 +180,16 @@ public class ExerciseManager {
         }
     }
 
-    private boolean isRest(String exName){
-        if(exName.length()>=4){
-            String start = exName.substring(0,4);
+    private boolean isRest(String exName) {
+        if (exName.length() >= 4) {
+            String start = exName.substring(0, 4);
             return start.equals("Rest");
         }
         return false;
     }
 
-    private Rest parseRest(String exName){
-        if(exName.length()>=5) {
+    private Rest parseRest(String exName) {
+        if (exName.length() >= 5) {
             String start = exName.substring(0, 5);
             if (start.equals("Rest:")) {
                 int time = Integer.parseInt(exName.substring(5));
@@ -164,10 +202,9 @@ public class ExerciseManager {
     public WorkoutComponent getWorkoutComponent(String exName) {
         String name = abbrevToFullName.getOrDefault(exName, exName);
         assert name != null;
-        if(isRest(name)){
+        if (isRest(name)) {
             return parseRest(name);
-        }
-        else if (nameToEx.containsKey(name)) {
+        } else if (nameToEx.containsKey(name)) {
             return nameToEx.get(name);
         } else {
             Log.e("ExerciseManager", "Exercise " + exName + " not defined.");
@@ -175,14 +212,11 @@ public class ExerciseManager {
         }
     }
 
-    private WorkoutComponent getExerciseFromDetails(String exName, String exType, boolean weighted, String abbrev) {
-        Exercise.EXTYPE type = Exercise.EXTYPE.REPS;
-        if (exType.equals("Duration")) {
-            type = Exercise.EXTYPE.DURATION;
-        } else if (exType.equals("Rest")) {
+    private WorkoutComponent getExerciseFromDetails(String exName, Exercise.ExType exType, boolean weighted, String abbrev) {
+        if (exType== Exercise.ExType.REST) {
             return new Rest(180000);
         }
-        Exercise exercise = new Exercise(exName, type, weighted);
+        Exercise exercise = new Exercise(exName, exType, weighted);
         exercise.setAbbrev(abbrev);
         return exercise;
     }
@@ -201,4 +235,6 @@ public class ExerciseManager {
     public ArrayList<String> getExerciseNames() {
         return new ArrayList<>(nameToEx.keySet());
     }
+
+
 }

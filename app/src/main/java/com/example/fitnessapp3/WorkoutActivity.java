@@ -51,7 +51,7 @@ public class WorkoutActivity extends AppCompatActivity {
                         repNum.setText(prevNums[1]);
                     }
                 }
-            if (exercise.getType() == Exercise.EXTYPE.DURATION) {
+            if (exercise.getType() == Exercise.ExType.DURATION) {
                 exNum.setHint("Duration");
             } else if(!exercise.isWeighted()) {
                 hideWeightElements();

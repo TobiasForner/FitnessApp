@@ -42,13 +42,8 @@ public class ManageExercisesActivity extends AppCompatActivity {
             intent.putExtra(AddWorkoutActivity.EXNAME, workoutComponent.getName());
             Exercise exercise = (Exercise) workoutComponent;
             intent.putExtra(WEIGHTED, exercise.isWeighted());
-            Exercise.EXTYPE type = exercise.getType();
-            String typeString;
-            if (type == Exercise.EXTYPE.DURATION) {
-                typeString = "Duration";
-            } else {
-                typeString = "Reps";
-            }
+            Exercise.ExType type = exercise.getType();
+            String typeString= type.toString();
             intent.putExtra(TYPE, typeString);
             startActivity(intent);
         }

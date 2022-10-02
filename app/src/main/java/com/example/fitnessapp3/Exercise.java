@@ -1,12 +1,36 @@
 package com.example.fitnessapp3;
 
+import androidx.annotation.NonNull;
+
 public class Exercise extends WorkoutComponent {
-    public enum EXTYPE {
-        DURATION, REPS
+    enum ExType {
+        REST, REPS, DURATION;
+
+        public static ExType fromString(String exType) {
+            if (exType.equals("Rest")) {
+                return REST;
+            } else if (exType.equals("Reps")) {
+                return REPS;
+            } else {
+                return DURATION;
+            }
+        }
+
+        @NonNull
+        @Override
+        public String toString() {
+            if (this == REST) {
+                return "Rest";
+            } else if (this == REPS) {
+                return "Reps";
+            } else {
+                return "Duration";
+            }
+        }
     }
 
-    public static String typeToString(EXTYPE type){
-        if(type==EXTYPE.DURATION){
+    public static String typeToString(ExType type){
+        if(type==ExType.DURATION){
             return "Duration";
         }
         else {
@@ -15,12 +39,12 @@ public class Exercise extends WorkoutComponent {
     }
 
     private final String name;
-    private final EXTYPE type;
+    private final ExType type;
     private int parameter;//weight for weighted exercises, duration for duration-based exercises
     private final boolean weighted;
     private String abbrev;
 
-    public Exercise(String name, EXTYPE type, boolean weighted) {
+    public Exercise(String name, ExType type, boolean weighted) {
         this.name = name;
         this.type = type;
         this.weighted = weighted;
@@ -32,7 +56,7 @@ public class Exercise extends WorkoutComponent {
         return this.name;
     }
 
-    public EXTYPE getType() {
+    public ExType getType() {
         return type;
     }
 

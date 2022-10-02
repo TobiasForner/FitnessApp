@@ -241,7 +241,7 @@ public class WorkoutManager {
         return workout_details[0];
     }
 
-    public static void addExercise(String name, String exType, boolean weighted, String abbrev, Context context) {
+    public static void addExercise(String name, Exercise.ExType exType, boolean weighted, String abbrev, Context context) {
         exerciseManager.addExercise(name, exType, weighted, abbrev, context);
     }
 
