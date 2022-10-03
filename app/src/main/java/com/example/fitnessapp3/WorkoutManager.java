@@ -42,6 +42,15 @@ public class WorkoutManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        String filenameJSON = name + "_workout.json";
+        File fileJSON = new File(context.getFilesDir(), filenameJSON);
+        try (FileOutputStream fos = new FileOutputStream(fileJSON, false)) {
+            JSONArray workouts = workoutsJSON(context);
+            fos.write(workouts.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void addWorkoutName(String name, Context context) {
@@ -257,7 +266,7 @@ public class WorkoutManager {
         return exerciseManager.getWorkoutComponent(name);
     }
 
-    public JSONArray workoutsJSON(Context context) throws JSONException {
+    public static JSONArray workoutsJSON(Context context) throws JSONException {
         List<JSONObject> workouts = new ArrayList<>();
         for (String workoutName : workoutNames) {
             JSONObject workout = getWorkoutJSONFromFile(workoutName, context);

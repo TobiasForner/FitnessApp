@@ -138,8 +138,7 @@ public class MainActivity extends AppCompatActivity {
         JSONObject abbreviations = exerciseManager.abbreviationsJson();
         res.put("abbreviations", abbreviations);
         // store workout details
-        WorkoutManager workoutManager = new WorkoutManager();
-        JSONArray workoutsJSON = workoutManager.workoutsJSON(this);
+        JSONArray workoutsJSON = WorkoutManager.workoutsJSON(this);
         res.put("workouts", workoutsJSON);
         // store results for last workouts (set strings)
         // TODO

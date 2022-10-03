@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ExerciseManager {
-
-    public final String abbreviationsJSON = "abbreviations";
     private final Map<String, WorkoutComponent> nameToEx;
     private final Map<String, String> abbrevToFullName;
 
@@ -46,6 +44,7 @@ public class ExerciseManager {
             //TODO ask whether user wants to overwrite
             nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
             writeExercisesToFile(context);
+            writeExercisesToJSON(context);
             return;
         }
         try {
@@ -58,6 +57,7 @@ public class ExerciseManager {
             }
             String fileContents = name + ":ExerciseType=" + exType.toString() + ";Weighted=" + weighted + abbrevString + sep;
             fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
+            writeExercisesToJSON(context);
             nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
         } catch (IOException e) {
             e.printStackTrace();
@@ -85,6 +85,17 @@ public class ExerciseManager {
         try {
             FileOutputStream fos = new FileOutputStream(file, true);
             fos.write(out.toString().getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeExercisesToJSON(Context context) {
+        JSONArray exercises = this.exercisesJson();
+        File file = new File(context.getFilesDir(), "exercise_details.json");
+        try {
+            FileOutputStream fos = new FileOutputStream(file, true);
+            fos.write(exercises.toString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
