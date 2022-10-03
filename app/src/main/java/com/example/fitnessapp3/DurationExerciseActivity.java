@@ -1,16 +1,20 @@
 package com.example.fitnessapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,7 +34,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
         CurrentWorkout.setProgress(progressBar);
         this.setTitle(CurrentWorkout.workoutName);
         playSound = getIntent().getBooleanExtra("playSound", true);
-        TextView exName= findViewById(R.id.duration_exercise_name);
+        TextView exName = findViewById(R.id.duration_exercise_name);
         exName.setText(CurrentWorkout.getWorkoutComponentName());
         timer = null;
         init();
@@ -43,27 +47,27 @@ public class DurationExerciseActivity extends AppCompatActivity {
         setWeightInvisibleIfUnweighted();
     }
 
-    private void setSetProgress(){
+    private void setSetProgress() {
         TextView setProg = findViewById(R.id.duration_exercise_set_progress);
         setProg.setText(CurrentWorkout.getSetString());
     }
 
-    private void copyPreviousNumbers(){
-        if(!CurrentWorkout.useLastWorkout){
+    private void copyPreviousNumbers() {
+        if (!CurrentWorkout.useLastWorkout) {
             return;
         }
         String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
-        if(prevNums.length>0){
+        if (prevNums.length > 0) {
             TextView dur = findViewById(R.id.editText_duration);
             dur.setText(prevNums[0]);
         }
-        if(prevNums.length>1){
+        if (prevNums.length > 1) {
             EditText weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
             weight_text.setText(prevNums[1]);
         }
     }
 
-    private void setPrevResults(){
+    private void setPrevResults() {
         String prevResults = CurrentWorkout.getPrevResultsInWorkout();
         TextView prevResultsView = findViewById(R.id.duration_exercise_prev_results_body);
         if (prevResults.length() > 0) {
@@ -75,8 +79,8 @@ public class DurationExerciseActivity extends AppCompatActivity {
         }
     }
 
-    private void setWeightInvisibleIfUnweighted(){
-        if(!((Exercise)CurrentWorkout.getNextWorkoutComponent()).isWeighted()){
+    private void setWeightInvisibleIfUnweighted() {
+        if (!((Exercise) CurrentWorkout.getNextWorkoutComponent()).isWeighted()) {
             View weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
             View weight_header = findViewById(R.id.duration_exercise_weight_header);
             weight_header.setVisibility(View.INVISIBLE);
@@ -86,6 +90,18 @@ public class DurationExerciseActivity extends AppCompatActivity {
 
     public void startDuration(View view) {
         final EditText durationText = findViewById(R.id.editText_duration);
+        final int duration;
+        try {
+            duration = Integer.parseInt(durationText.getText().toString());
+            if(duration==0){
+                showPopupWindowClick(durationText, "Please enter a valid duration.");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showPopupWindowClick(durationText, "Please enter a valid duration.");
+            return;
+        }
+
         durationText.setEnabled(false);
         durationText.setClickable(false);
         durationText.setFocusable(false);
@@ -94,14 +110,14 @@ public class DurationExerciseActivity extends AppCompatActivity {
         Button startButton = findViewById(R.id.button_start_duration);
         startButton.setVisibility(View.INVISIBLE);
 
-        createTimer();
+        createTimer(duration);
         timer.start();
     }
 
-    private void createTimer(){
+    private void createTimer(int duration) {
         final EditText durationText = findViewById(R.id.editText_duration);
-        final int duration = Integer.parseInt(durationText.getText().toString());
-        timer= new CountDownTimer(duration * 1000L, 1000) {
+
+        timer = new CountDownTimer(duration * 1000L, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);
@@ -119,7 +135,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
                 }
                 if (CurrentWorkout.hasNextExercise()) {
                     goToNextActivity();
-                }else {
+                } else {
                     finishWorkout();
                 }
             }
@@ -127,22 +143,22 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void logDuration(int duration) {
-        if(((Exercise)CurrentWorkout.getNextWorkoutComponent()).isWeighted()){
+        if (((Exercise) CurrentWorkout.getNextWorkoutComponent()).isWeighted()) {
             TextView weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
             int weight = Integer.parseInt(weight_text.getText().toString());
             CurrentWorkout.logWeightedDuration(duration, weight, this);
-        }else{
+        } else {
             CurrentWorkout.logDuration(duration, this);
         }
     }
 
-    private void finishWorkout(){
+    private void finishWorkout() {
         CurrentWorkout.finishWorkout(this);
         goToNextActivity();
     }
 
     private void goToNextActivity() {
-        if(!CurrentWorkout.hasNextExercise()){
+        if (!CurrentWorkout.hasNextExercise()) {
             CurrentWorkout.finishWorkout(this);
             startActivity(ActivityTransition.goToNextActivityInWorkout(this));
             finish();
@@ -150,10 +166,36 @@ public class DurationExerciseActivity extends AppCompatActivity {
         startActivity(ActivityTransition.goToNextActivityInWorkout(this));
     }
 
-    public void skipTimer(View view){
+    public void skipTimer(View view) {
         playSound = false;
         timer.onFinish();
         timer.cancel();
+    }
+
+    private void showPopupWindowClick(View view, String text) {
+
+        // inflate the popup_continue_previous_workout.xml of the popup window
+        LayoutInflater inflater = (LayoutInflater)
+                getSystemService(LAYOUT_INFLATER_SERVICE);
+        View popupView = inflater.inflate(R.layout.popup_window, null);
+
+        // create the popup window
+        int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+        int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+        final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+        // show the popup window
+        // which view you pass in doesn't matter, it is only used for the window token
+        popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
+
+        TextView popUpText = popupView.findViewById(R.id.popup_text);
+        popUpText.setText(text);
+
+        // dismiss the popup window when touched
+        popupView.setOnTouchListener((v, event) -> {
+            v.performClick();
+            popupWindow.dismiss();
+            return true;
+        });
     }
 }
 

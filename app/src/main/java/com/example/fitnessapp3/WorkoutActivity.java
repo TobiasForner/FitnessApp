@@ -1,7 +1,5 @@
 package com.example.fitnessapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -11,6 +9,8 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class WorkoutActivity extends AppCompatActivity {
@@ -42,18 +42,18 @@ public class WorkoutActivity extends AppCompatActivity {
             Exercise exercise = (Exercise) nextWorkoutComponent;
             TextView exNum = findViewById(R.id.exerciseNumberInput);
             if (CurrentWorkout.useLastWorkout) {
-                    String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
-                    if (prevNums.length >= 1) {
-                        if(exercise.isWeighted() && prevNums.length==2){
-                            exNum.setText(prevNums[0]);
-                        }
-                        TextView repNum = findViewById(R.id.repNumberInput);
-                        repNum.setText(prevNums[1]);
+                String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
+                if (prevNums.length >= 1) {
+                    if (exercise.isWeighted() && prevNums.length == 2) {
+                        exNum.setText(prevNums[0]);
                     }
+                    TextView repNum = findViewById(R.id.repNumberInput);
+                    repNum.setText(prevNums[1]);
                 }
+            }
             if (exercise.getType() == Exercise.ExType.DURATION) {
                 exNum.setHint("Duration");
-            } else if(!exercise.isWeighted()) {
+            } else if (!exercise.isWeighted()) {
                 hideWeightElements();
             }
             setPrevResults();
@@ -61,7 +61,7 @@ public class WorkoutActivity extends AppCompatActivity {
         setProg.setText(CurrentWorkout.getSetString());
     }
 
-    private void hideWeightElements(){
+    private void hideWeightElements() {
         View weight_header = findViewById(R.id.text_weight_header);
         weight_header.setVisibility(View.INVISIBLE);
         View exNum = findViewById(R.id.exerciseNumberInput);
@@ -70,7 +70,7 @@ public class WorkoutActivity extends AppCompatActivity {
         kg.setVisibility(View.INVISIBLE);
     }
 
-    private void setPrevResults(){
+    private void setPrevResults() {
         String prevResults = CurrentWorkout.getPrevResultsInWorkout();
         TextView prevResultsView = findViewById(R.id.prev_results_body);
         if (prevResults.length() > 0) {
@@ -85,20 +85,26 @@ public class WorkoutActivity extends AppCompatActivity {
     public void logExercise(View view) {
         Exercise exercise = (Exercise) CurrentWorkout.getNextWorkoutComponent();
         TextView repNum = findViewById(R.id.repNumberInput);
-        int repNumInt = Integer.parseInt(repNum.getText().toString());
-        if(exercise.isWeighted()){
+        String repNumText = repNum.getText().toString();
+        int repNumInt;
+        try {
+            repNumInt = Integer.parseInt(repNumText);
+        } catch (NumberFormatException e) {
+            showPopupWindowClick(repNum, getString(R.string.popup_unweighted));
+            return;
+        }
+        if (exercise.isWeighted()) {
             TextView exNum = findViewById(R.id.exerciseNumberInput);
-            int exNumInt = Integer.parseInt(exNum.getText().toString());
-
-            if (!CurrentWorkout.logExercise(exNumInt, repNumInt, this)) {
+            String exNumText = exNum.getText().toString();
+            try {
+                int exNumInt = Integer.parseInt(exNumText);
+                CurrentWorkout.logExercise(exNumInt, repNumInt, this);
+            } catch (NumberFormatException e) {
                 showPopupWindowClick(exNum, getString(R.string.popup));
                 return;
             }
-        }else{
-            if (!CurrentWorkout.logExercise(0, repNumInt, this)){
-                showPopupWindowClick(repNum, getString(R.string.popup_unweighted));
-                return;
-            }
+        } else {
+            CurrentWorkout.logExercise(0, repNumInt, this);
         }
 
         if (CurrentWorkout.hasNextExercise()) {

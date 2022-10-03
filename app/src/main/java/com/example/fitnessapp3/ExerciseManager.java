@@ -28,7 +28,11 @@ public class ExerciseManager {
     public ExerciseManager(Context context) {
         nameToEx = new HashMap<>();
         abbrevToFullName = new HashMap<>();
-        readExerciseDetails(context);
+        //readExerciseDetails(context);
+        //writeExercisesToJSON(context);
+        readExerciseDetailsJSON(context);
+        Log.d("ExerciseManager", nameToEx.keySet().toString());
+        //writeExercisesToJSON(context);
     }
 
     public void initExerciseDetails(Context context) {
@@ -47,21 +51,14 @@ public class ExerciseManager {
             writeExercisesToJSON(context);
             return;
         }
-        try {
-            File file = new File(context.getFilesDir(), "exercise_details.txt");
-            FileOutputStream fos = new FileOutputStream(file, true);
-            String sep = Objects.requireNonNull(System.getProperty("line.separator"));
-            String abbrevString = "";
-            if (!abbrev.equals("")) {
-                updateAbbreviations(abbrev, name);
-            }
-            String fileContents = name + ":ExerciseType=" + exType.toString() + ";Weighted=" + weighted + abbrevString + sep;
-            fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
-            writeExercisesToJSON(context);
-            nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        if (!abbrev.equals("")) {
+            updateAbbreviations(abbrev, name);
         }
+
+        nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
+        writeExercisesToFile(context);
+        writeExercisesToJSON(context);
     }
 
     public void addStrippedExercise(String exName, Context context) {
@@ -94,9 +91,10 @@ public class ExerciseManager {
         JSONArray exercises = this.exercisesJson();
         File file = new File(context.getFilesDir(), "exercise_details.json");
         try {
-            FileOutputStream fos = new FileOutputStream(file, true);
+            FileOutputStream fos = new FileOutputStream(file, false);
             fos.write(exercises.toString().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
+            Log.e("ExerciseManager", "writeExercisesToJSON: Could not store exercises");
             e.printStackTrace();
         }
     }
@@ -135,7 +133,7 @@ public class ExerciseManager {
 
     public JSONObject abbreviationsJson() throws JSONException {
         JSONObject res = new JSONObject();
-        for (Map.Entry<String, String> entry:this.abbrevToFullName.entrySet()){
+        for (Map.Entry<String, String> entry : this.abbrevToFullName.entrySet()) {
             res.put(entry.getKey(), entry.getValue());
         }
 
@@ -178,6 +176,29 @@ public class ExerciseManager {
             }
         } catch (FileNotFoundException e) {
             Log.e("ExerciseManager", "Exercise details file exercise_details not found.");
+        }
+    }
+
+    public void readExerciseDetailsJSON(Context context) {
+        try {
+            String content = Util.readFromInternal("exercise_details.json", context);
+            JSONArray exerciseDetails = new JSONArray(content);
+            for (int i = 0; i < exerciseDetails.length(); i++) {
+                JSONObject compJSON = (JSONObject) exerciseDetails.get(i);
+
+                if (compJSON.get(WorkoutComponent.typeJSON).equals(Exercise.ExType.REST.toString())) {
+                    WorkoutComponent rest = Rest.fromJSON(compJSON);
+                    nameToEx.put(rest.getName(), rest);
+
+                } else {
+                    WorkoutComponent exercise = Exercise.fromJSON(compJSON);
+                    nameToEx.put(exercise.getName(), exercise);
+                }
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 

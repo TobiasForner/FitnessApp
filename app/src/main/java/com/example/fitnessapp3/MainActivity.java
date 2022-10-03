@@ -1,12 +1,6 @@
 package com.example.fitnessapp3;
 
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import com.google.android.material.card.MaterialCardView;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -15,7 +9,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
-import android.util.JsonWriter;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -24,6 +17,13 @@ import android.widget.LinearLayout;
 import android.widget.Space;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+
+import com.google.android.material.card.MaterialCardView;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +31,6 @@ import org.json.JSONObject;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         LinearLayout.LayoutParams params = new
-                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,LinearLayout.LayoutParams.MATCH_PARENT);
+                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         linear.setGravity(Gravity.CENTER);
         for (String s : WorkoutManager.getWorkoutNames()) {
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             cLinear.addView(test, params);*/
 
 
-            c. setOnClickListener((v) -> startWorkout(s));
+            c.setOnClickListener((v) -> startWorkout(s));
             linear.addView(c);
             Space space = new Space(this);
             linear.addView(space);
@@ -92,38 +91,39 @@ public class MainActivity extends AppCompatActivity {
         ActivityResultLauncher<Uri> mGetContent = registerForActivityResult(new ActivityResultContracts.OpenDocumentTree(),
                 uri -> {
                     // Handle the returned Uri
-                    Log.d("MainActivity", "onActivityResult: "+uri.getPath());
+                    Log.d("MainActivity", "onActivityResult: " + uri.getPath());
                     try {
 
                         String treePath = uri.getPath();
 
                         assert treePath != null;
                         String[] parts = treePath.split(":");
-                        String relativeDirName = parts[parts.length-1];
-                        File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
-                        File treeRoot=new File(docsDir.getPath(), relativeDirName);
+                        String relativeDirName = parts[parts.length - 1];
+                        File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+                        File treeRoot = new File(docsDir.getPath(), relativeDirName);
 
                         if (!treeRoot.exists()) {
-                            boolean success=treeRoot.mkdirs();
-                            if(!success){
+                            boolean success = treeRoot.mkdirs();
+                            if (!success) {
                                 //TODO: surface warning to user
                             }
                         }
                         File backupFile = new File(treeRoot, "workoutBackup.json");
-                        Log.d("MainActivity", "onActivityResult: writing to "+backupFile.getPath());
+                        Log.d("MainActivity", "onActivityResult: writing to " + backupFile.getPath());
                         FileWriter writer = new FileWriter(backupFile);
                         BufferedWriter bw = new BufferedWriter(writer);
                         JSONObject fullBackup = fullJSONData();
                         bw.write(fullBackup.toString());
+                        Log.d("MainActivity", fullBackup.toString());
                         bw.close();
-                    } catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 });
 
         Button selectDirButton = findViewById(R.id.selectDirectoryButton);
         selectDirButton.setOnClickListener(v -> {
-            File docsDir= Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOCUMENTS);
+            File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
             Uri uri = Uri.fromFile(docsDir);
             mGetContent.launch(uri);
         });
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
     private JSONObject fullJSONData() throws JSONException {
         JSONObject res = new JSONObject();
         // store exercises
-        ExerciseManager exerciseManager=new ExerciseManager(this);
+        ExerciseManager exerciseManager = new ExerciseManager(this);
         JSONArray exercises = exerciseManager.exercisesJson();
         res.put("exercises", exercises);
         JSONObject abbreviations = exerciseManager.abbreviationsJson();
@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         return res;
     }
 
-    public void startWorkout( String workoutName) {
+    public void startWorkout(String workoutName) {
         CurrentWorkout.init(workoutName, this);
         startWorkout();
     }

@@ -80,6 +80,7 @@ public class WorkoutManager {
     private static void parseWorkoutLine(String line, Workout workout, Context context) {
         Log.d("WorkoutManager", "parseWorkoutLine: start");
         if (line.equals("")) {
+            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: " + line);
             return;
         }
         String[] parts = line.split("\\[");
@@ -100,7 +101,7 @@ public class WorkoutManager {
         String[] exerciseNames = bodyAndTimes[0].split(",");
         for (String exName : exerciseNames) {
             if (!exerciseManager.exerciseExists(exName)) {
-                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise: " + line);
+                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise ("+exName+": " + line);
                 return;
             }
 

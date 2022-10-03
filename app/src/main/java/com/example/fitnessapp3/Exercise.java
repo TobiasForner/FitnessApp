@@ -104,10 +104,10 @@ public class Exercise extends WorkoutComponent {
         res.put(weightedJSON, weighted);
         return res;
     }
-    @Override
-    public WorkoutComponent fromJSON(JSONObject object) throws JSONException {
+
+    public static Exercise fromJSON(JSONObject object) throws JSONException {
         String name = (String) object.get(nameJSON);
-        ExType type = (ExType)object.get(typeJSON);
+        ExType type = ExType.fromString((String)object.get(typeJSON));
         boolean weighted = (boolean) object.get(weightedJSON);
         return new Exercise(name, type, weighted);
     }

@@ -140,10 +140,7 @@ public class CurrentWorkout {
         workout.goBack();
     }
 
-    public static boolean logExercise(int exNum, int repNum, Activity activity) {
-        if (exNum < 0 || repNum < 0) {
-            return false;
-        }
+    public static void logExercise(int exNum, int repNum, Activity activity) {
         currentWorkout[workout.getPosition()] = exNum + "," + repNum;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
@@ -153,7 +150,6 @@ public class CurrentWorkout {
         currentSetResult.setAddedWeight(exNum);
         workout.proceed();
         saveProgress(activity);
-        return true;
     }
 
     public static void logRest(int millis, Activity activity) {

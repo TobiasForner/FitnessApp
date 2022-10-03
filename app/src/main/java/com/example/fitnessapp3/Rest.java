@@ -1,5 +1,7 @@
 package com.example.fitnessapp3;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,8 +36,12 @@ public class Rest extends WorkoutComponent {
         res.put(timeJSON, restTime);
         return res;
     }
-    @Override
-    public WorkoutComponent fromJSON(JSONObject object) throws JSONException {
+
+    public static Rest fromJSON(JSONObject object) throws JSONException {
+
+        if(!object.has(timeJSON)){
+            Log.e("Rest", "Cant parse "+object);
+        }
         int time = (int)object.get(timeJSON);
         return new Rest(time);
     }
