@@ -40,4 +40,8 @@ public class SetResult {
     public String toString(){
         return "+"+addedWeight+" x "+repNr;
     }
+
+    public String repr(){
+        return addedWeight+";"+repNr+";"+isDuration;
+    }
 }
