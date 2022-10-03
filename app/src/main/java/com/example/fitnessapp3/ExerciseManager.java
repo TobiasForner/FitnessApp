@@ -22,10 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 
 public class ExerciseManager {
-    public final String typeJSON = "type";
-    public final String timeJSON = "time";
-    public final String nameJSON = "name";
-    public final String weightedJSON = "weighted";
+
     public final String abbreviationsJSON = "abbreviations";
     private final Map<String, WorkoutComponent> nameToEx;
     private final Map<String, String> abbrevToFullName;
@@ -109,46 +106,28 @@ public class ExerciseManager {
     }
 
     public JSONArray exercisesJson() {
-        List<JSONObject> exercises = new ArrayList<JSONObject>();
+        List<JSONObject> exercises = new ArrayList<>();
         for (String name : nameToEx.keySet()) {
             WorkoutComponent current = nameToEx.get(name);
             assert current != null;
             try {
-                JSONObject fileContents = componentToJson(current);
+                JSONObject fileContents = current.toJSON();
 
                 exercises.add(fileContents);
             } catch (JSONException e) {
                 Log.e("ExerciseManager", "exercisesJson: failed to convert component with name '" + name + "' to JSON!");
             }
         }
+
         return new JSONArray(exercises);
     }
 
-    private JSONObject componentToJson(WorkoutComponent comp) throws JSONException {
+    public JSONObject abbreviationsJson() throws JSONException {
         JSONObject res = new JSONObject();
-        if (comp.isRest()) {
-            Rest r = (Rest) comp;
-            res.put(nameJSON, "Rest");
-            res.put(typeJSON, Exercise.ExType.REST.toString());
-            res.put(timeJSON, r.getRestTime());
-        } else {
-            Exercise e = (Exercise) comp;
-            String name = e.getName();
-            res.put(nameJSON, name);
-            String exType = e.getType().toString();
-
-            res.put(typeJSON, exType);
-
-            boolean weighted = e.isWeighted();
-            res.put(weightedJSON, weighted);
-            List<String> abbreviations = new ArrayList<>();
-            for (Map.Entry<String, String> abbrevs : abbrevToFullName.entrySet()) {
-                if (Objects.equals(abbrevs.getValue(), name)) {
-                    abbreviations.add(abbrevs.getKey());
-                }
-            }
-            res.put(abbreviationsJSON, new JSONArray(abbreviations));
+        for (Map.Entry<String, String> entry:this.abbrevToFullName.entrySet()){
+            res.put(entry.getKey(), entry.getValue());
         }
+
         return res;
     }
 

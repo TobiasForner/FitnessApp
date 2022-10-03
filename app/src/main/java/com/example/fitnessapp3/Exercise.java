@@ -2,7 +2,17 @@ package com.example.fitnessapp3;
 
 import androidx.annotation.NonNull;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 public class Exercise extends WorkoutComponent {
+
     enum ExType {
         REST, REPS, DURATION;
 
@@ -78,5 +88,27 @@ public class Exercise extends WorkoutComponent {
 
     public boolean isRest() {
         return false;
+    }
+
+    @Override
+    public JSONObject toJSON() throws JSONException {
+        JSONObject res = new JSONObject();
+
+        String name = this.getName();
+        res.put(nameJSON, name);
+        String exType = this.getType().toString();
+
+        res.put(typeJSON, exType);
+
+        boolean weighted = this.isWeighted();
+        res.put(weightedJSON, weighted);
+        return res;
+    }
+    @Override
+    public WorkoutComponent fromJSON(JSONObject object) throws JSONException {
+        String name = (String) object.get(nameJSON);
+        ExType type = (ExType)object.get(typeJSON);
+        boolean weighted = (boolean) object.get(weightedJSON);
+        return new Exercise(name, type, weighted);
     }
 }

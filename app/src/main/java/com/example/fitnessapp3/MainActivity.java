@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
         ExerciseManager exerciseManager=new ExerciseManager(this);
         JSONArray exercises = exerciseManager.exercisesJson();
         res.put("exercises", exercises);
+        JSONObject abbreviations = exerciseManager.abbreviationsJson();
+        res.put("abbreviations", abbreviations);
         // store workout details
         WorkoutManager workoutManager = new WorkoutManager();
         JSONArray workoutsJSON = workoutManager.workoutsJSON(this);
