@@ -7,13 +7,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,7 +42,6 @@ public class ExerciseManager {
         }
 
         nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
-        writeExercisesToFile(context);
         writeExercisesToJSON(context);
     }
 
@@ -56,23 +51,6 @@ public class ExerciseManager {
         if (comp.isExercise()) {
             Exercise ex = (Exercise) comp;
             addExercise(strippedName, ex.getType(), ex.isWeighted(), ex.getAbbrev(), context);
-        }
-    }
-
-    private void writeExercisesToFile(Context context) {
-        StringBuilder out = new StringBuilder();
-        for (String name : nameToEx.keySet()) {
-            WorkoutComponent current = nameToEx.get(name);
-            assert current != null;
-            String fileContents = componentToString(current);
-            out.append(fileContents);
-        }
-        File file = new File(context.getFilesDir(), "exercise_details.txt");
-        try {
-            FileOutputStream fos = new FileOutputStream(file, true);
-            fos.write(out.toString().getBytes(StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -86,21 +64,6 @@ public class ExerciseManager {
             Log.e("ExerciseManager", "writeExercisesToJSON: Could not store exercises");
             e.printStackTrace();
         }
-    }
-
-    private String componentToString(WorkoutComponent comp) {
-        String sep = Objects.requireNonNull(System.getProperty("line.separator"));
-        if (comp.isRest()) {
-            Rest r = (Rest) comp;
-            return "Rest:" + r.getRestTime() + sep;
-        } else {
-            Exercise e = (Exercise) comp;
-            String exType = e.getType().toString();
-            String name = e.getName();
-            boolean weighted = e.isWeighted();
-            return name + ":ExerciseType=" + exType + ";Weighted=" + weighted + sep;
-        }
-
     }
 
     public JSONArray exercisesJson() {
@@ -127,45 +90,6 @@ public class ExerciseManager {
         }
 
         return res;
-    }
-
-    public void readExerciseDetails(Context context) {
-        try {
-            File file = new File(context.getFilesDir(), "exercise_details.txt");
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader inputStreamReader =
-                    new InputStreamReader(fis, StandardCharsets.UTF_8);
-            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                String line = reader.readLine();
-                while (line != null) {
-                    String[] exerciseDet = line.split(":");
-                    String[] details = exerciseDet[1].split(";");
-                    if (details.length < 2) {
-                        Log.e("ExerciseManager", "Details length invalid (smaller than 2).");
-                    }
-                    if (isRest(exerciseDet[0])) {
-                        Rest rest = parseRest(exerciseDet[0]);
-                        nameToEx.put(exerciseDet[0], rest);
-                    } else {
-                        String exTypeString = details[0].split("=")[1];
-                        boolean weighted = details[1].split("=")[1].equals("true");
-                        WorkoutComponent component = getExerciseFromDetails(exerciseDet[0], Exercise.ExType.fromString(exTypeString), weighted, "");
-                        nameToEx.put(exerciseDet[0], component);
-                        if (details.length == 3) {
-                            Exercise exercise = (Exercise) component;
-                            String abbrev = details[2].split("=")[1];
-                            exercise.setAbbrev(abbrev);
-                            updateAbbreviations(abbrev, exercise.getName());
-                        }
-                    }
-                    line = reader.readLine();
-                }
-            } catch (IOException e) {
-                // Error occurred when opening raw file for reading.
-            }
-        } catch (FileNotFoundException e) {
-            Log.e("ExerciseManager", "Exercise details file exercise_details not found.");
-        }
     }
 
     public void readExerciseDetailsJSON(Context context) {
