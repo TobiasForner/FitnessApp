@@ -1,12 +1,10 @@
 package com.example.fitnessapp3;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.example.fitnessapp3.SetResults.SetResult;
 
@@ -16,7 +14,6 @@ import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -59,7 +56,7 @@ public class CurrentWorkout {
         Util.writeFileOnInternalStorage(activity, workoutName + "last_result.txt", lastResults);
     }
 
-    private static void disableWorkoutInProgress(Activity activity){
+    private static void disableWorkoutInProgress(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("workout_is_in_progress", false);
@@ -181,7 +178,7 @@ public class CurrentWorkout {
     }
 
     public static void logWeightedDuration(int duration, int weight, Activity activity) {
-        currentWorkout[workout.getPosition()] = "" + duration + "," + weight+","+true;
+        currentWorkout[workout.getPosition()] = "" + duration + "," + weight + "," + true;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
         assert setResults != null;
@@ -245,10 +242,10 @@ public class CurrentWorkout {
             JSONObject exerciseResults = new JSONObject();
             for (String ex : exToResults.keySet()) {
                 ArrayList<SetResult> setResults = exToResults.get(ex);
-                ArrayList<String>repr=new ArrayList<>();
+                ArrayList<JSONObject> repr = new ArrayList<>();
                 assert setResults != null;
-                for(SetResult sr: setResults){
-                    repr.add(sr.repr());
+                for (SetResult sr : setResults) {
+                    repr.add(sr.toJSON());
                 }
 
                 exerciseResults.put(ex, new JSONArray(repr));
@@ -256,12 +253,23 @@ public class CurrentWorkout {
             workoutProgress.put("exResults", exerciseResults);
             workoutProgress.put("position", workout.getPosition());
 
-            workoutProgress.put("currentWorkout",new JSONArray(currentWorkout));
+            workoutProgress.put("currentWorkout", new JSONArray(currentWorkout));
             Util.writeFileOnInternalStorage(activity, Util.WORKOUT_IN_PROGRESS_JSON, workoutProgress.toString());
         } catch (JSONException e) {
             Log.e("CurrentWorkout", "saveProgress: failed to store set results");
         }
+    }
 
+    public static String getWorkoutNameInProgress(Activity activity) {
+        String jsonStr = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS_JSON, activity);
+        try {
+            assert jsonStr != null;
+            JSONObject workoutInProgress = new JSONObject(jsonStr);
+            return (String) workoutInProgress.get("name");
+        } catch (JSONException e) {
+            Log.e("CurrentWorkout", "getWorkoutNameInProgress: could not retrieve JSON");
+            return "";
+        }
     }
 
     public static void restoreWorkoutInProgress(Activity activity) {
@@ -271,40 +279,33 @@ public class CurrentWorkout {
                 Log.d("CurrentWorkout", "restoreWorkoutInProgress: Restoring from JSON");
                 try {
                     JSONObject progress = new JSONObject(contentsJSON);
-                    init((String)progress.get("name"), activity);
+                    init((String) progress.get("name"), activity);
                     JSONArray wip = (JSONArray) progress.get("currentWorkout");
                     currentWorkoutEnqueuePos = 0;
-                    for (int i=0;i<wip.length();i++){
+                    for (int i = 0; i < wip.length(); i++) {
                         tryAddToWorkout(wip.getString(i));
                     }
 
-                    int workoutPos = (int)progress.get("position");
-                    Log.d("CurrentWorkout", "restoreWorkoutInProgress: restoring from position "+workoutPos);
+                    int workoutPos = (int) progress.get("position");
+                    Log.d("CurrentWorkout", "restoreWorkoutInProgress: restoring from position " + workoutPos);
                     while (workout.getPosition() < workoutPos) {
                         workout.proceed();
                     }
                     JSONObject exToRes = (JSONObject) progress.get("exResults");
                     for (Iterator<String> it = exToRes.keys(); it.hasNext(); ) {
                         String key = it.next();
-                        JSONArray exResults =(JSONArray) exToRes.get(key);
+                        JSONArray exResults = (JSONArray) exToRes.get(key);
                         ArrayList<SetResult> currResults = exToResults.get(key);
-                        for (int i=0;i<exResults.length();i++){
-                            String[]details=((String)exResults.get(i)).split(";");
-                            if(details.length!=3){
-                                Log.e("CurrentWorkout", "restoreWorkoutInProgress: Invalid set results string");
-                            }
+                        for (int i = 0; i < exResults.length(); i++) {
+                            SetResult ithRes = SetResult.fromJSON((JSONObject) exResults.get(i));
                             assert currResults != null;
-                            SetResult ithRes=currResults.get(i);
-                            ithRes.setAddedWeight(Integer.parseInt(details[0]));
-                            ithRes.setRepNr(Integer.parseInt(details[1]));
-                            ithRes.setIsDuration(Boolean.parseBoolean(details[2]));
+                            currResults.set(i, ithRes);
                         }
                     }
                 } catch (JSONException e) {
                     Log.e("CurrentWorkout", "restoreWorkoutInProgress: failed to load from JSON");
                 }
-            }
-            else{
+            } else {
                 Log.e("CurrentWorkout", "restoreWorkoutInProgress: failed to load from JSON; JSON content null");
             }
         }
@@ -338,13 +339,13 @@ public class CurrentWorkout {
     }
 
     public static void assureNotInProgress(String workoutName, Activity activity) {
-        if(workoutIsInProgress(activity)){
+        if (workoutIsInProgress(activity)) {
             String contentsJSON = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS_JSON, activity);
             if (contentsJSON != null) {
                 try {
                     JSONObject progress = new JSONObject(contentsJSON);
-                    String inProgressName=(String)progress.get("name");
-                    if(workoutName.equals(inProgressName)){
+                    String inProgressName = (String) progress.get("name");
+                    if (workoutName.equals(inProgressName)) {
                         disableWorkoutInProgress(activity);
                     }
                 } catch (JSONException e) {

@@ -240,11 +240,6 @@ public class WorkoutManager {
         return exerciseManager.exerciseExists(exName);
     }
 
-    public static void BackupWorkouts(Context context) {
-        WorkoutManager.readWorkoutNames(context);
-        //TODO store workout content in e.g. json format
-    }
-
     public static String getWorkoutNameInProgress(Activity activity) {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         if (!sharedPreferences.getBoolean("workout_is_in_progress", false)) {
@@ -340,7 +335,7 @@ public class WorkoutManager {
         String[] exerciseNames = bodyAndTimes[0].split(",");
         for (String exName : exerciseNames) {
             if (!exerciseManager.exerciseExists(exName)) {
-                throw new IllegalArgumentException("parseWorkoutLine: line contains invalid exercise: " + line);
+                throw new IllegalArgumentException("parseWorkoutLine: line contains invalid exercise '"+exName+"': " + line);
             }
 
             String strippedName = Util.strip(exName);

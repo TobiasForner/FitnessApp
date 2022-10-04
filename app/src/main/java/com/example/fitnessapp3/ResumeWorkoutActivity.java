@@ -16,7 +16,7 @@ public class ResumeWorkoutActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_resume_workout);
         TextView text=findViewById(R.id.text_workout_in_progress_exists);
-        text.setText(getString(R.string.workout_in_progress_exists, WorkoutManager.getWorkoutNameInProgress(this)));
+        text.setText(getString(R.string.workout_in_progress_exists, CurrentWorkout.getWorkoutNameInProgress(this)));
     }
 
     public void goToMainActivity(View view) {
