@@ -25,6 +25,7 @@
     <string name="initWorkouts">Initialize Workouts</string>
     <string name="add_workout">Add Workout</string>
     <string name="workout_name">Workout Name</string>
+    <string name="workout_invalid">Workout Invalid</string>
     <string name="edit_workout">Edit Workout</string>
     <string name="edit">Edit</string>
     <string name="enter_workout_text">Enter Workout Text</string>

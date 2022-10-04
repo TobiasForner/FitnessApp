@@ -147,6 +147,4 @@ public class WorkoutActivity extends AppCompatActivity {
             return true;
         });
     }
-
-
 }

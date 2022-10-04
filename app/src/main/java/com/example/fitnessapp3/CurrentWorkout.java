@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.example.fitnessapp3.SetResults.SetResult;
 
@@ -48,15 +49,22 @@ public class CurrentWorkout {
         Date today = Calendar.getInstance().getTime();
         String date = dateFormat.format(today);
         workoutResults.add(date + String.join(";", currentWorkout));
-
         String lastResults = String.join(";", currentWorkout);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("workout_is_in_progress", false);
-        editor.putString("workout_in_progress", "");
         editor.putString(workoutName + "last_result", lastResults);
         editor.putStringSet(workoutName + "_results", workoutResults);
         editor.apply();
+
+        disableWorkoutInProgress(activity);
         Util.writeFileOnInternalStorage(activity, workoutName + "last_result.txt", lastResults);
+    }
+
+    private static void disableWorkoutInProgress(Activity activity){
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean("workout_is_in_progress", false);
+        editor.putString("workout_in_progress", "");
+        editor.apply();
     }
 
     public static void init(String workoutName, Activity activity) {
@@ -327,5 +335,23 @@ public class CurrentWorkout {
         progressBar.setMax(getWorkoutLength());
         progressBar.setIndeterminate(false);
         progressBar.setProgress(getWorkoutPosition() + 1);
+    }
+
+    public static void assureNotInProgress(String workoutName, Activity activity) {
+        if(workoutIsInProgress(activity)){
+            String contentsJSON = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS_JSON, activity);
+            if (contentsJSON != null) {
+                try {
+                    JSONObject progress = new JSONObject(contentsJSON);
+                    String inProgressName=(String)progress.get("name");
+                    if(workoutName.equals(inProgressName)){
+                        disableWorkoutInProgress(activity);
+                    }
+                } catch (JSONException e) {
+                    Log.e("CurrentWorkout", "assureNotInProgress: failed to check JSON");
+                    disableWorkoutInProgress(activity);
+                }
+            }
+        }
     }
 }
