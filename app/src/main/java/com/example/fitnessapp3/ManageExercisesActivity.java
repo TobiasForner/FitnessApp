@@ -16,8 +16,13 @@ public class ManageExercisesActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_exercises);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         LinearLayout linear = findViewById(R.id.linear_layout_exercise_buttons);
+        linear.removeAllViews();
 
         for (String s : WorkoutManager.getExerciseNames()) {
             if (s.equals("Rest")) {

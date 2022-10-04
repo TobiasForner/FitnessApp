@@ -28,11 +28,8 @@ public class ExerciseManager {
     public ExerciseManager(Context context) {
         nameToEx = new HashMap<>();
         abbrevToFullName = new HashMap<>();
-        //readExerciseDetails(context);
-        //writeExercisesToJSON(context);
         readExerciseDetailsJSON(context);
         Log.d("ExerciseManager", nameToEx.keySet().toString());
-        //writeExercisesToJSON(context);
     }
 
     public void initExerciseDetails(Context context) {
@@ -44,14 +41,6 @@ public class ExerciseManager {
     }
 
     public void addExercise(String name, Exercise.ExType exType, boolean weighted, String abbrev, Context context) {
-        if (nameToEx.containsKey(name)) {
-            //TODO ask whether user wants to overwrite
-            nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
-            writeExercisesToFile(context);
-            writeExercisesToJSON(context);
-            return;
-        }
-
         if (!abbrev.equals("")) {
             updateAbbreviations(abbrev, name);
         }

@@ -29,11 +29,13 @@
     <string name="edit">Edit</string>
     <string name="enter_workout_text">Enter Workout Text</string>
     <string name="exercise_does_not_exists">The exercise %1$s does not exist. Would you like to add it?</string>
+    <string name="exercise_exists">The exercise %1$s already exists. Would you like to overwrite it?</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="workout_name_already_exists">A workout with the name %1$s already exists. Would you like to edit it instead?</string>
     <string name="yes">Yes</string>
     <string name="no_edit">No, overwrite instead</string>
+    <string name="overwrite">Overwrite</string>
     <string name="workout_in_progress_exists">You still have a workout with the name %1$s in progress. Would you like to continue with it?</string>
     <string name="continue_word">Continue</string>
     <string name="choose_workout_to_edit">Choose workout to edit</string>

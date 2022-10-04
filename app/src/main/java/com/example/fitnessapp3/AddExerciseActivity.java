@@ -1,8 +1,5 @@
 package com.example.fitnessapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,9 +9,11 @@ import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.Objects;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.fragment.app.DialogFragment;
 
-public class AddExerciseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, CompoundButton.OnCheckedChangeListener {
+public class AddExerciseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, PositiveNegativeDialogFragment.NoticeDialogListener, CompoundButton.OnCheckedChangeListener {
     private String exType;
     private boolean weighted;
 
@@ -66,8 +65,36 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
 
     public void addExercise(View view) {
         TextView exName = findViewById(R.id.editTextExName);
+        String exerciseName = exName.getText().toString();
+        if (WorkoutManager.exerciseExists(exerciseName)) {
+            openDialog(exerciseName);
+        } else {
+            finishAndAdd();
+        }
+    }
+
+    private void openDialog(String messageExtra) {
+        // Create an instance of the dialog fragment and show it
+        DialogFragment dialog;
+        dialog = new PositiveNegativeDialogFragment(R.string.exercise_exists, R.string.overwrite, R.string.cancel, messageExtra, 0);
+
+        dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+    }
+
+    private void finishAndAdd() {
+        TextView exName = findViewById(R.id.editTextExName);
+        String exerciseName = exName.getText().toString();
         Exercise.ExType type = Exercise.ExType.fromString(exType);
-        WorkoutManager.addExercise(exName.getText().toString(), type, weighted, exName.getText().toString(), this);
+        WorkoutManager.addExercise(exerciseName, type, weighted, exName.getText().toString(), this);
         finish();
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+        finishAndAdd();
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
     }
 }
