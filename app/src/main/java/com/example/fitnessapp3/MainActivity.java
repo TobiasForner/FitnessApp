@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -31,6 +32,8 @@ import org.json.JSONObject;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         LinearLayout.LayoutParams params = new
                 LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        //params.setMargins(5,5,5,5);
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         linear.setGravity(Gravity.CENTER);
         for (String s : WorkoutManager.getWorkoutNames()) {
@@ -51,7 +55,11 @@ public class MainActivity extends AppCompatActivity {
             t.setGravity(Gravity.CENTER);
             t.setTextColor(Color.WHITE);
 
-            CardView c = new MaterialCardView(this);
+            MaterialCardView c = new MaterialCardView(this);
+
+            c.setMinimumHeight(200);
+            c.setStrokeColor(Color.GRAY);
+            c.setStrokeWidth(3);
             c.setForegroundGravity(Gravity.CENTER);
             c.setBackgroundColor(Color.TRANSPARENT);
             Util.setMargins(c, 100, 100, 100, 100);
@@ -60,11 +68,27 @@ public class MainActivity extends AppCompatActivity {
             cLinear.addView(t, params);
             c.addView(cLinear);
 
-            /*TextView test = new TextView(this);
-            test.setTextColor(Color.GREEN);
-            test.setGravity(Gravity.CENTER);
-            test.setText("blabla");
-            cLinear.addView(test, params);*/
+            TextView exercises = new TextView(this);
+            exercises.setTextColor(Color.WHITE);
+            exercises.setGravity(Gravity.CENTER);
+
+            HashSet<String> foundExercises = new HashSet<>();
+            ArrayList<String> exNames = new ArrayList<>();
+            Workout w = WorkoutManager.getWorkoutFromFile(s, this);
+            for(int i=0;i<w.getLength();i++){
+                WorkoutComponent comp = w.getComponentAt(i);
+                if(comp.isExercise()){
+                    String exName = comp.getName();
+                    if(!foundExercises.contains(exName)){
+                        foundExercises.add(exName);
+                        exNames.add(exName);
+                    }
+                }
+            }
+
+            String overview = String.join(", ",exNames);
+            exercises.setText(overview);
+            cLinear.addView(exercises, params);
 
 
             c.setOnClickListener((v) -> startWorkout(s));
