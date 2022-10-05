@@ -240,16 +240,6 @@ public class WorkoutManager {
         return exerciseManager.exerciseExists(exName);
     }
 
-    public static String getWorkoutNameInProgress(Activity activity) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        if (!sharedPreferences.getBoolean("workout_is_in_progress", false)) {
-            return null;
-        }
-        String progress = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS, activity);
-        String[] workout_details = Objects.requireNonNull(progress).split(Objects.requireNonNull(System.getProperty("line.separator")));
-        return workout_details[0];
-    }
-
     public static void addExercise(String name, Exercise.ExType exType, boolean weighted, String abbrev, Context context) {
         exerciseManager.addExercise(name, exType, weighted, abbrev, context);
     }
@@ -314,7 +304,6 @@ public class WorkoutManager {
     }
 
     private static JSONObject parseWorkoutLineJSON(String line, Context context) throws JSONException {
-
         Log.d("WorkoutManager", "parseWorkoutLine: start");
         if (line.equals("")) {
             throw new IllegalArgumentException("Empty workout line.");
