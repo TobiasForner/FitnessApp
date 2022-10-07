@@ -1,8 +1,5 @@
 package com.example.fitnessapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,12 +13,19 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AddWorkoutActivity extends AppCompatActivity implements PositiveNegativeDialogFragment.NoticeDialogListener {
     public static final String EXNAME = "com.example.fitnessapp3.EXNAME";
     public static final String EDIT = "com.example.fitnessapp3.EDIT";
     public static final String WORKOUT_NAME = "com.example.fitnessapp3.WORKOUT_NAME";
+    // [bla,jskfjsdk,ddfgdg]  x5
+    private final Pattern workoutGroupP = Pattern.compile("\\[(.*)]\\s*x?\\s*(\\d+)?$");
     private boolean edit;
 
     @Override
@@ -76,44 +80,42 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
     }
 
     private boolean checkWorkoutLine(String line) {
-        // TODO use regex
         line = Util.strip(line);
         if (line.equals("")) {
             return false;
         }
-        String[] parts = line.split("\\[");
-        if (parts.length != 1 && parts.length != 2) {
-            return false;
-        }
-        if (parts.length == 2 && !parts[0].equals("")) {
-            return false;
-        }
-        String[] bodyAndTimes;
-        if (parts.length == 2) {
-            bodyAndTimes = parts[1].split("]");
-        } else {
-            bodyAndTimes = parts[0].split("]");
-        }
-        if (bodyAndTimes.length == 0) {
-            return false;
-        }
-        String[] exerciseNames = bodyAndTimes[0].split(",");
-        for (String exName : exerciseNames) {
-            String strippedName = Util.strip(exName);
-
-            if (!WorkoutManager.exerciseExists(strippedName)) {
-                openDialog(strippedName, 1);
+        Matcher m = workoutGroupP.matcher(line);
+        if (m.matches()) {
+            String g = m.group(1);
+            assert g != null;
+            String[] parts = g.split(",");
+            if (validExerciseNames(parts)) {
+                if (m.groupCount() == 2) {
+                    String times = m.group(2);
+                    try {
+                        assert times != null;
+                        Integer.parseInt(times);
+                    } catch (NumberFormatException nfe) {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
                 return false;
             }
+
+        } else {
+            String[] parts = line.split(",");
+            return validExerciseNames(parts);
         }
-        if (bodyAndTimes.length == 2 && bodyAndTimes[1].length() >= 2) {
-            if (bodyAndTimes[1].charAt(0) == 'x' | bodyAndTimes[1].charAt(0) == 'X') {
-                String timesString = bodyAndTimes[1].substring(1);
-                try {
-                    Integer.parseInt(timesString);
-                } catch (NumberFormatException nfe) {
-                    return false;
-                }
+    }
+
+    private boolean validExerciseNames(String[] exNames) {
+        for (String part : exNames) {
+            String tmp = Util.strip(part);
+            if (!WorkoutManager.exerciseExists(tmp)) {
+                openDialog(tmp, 1);
+                return false;
             }
         }
         return true;
@@ -161,7 +163,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
 
                 Intent intent = new Intent(this, MainActivity.class);
                 startActivity(intent);
-            }else{
+            } else {
                 showPopupWindowClick(workoutName, getString(R.string.workout_invalid));
             }
         }
@@ -206,7 +208,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
     }
 
     public void hideKeyboard(View view) {
-        InputMethodManager inputMethodManager =(InputMethodManager)getSystemService(Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 }
