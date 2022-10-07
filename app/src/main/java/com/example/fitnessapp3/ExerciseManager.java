@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,7 +25,7 @@ public class ExerciseManager {
     public ExerciseManager(Context context) {
         nameToEx = new HashMap<>();
         abbrevToFullName = new HashMap<>();
-        readExerciseDetailsJSON(context);
+        readExerciseDetails(context);
         Log.d("ExerciseManager", nameToEx.keySet().toString());
     }
 
@@ -92,7 +93,15 @@ public class ExerciseManager {
         return res;
     }
 
-    public void readExerciseDetailsJSON(Context context) {
+    public void overwriteAbbreviationsJson(JSONObject abbrevs) throws JSONException {
+        for (Iterator<String> it = abbrevs.keys(); it.hasNext(); ) {
+            String key = it.next();
+            abbrevToFullName.put(key, abbrevs.getString(key));
+        }
+        //TODO store abbreviations in internal storage
+    }
+
+    public void readExerciseDetails(Context context) {
         try {
             String content = Util.readFromInternal("exercise_details.json", context);
             JSONArray exerciseDetails = new JSONArray(content);
@@ -108,11 +117,24 @@ public class ExerciseManager {
                     nameToEx.put(exercise.getName(), exercise);
                 }
             }
-
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    public void overwriteExerciseDetailsJSON(JSONArray json, Context context) throws JSONException {
+        for(int i=0; i<json.length(); i++){
+            JSONObject current = json.getJSONObject(i);
+            String name = current.getString("name");
+            if(name.equals("Rest")){
+                Rest rest = Rest.fromJSON(current);
+                nameToEx.put(name, rest);
+            }else{
+                Exercise exercise=Exercise.fromJSON(current);
+                nameToEx.put(name, exercise);
+            }
+        }
+        writeExercisesToJSON(context);
     }
 
     private boolean isRest(String exName) {

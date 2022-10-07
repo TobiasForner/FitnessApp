@@ -1,11 +1,11 @@
 package com.example.fitnessapp3;
 
 
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -21,7 +21,8 @@ import android.widget.TextView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
+import androidx.documentfile.provider.DocumentFile;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.card.MaterialCardView;
 
@@ -29,15 +30,21 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PositiveNegativeDialogFragment.NoticeDialogListener {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
     public static final String EXTRA_RETURN_DEST = "com.example.fitnessapp3.RETURN";
+    private boolean do_restore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,18 +82,18 @@ public class MainActivity extends AppCompatActivity {
             HashSet<String> foundExercises = new HashSet<>();
             ArrayList<String> exNames = new ArrayList<>();
             Workout w = WorkoutManager.getWorkoutFromFile(s, this);
-            for(int i=0;i<w.getLength();i++){
+            for (int i = 0; i < w.getLength(); i++) {
                 WorkoutComponent comp = w.getComponentAt(i);
-                if(comp.isExercise()){
+                if (comp.isExercise()) {
                     String exName = comp.getName();
-                    if(!foundExercises.contains(exName)){
+                    if (!foundExercises.contains(exName)) {
                         foundExercises.add(exName);
                         exNames.add(exName);
                     }
                 }
             }
 
-            String overview = String.join(", ",exNames);
+            String overview = String.join(", ", exNames);
             exercises.setText(overview);
             cLinear.addView(exercises, params);
 
@@ -117,29 +124,19 @@ public class MainActivity extends AppCompatActivity {
                     // Handle the returned Uri
                     Log.d("MainActivity", "onActivityResult: " + uri.getPath());
                     try {
-
-                        String treePath = uri.getPath();
-
-                        assert treePath != null;
-                        String[] parts = treePath.split(":");
-                        String relativeDirName = parts[parts.length - 1];
-                        File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
-                        File treeRoot = new File(docsDir.getPath(), relativeDirName);
-
-                        if (!treeRoot.exists()) {
-                            boolean success = treeRoot.mkdirs();
-                            if (!success) {
-                                //TODO: surface warning to user
-                            }
-                        }
-                        File backupFile = new File(treeRoot, "workoutBackup.json");
-                        Log.d("MainActivity", "onActivityResult: writing to " + backupFile.getPath());
-                        FileWriter writer = new FileWriter(backupFile);
-                        BufferedWriter bw = new BufferedWriter(writer);
+                        DocumentFile treeDoc = DocumentFile.fromTreeUri(this, uri);
+                        assert treeDoc != null;
                         JSONObject fullBackup = fullJSONData();
-                        bw.write(fullBackup.toString());
-                        Log.d("MainActivity", fullBackup.toString());
-                        bw.close();
+                        treeDoc.createFile("application/json", "workout_backup.json");
+                        DocumentFile res = treeDoc.findFile("workout_backup.json");
+                        assert res != null;
+                        Uri resUri = res.getUri();
+                        ContentResolver contentResolver = getContentResolver();
+                        OutputStream outputStream = contentResolver.openOutputStream(resUri);
+
+                        assert outputStream != null;
+                        outputStream.write(fullBackup.toString().getBytes(StandardCharsets.UTF_8));
+                        outputStream.close();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -150,6 +147,70 @@ public class MainActivity extends AppCompatActivity {
             File docsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
             Uri uri = Uri.fromFile(docsDir);
             mGetContent.launch(uri);
+        });
+
+        do_restore=false;
+        //register callback for restore file
+        ActivityResultLauncher<String[]> restoreRes = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
+                uri -> {
+                    // Handle the returned Uri
+
+                    DocumentFile treeDoc = DocumentFile.fromSingleUri(this, uri);
+
+                    Uri resUri = treeDoc.getUri();
+                    ContentResolver contentResolver = getContentResolver();
+
+                    InputStream inputStream;
+                    String contents="";
+                    try {
+                        inputStream = contentResolver.openInputStream(resUri);
+                        InputStreamReader inputStreamReader =
+                                new InputStreamReader(inputStream, StandardCharsets.UTF_8);
+                        StringBuilder stringBuilder = new StringBuilder();
+                        try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                            String line = reader.readLine();
+                            while (line != null) {
+                                stringBuilder.append(line).append('\n');
+                                line = reader.readLine();
+                            }
+                        } catch (IOException e) {
+                            // Error occurred when opening raw file for reading.
+                        } finally {
+                            contents = stringBuilder.toString().trim();
+                        }
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d("MainActivity", "content read: "+contents);
+                    //todo restore content
+                    DialogFragment dialog;
+                    dialog = new PositiveNegativeDialogFragment(R.string.confirm_restore, R.string.yes, R.string.cancel, "", 0);
+
+                    dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
+                    if(do_restore){
+                        try {
+                            JSONObject backup = new JSONObject(contents);
+                            ExerciseManager exerciseManager = new ExerciseManager(this);
+                            JSONArray exercises = backup.getJSONArray("exercises");
+                            exerciseManager.overwriteExerciseDetailsJSON(exercises,this);
+                            JSONObject abbrevs = backup.getJSONObject("abbreviations");
+                            exerciseManager.overwriteAbbreviationsJson(abbrevs);
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+
+                });
+        Button restoreButton = findViewById(R.id.button_restore);
+        restoreButton.setOnClickListener(v -> {
+            String[] tmp = new String[1];
+            tmp[0] = "application/json";
+            restoreRes.launch(tmp);
         });
     }
 
@@ -207,5 +268,15 @@ public class MainActivity extends AppCompatActivity {
     public void goToManageExercises(View v) {
         Intent intent = new Intent(this, ManageExercisesActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void onDialogPositiveClick(DialogFragment dialog) {
+
+        //overwrite internal
+    }
+
+    @Override
+    public void onDialogNegativeClick(DialogFragment dialog) {
     }
 }

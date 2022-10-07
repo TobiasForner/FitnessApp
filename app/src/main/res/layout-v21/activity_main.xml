@@ -56,7 +56,7 @@
         android:onClick="goToManageExercises"
         android:text="@string/manage_exercises"
         app:layout_constraintEnd_toEndOf="@+id/timerButton"
-        app:layout_constraintHorizontal_bias="0.068"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/initWorkoutsButton"
         app:layout_constraintTop_toBottomOf="@+id/initWorkoutsButton" />
 
@@ -85,10 +85,10 @@
         android:contentDescription="@string/exercise_scroll_view_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.06"
+        app:layout_constraintHorizontal_bias="0.406"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.304">
+        app:layout_constraintVertical_bias="0.3">
 
         <LinearLayout
             android:id="@+id/workout_linear_layout"
@@ -129,9 +129,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:onClick="Backup Workouts"
-        android:text="CreateFile"
+        android:text="Backup"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/button_go_to_manage_exercises"
         app:layout_constraintTop_toBottomOf="@+id/timerButton" />
 
@@ -147,5 +147,18 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.384"
         app:srcCompat="@drawable/baseline_settings_24" />
+
+    <Button
+        android:id="@+id/button_restore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:text="Restore"
+        app:layout_constraintBottom_toBottomOf="@+id/selectDirectoryButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.058"
+        app:layout_constraintStart_toEndOf="@+id/selectDirectoryButton"
+        app:layout_constraintTop_toTopOf="@+id/selectDirectoryButton"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
