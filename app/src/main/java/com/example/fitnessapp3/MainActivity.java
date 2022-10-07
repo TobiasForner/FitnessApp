@@ -40,6 +40,7 @@ import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements PositiveNegativeDialogFragment.NoticeDialogListener {
     public static final String EXTRA_MESSAGE = "com.example.fitnessapp3.MESSAGE";
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
             HashSet<String> foundExercises = new HashSet<>();
             ArrayList<String> exNames = new ArrayList<>();
             Workout w = WorkoutManager.getWorkoutFromFile(s, this);
-            for (int i = 0; i < w.getLength(); i++) {
+            for (int i = 0; i < Objects.requireNonNull(w).getLength(); i++) {
                 WorkoutComponent comp = w.getComponentAt(i);
                 if (comp.isExercise()) {
                     String exName = comp.getName();
@@ -157,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
 
                     DocumentFile treeDoc = DocumentFile.fromSingleUri(this, uri);
 
+                    assert treeDoc != null;
                     Uri resUri = treeDoc.getUri();
                     ContentResolver contentResolver = getContentResolver();
 
