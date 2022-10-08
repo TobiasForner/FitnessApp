@@ -47,6 +47,10 @@ public class WorkoutManager {
         }
     }
 
+    public static void overwriteWorkouts(JSONObject workouts, Context context){
+        Util.writeFileOnInternalStorage(context, workoutFile, workouts.toString());
+    }
+
     private static void saveWorkouts(Context context) {
         try {
             JSONObject workouts = workoutsJSON(context);
@@ -98,6 +102,7 @@ public class WorkoutManager {
     }
 
     public static String getWorkoutTextFromFile(String workoutName, Context context) {
+        // todo generate from JSON
         if (!Arrays.asList(workoutNames).contains(workoutName)) {
             Log.e("WorkoutManager", "Workout name is not valid.");
             return null;
@@ -132,12 +137,13 @@ public class WorkoutManager {
     }
 
     public static JSONObject workoutsJSON(Context context) throws JSONException {
-        JSONObject workouts = new JSONObject();
-        for (String workoutName : workoutNames) {
+        String workoutsJSON = Util.readFromInternal(workoutFile, context);
+        assert workoutsJSON != null;
+        /*for (String workoutName : workoutNames) {
             JSONObject workout = getWorkoutJSONFromFile(workoutName, context);
             workouts.put(workoutName, workout);
-        }
-        return workouts;
+        }*/
+        return new JSONObject(workoutsJSON);
     }
 
     public static Workout getWorkout(String workoutName, Context context) {
@@ -163,12 +169,10 @@ public class WorkoutManager {
     }
 
     public static JSONObject getWorkoutJSONFromFile(String workoutName, Context context) throws JSONException {
-
-
+        //TODO use json file
         String contents = getWorkoutTextFromFile(workoutName, context);
         assert contents != null;
         return generateWorkoutJSONFromString(contents, workoutName, context);
-
     }
 
     public static JSONObject generateWorkoutJSONFromString(String text, String name, Context context) throws JSONException {

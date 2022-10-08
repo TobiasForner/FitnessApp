@@ -198,8 +198,8 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
                             exerciseManager.overwriteExerciseDetailsJSON(exercises,this);
                             JSONObject abbrevs = backup.getJSONObject("abbreviations");
                             exerciseManager.overwriteAbbreviationsJson(abbrevs);
-
-
+                            JSONObject workouts = backup.getJSONObject("workouts");
+                            WorkoutManager.overwriteWorkouts(workouts, this);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
