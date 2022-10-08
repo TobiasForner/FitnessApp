@@ -75,6 +75,7 @@ public class WorkoutManager {
     }
 
     private static void parseWorkoutLine(String line, Workout workout, Context context) {
+        //todo write with regex
         Log.d("WorkoutManager", "parseWorkoutLine: start");
         if (line.equals("")) {
             Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: " + line);
@@ -98,7 +99,7 @@ public class WorkoutManager {
         String[] exerciseNames = bodyAndTimes[0].split(",");
         for (String exName : exerciseNames) {
             if (!exerciseManager.exerciseExists(exName)) {
-                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise ("+exName+": " + line);
+                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise (" + exName + ": " + line);
                 return;
             }
 
@@ -140,29 +141,13 @@ public class WorkoutManager {
     }
 
     private static void readWorkoutNames(Context context) {
-        try {
-            File file = new File(context.getFilesDir(), "workout_names.txt");
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader inputStreamReader =
-                    new InputStreamReader(fis, StandardCharsets.UTF_8);
-            StringBuilder stringBuilder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                String line = reader.readLine();
-                while (line != null) {
-                    stringBuilder.append(line).append(Objects.requireNonNull(System.getProperty("line.separator")));
-                    line = reader.readLine();
-                }
-            } catch (IOException e) {
-                // Error occurred when opening raw file for reading.
-            } finally {
-                String contents = stringBuilder.toString();
-                workoutNames = contents.split(Objects.requireNonNull(System.getProperty("line.separator")));
-            }
-        } catch (FileNotFoundException e) {
+        String contents = Util.readFromInternal("workout_names.txt", context);
+        if (contents == null) {
             Log.e("WorkoutManager", "Workout Names file workout_names not found.");
             workoutNames = new String[0];
+        } else {
+            workoutNames = contents.split(Objects.requireNonNull(System.getProperty("line.separator")));
         }
-
     }
 
     public static String[] getWorkoutNames() {
@@ -174,58 +159,18 @@ public class WorkoutManager {
             Log.e("WorkoutManager", "Workout name is not valid.");
             return null;
         }
-        String contents;
-        try {
-            File file = new File(context.getFilesDir(), workoutName + "_workout.txt");
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader inputStreamReader =
-                    new InputStreamReader(fis, StandardCharsets.UTF_8);
-            StringBuilder stringBuilder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                String line = reader.readLine();
-                while (line != null) {
-                    stringBuilder.append(line).append(Objects.requireNonNull(System.getProperty("line.separator")));
-                    line = reader.readLine();
-                }
-            } catch (IOException e) {
-                // Error occurred when opening raw file for reading.
-            } finally {
-                contents = stringBuilder.toString().trim();
-            }
-        } catch (FileNotFoundException e) {
+        String result = Util.readFromInternal(workoutName + "_workout.txt", context);
+        if(result==null){
             Log.e("WorkoutManager", "Workout Names file workout_names not found.");
             return null;
+        }else{
+            return result;
         }
-        return contents;
     }
 
     public static Workout getWorkoutFromFile(String workoutName, Context context) {
-        if (!Arrays.asList(workoutNames).contains(workoutName)) {
-            Log.e("WorkoutManager", "Workout name is not valid.");
-            return null;
-        }
-        String contents;
-        try {
-            File file = new File(context.getFilesDir(), workoutName + "_workout.txt");
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader inputStreamReader =
-                    new InputStreamReader(fis, StandardCharsets.UTF_8);
-            StringBuilder stringBuilder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                String line = reader.readLine();
-                while (line != null) {
-                    stringBuilder.append(line).append(Objects.requireNonNull(System.getProperty("line.separator")));
-                    line = reader.readLine();
-                }
-            } catch (IOException e) {
-                // Error occurred when opening raw file for reading.
-            } finally {
-                contents = stringBuilder.toString();
-            }
-        } catch (FileNotFoundException e) {
-            Log.e("WorkoutManager", "Workout Names file workout_names not found.");
-            return null;
-        }
+        String contents=getWorkoutTextFromFile(workoutName, context);
+        assert contents != null;
         return generateWorkoutFromString(contents, workoutName, context);
     }
 
@@ -262,28 +207,8 @@ public class WorkoutManager {
         if (!Arrays.asList(workoutNames).contains(workoutName)) {
             throw new IllegalArgumentException("Workout name is not valid.");
         }
-        String contents;
-        try {
-            File file = new File(context.getFilesDir(), workoutName + "_workout.txt");
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader inputStreamReader =
-                    new InputStreamReader(fis, StandardCharsets.UTF_8);
-            StringBuilder stringBuilder = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
-                String line = reader.readLine();
-                while (line != null) {
-                    stringBuilder.append(line).append(Objects.requireNonNull(System.getProperty("line.separator")));
-                    line = reader.readLine();
-                }
-            } catch (IOException e) {
-                // Error occurred when opening raw file for reading.
-            } finally {
-                contents = stringBuilder.toString();
-            }
-        } catch (FileNotFoundException e) {
-            Log.e("WorkoutManager", "Workout Names file workout_names not found.");
-            return null;
-        }
+        String contents=getWorkoutTextFromFile(workoutName, context);
+        assert contents != null;
         return generateWorkoutJSONFromString(contents, workoutName, context);
     }
 
@@ -293,7 +218,7 @@ public class WorkoutManager {
         workout.put("name", name);
         List<JSONObject> componentGroups = new ArrayList<>();
         for (String line : lines) {
-            JSONObject group=parseWorkoutLineJSON(line, context);
+            JSONObject group = parseWorkoutLineJSON(line, context);
             componentGroups.add(group);
         }
         workout.put("componentGroups", new JSONArray(componentGroups));
@@ -321,7 +246,7 @@ public class WorkoutManager {
         String[] exerciseNames = bodyAndTimes[0].split(",");
         for (String exName : exerciseNames) {
             if (!exerciseManager.exerciseExists(exName)) {
-                throw new IllegalArgumentException("parseWorkoutLine: line contains invalid exercise '"+exName+"': " + line);
+                throw new IllegalArgumentException("parseWorkoutLine: line contains invalid exercise '" + exName + "': " + line);
             }
 
             String strippedName = Util.strip(exName);
