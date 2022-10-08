@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
 
             HashSet<String> foundExercises = new HashSet<>();
             ArrayList<String> exNames = new ArrayList<>();
-            Workout w = WorkoutManager.getWorkoutFromFile(s, this);
+            Workout w = WorkoutManager.getWorkout(s, this);
             for (int i = 0; i < Objects.requireNonNull(w).getLength(); i++) {
                 WorkoutComponent comp = w.getComponentAt(i);
                 if (comp.isExercise()) {
@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         JSONObject abbreviations = exerciseManager.abbreviationsJson();
         res.put("abbreviations", abbreviations);
         // store workout details
-        JSONArray workoutsJSON = WorkoutManager.workoutsJSON(this);
+        JSONObject workoutsJSON = WorkoutManager.workoutsJSON(this);
         res.put("workouts", workoutsJSON);
         // store results for last workouts (set strings)
         // TODO

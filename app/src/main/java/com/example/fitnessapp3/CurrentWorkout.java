@@ -66,8 +66,8 @@ public class CurrentWorkout {
 
     public static void init(String workoutName, Activity activity) {
         CurrentWorkout.workoutName = workoutName;
-        workout = WorkoutManager.getWorkoutFromFile(workoutName, activity);
-        if (workout == null) {
+        workout = WorkoutManager.getWorkout(workoutName, activity);
+        if (workout.getLength()==0) {
             handleWorkoutDoesNotExist();
             return;
         }

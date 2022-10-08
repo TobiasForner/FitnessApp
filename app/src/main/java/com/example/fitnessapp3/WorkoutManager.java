@@ -7,27 +7,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 
 public class WorkoutManager {
 
+    private final static String workoutFile = "workouts.json";
     private static String[] workoutNames;
     private static ExerciseManager exerciseManager;
 
     public static void init(Context context) {
-        readWorkoutNames(context);
         exerciseManager = new ExerciseManager(context);
+        readWorkoutNames(context);
     }
 
     public static void addWorkout(String name, String workoutBody, Context context) {
@@ -40,12 +38,21 @@ public class WorkoutManager {
             e.printStackTrace();
         }
 
-        String filenameJSON = name + "_workout.json";
-        File fileJSON = new File(context.getFilesDir(), filenameJSON);
-        try (FileOutputStream fos = new FileOutputStream(fileJSON, false)) {
-            JSONArray workouts = workoutsJSON(context);
-            fos.write(workouts.toString().getBytes(StandardCharsets.UTF_8));
-        } catch (IOException | JSONException e) {
+        try {
+            JSONObject workouts = new JSONObject(Objects.requireNonNull(Util.readFromInternal(workoutFile, context)));
+            JSONObject toAdd = generateWorkoutJSONFromString(workoutBody, name, context);
+            workouts.put(name, toAdd);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void saveWorkouts(Context context) {
+        try {
+            JSONObject workouts = workoutsJSON(context);
+            Util.writeFileOnInternalStorage(context, workoutFile, workouts.toString());
+
+        } catch (JSONException e) {
             e.printStackTrace();
         }
     }
@@ -65,89 +72,25 @@ public class WorkoutManager {
         readWorkoutNames(context);
     }
 
-    public static Workout generateWorkoutFromString(String text, String name, Context context) {
-        Workout workout = new Workout(name);
-        String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
-        for (String line : lines) {
-            parseWorkoutLine(line, workout, context);
-        }
-        return workout;
-    }
-
-    private static void parseWorkoutLine(String line, Workout workout, Context context) {
-        //todo write with regex
-        Log.d("WorkoutManager", "parseWorkoutLine: start");
-        if (line.equals("")) {
-            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: " + line);
-            return;
-        }
-        String[] parts = line.split("\\[");
-        if (parts.length != 1 && parts.length != 2) {
-            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: " + line);
-            return;
-        }
-        if (parts.length == 2 && !parts[0].equals("")) {
-            Log.e("WorkoutManager", "parseWorkoutLine: line has invalid format: " + line);
-            return;
-        }
-        String[] bodyAndTimes;
-        if (parts.length == 2) {
-            bodyAndTimes = parts[1].split("]");
-        } else {
-            bodyAndTimes = parts[0].split("]");
-        }
-        String[] exerciseNames = bodyAndTimes[0].split(",");
-        for (String exName : exerciseNames) {
-            if (!exerciseManager.exerciseExists(exName)) {
-                Log.e("WorkoutManager", "parseWorkoutLine: line contains invalid exercise (" + exName + ": " + line);
-                return;
-            }
-
-            String strippedName = Util.strip(exName);
-            if (!exerciseManager.exerciseExists(strippedName)) {
-                exerciseManager.addStrippedExercise(exName, context);
-            }
-        }
-        String timesStr;
-        if (bodyAndTimes.length >= 2) {
-            timesStr = bodyAndTimes[1];
-
-        } else {
-            // pattern without [...] x ..., default times to 1
-            timesStr = "x1";
-        }
-        timesStr = Util.strip(timesStr);
-        if (timesStr.length() >= 2) {
-            if (timesStr.charAt(0) == 'x' | timesStr.charAt(0) == 'X') {
-                String timesString = timesStr.substring(1);
-                try {
-                    int times = Integer.parseInt(timesString);
-                    for (int i = 0; i < times; i++) {
-                        for (String exName : exerciseNames) {
-                            String strippedName = Util.strip(exName);
-                            workout.addComponent(exerciseManager.getWorkoutComponent(strippedName));
-                        }
-                    }
-                } catch (NumberFormatException nfe) {
-                    Log.e("AddWorkoutActivity", "Error parsing number.");
-                }
-            }
-        } else {
-            for (String exName : exerciseNames) {
-                String strippedName = Util.strip(exName);
-                workout.addComponent(exerciseManager.getWorkoutComponent(strippedName));
-            }
-        }
-    }
-
     private static void readWorkoutNames(Context context) {
-        String contents = Util.readFromInternal("workout_names.txt", context);
-        if (contents == null) {
-            Log.e("WorkoutManager", "Workout Names file workout_names not found.");
-            workoutNames = new String[0];
-        } else {
-            workoutNames = contents.split(Objects.requireNonNull(System.getProperty("line.separator")));
+        //todo use array list for workout names
+        String contentsJSON = Util.readFromInternal(workoutFile, context);
+        try {
+            assert contentsJSON != null;
+            JSONObject json = new JSONObject(contentsJSON);
+            ArrayList<String> names = new ArrayList<>();
+            for (Iterator<String> it = json.keys(); it.hasNext(); ) {
+                String key = it.next();
+                names.add(key);
+            }
+            workoutNames = new String[names.size()];
+            for (int i = 0; i < names.size(); i++) {
+                workoutNames[i] = names.get(i);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+        saveWorkouts(context);
     }
 
     public static String[] getWorkoutNames() {
@@ -160,18 +103,12 @@ public class WorkoutManager {
             return null;
         }
         String result = Util.readFromInternal(workoutName + "_workout.txt", context);
-        if(result==null){
+        if (result == null) {
             Log.e("WorkoutManager", "Workout Names file workout_names not found.");
             return null;
-        }else{
+        } else {
             return result;
         }
-    }
-
-    public static Workout getWorkoutFromFile(String workoutName, Context context) {
-        String contents=getWorkoutTextFromFile(workoutName, context);
-        assert contents != null;
-        return generateWorkoutFromString(contents, workoutName, context);
     }
 
     public static boolean workoutExists(String name) {
@@ -194,22 +131,44 @@ public class WorkoutManager {
         return exerciseManager.getWorkoutComponent(name);
     }
 
-    public static JSONArray workoutsJSON(Context context) throws JSONException {
-        List<JSONObject> workouts = new ArrayList<>();
+    public static JSONObject workoutsJSON(Context context) throws JSONException {
+        JSONObject workouts = new JSONObject();
         for (String workoutName : workoutNames) {
             JSONObject workout = getWorkoutJSONFromFile(workoutName, context);
-            workouts.add(workout);
+            workouts.put(workoutName, workout);
         }
-        return new JSONArray(workouts);
+        return workouts;
+    }
+
+    public static Workout getWorkout(String workoutName, Context context) {
+        Workout result = new Workout(workoutName);
+        try {
+            JSONObject workout = getWorkoutJSONFromFile(workoutName, context);
+            JSONArray componentGroups = workout.getJSONArray("componentGroups");
+            for (int i = 0; i < componentGroups.length(); i++) {
+                JSONObject group = componentGroups.getJSONObject(i);
+                int repetitions = group.getInt("repetitions");
+                JSONArray exercises = group.getJSONArray("components");
+                for (int rep = 0; rep < repetitions; rep++) {
+                    for (int ex = 0; ex < exercises.length(); ex++) {
+                        WorkoutComponent comp = exerciseManager.getWorkoutComponent(exercises.getString(ex));
+                        result.addComponent(comp);
+                    }
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
     public static JSONObject getWorkoutJSONFromFile(String workoutName, Context context) throws JSONException {
-        if (!Arrays.asList(workoutNames).contains(workoutName)) {
-            throw new IllegalArgumentException("Workout name is not valid.");
-        }
-        String contents=getWorkoutTextFromFile(workoutName, context);
+
+
+        String contents = getWorkoutTextFromFile(workoutName, context);
         assert contents != null;
         return generateWorkoutJSONFromString(contents, workoutName, context);
+
     }
 
     public static JSONObject generateWorkoutJSONFromString(String text, String name, Context context) throws JSONException {
@@ -226,6 +185,7 @@ public class WorkoutManager {
     }
 
     private static JSONObject parseWorkoutLineJSON(String line, Context context) throws JSONException {
+        //todo improve parsing
         Log.d("WorkoutManager", "parseWorkoutLine: start");
         if (line.equals("")) {
             throw new IllegalArgumentException("Empty workout line.");
