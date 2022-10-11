@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         //params.setMargins(5,5,5,5);
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         linear.setGravity(Gravity.CENTER);
-        for (String s : WorkoutManager.getWorkoutNames()) {
+        for (String s : WorkoutManager.getWorkoutNamesList()) {
             TextView t = new TextView(this);
             t.setText(s);
             t.setTextSize(30);

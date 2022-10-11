@@ -20,7 +20,7 @@ import java.util.Objects;
 public class WorkoutManager {
 
     private final static String workoutFile = "workouts.json";
-    private static String[] workoutNames;
+    private static List<String> workoutNamesList;
     private static ExerciseManager exerciseManager;
 
     public static void init(Context context) {
@@ -47,22 +47,8 @@ public class WorkoutManager {
         }
     }
 
-    public static void overwriteWorkouts(JSONObject workouts, Context context){
-        Util.writeFileOnInternalStorage(context, workoutFile, workouts.toString());
-    }
-
-    private static void saveWorkouts(Context context) {
-        try {
-            JSONObject workouts = workoutsJSON(context);
-            Util.writeFileOnInternalStorage(context, workoutFile, workouts.toString());
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
     private static void addWorkoutName(String name, Context context) {
-        if (Arrays.asList(workoutNames).contains(name)) {
+        if (workoutExists(name)) {
             return;
         }
         String filename = "workout_names.txt";
@@ -76,8 +62,23 @@ public class WorkoutManager {
         readWorkoutNames(context);
     }
 
+
+    public static void overwriteWorkouts(JSONObject workouts, Context context) {
+        Util.writeFileOnInternalStorage(context, workoutFile, workouts.toString());
+    }
+
+    private static void saveWorkouts(Context context) {
+        try {
+            JSONObject workouts = workoutsJSON(context);
+            Util.writeFileOnInternalStorage(context, workoutFile, workouts.toString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private static void readWorkoutNames(Context context) {
-        //todo use array list for workout names
         String contentsJSON = Util.readFromInternal(workoutFile, context);
         try {
             assert contentsJSON != null;
@@ -87,37 +88,46 @@ public class WorkoutManager {
                 String key = it.next();
                 names.add(key);
             }
-            workoutNames = new String[names.size()];
-            for (int i = 0; i < names.size(); i++) {
-                workoutNames[i] = names.get(i);
-            }
+            workoutNamesList=names;
         } catch (JSONException e) {
             e.printStackTrace();
         }
         saveWorkouts(context);
     }
 
-    public static String[] getWorkoutNames() {
-        return workoutNames;
+    public static List<String> getWorkoutNamesList() {
+        return workoutNamesList;
     }
 
-    public static String getWorkoutTextFromFile(String workoutName, Context context) {
-        // todo generate from JSON
-        if (!Arrays.asList(workoutNames).contains(workoutName)) {
-            Log.e("WorkoutManager", "Workout name is not valid.");
+    public static String getWorkoutText(String workoutName, Context context) {
+        try {
+            JSONObject workout = getWorkoutJSONFromFile(workoutName, context);
+            JSONArray componentGroups = workout.getJSONArray("componentGroups");
+            List<String> resLines = new ArrayList<>();
+            for (int i = 0; i < componentGroups.length(); i++) {
+                JSONObject group = componentGroups.getJSONObject(i);
+                String workoutLine = "[";
+                int repetitions = group.getInt("repetitions");
+                JSONArray exercises = group.getJSONArray("components");
+                List<String>exNames = new ArrayList<>();
+
+                for (int ex = 0; ex < exercises.length(); ex++) {
+                    String exName = exercises.getString(ex);
+                    exNames.add(exName);
+                }
+                workoutLine+=String.join(",", exNames);
+                workoutLine+="] x "+repetitions;
+                resLines.add(workoutLine);
+            }
+            return String.join("\n", resLines);
+        } catch (JSONException e) {
+            e.printStackTrace();
             return null;
-        }
-        String result = Util.readFromInternal(workoutName + "_workout.txt", context);
-        if (result == null) {
-            Log.e("WorkoutManager", "Workout Names file workout_names not found.");
-            return null;
-        } else {
-            return result;
         }
     }
 
     public static boolean workoutExists(String name) {
-        return Arrays.asList(workoutNames).contains(name);
+        return workoutNamesList.contains(name);
     }
 
     public static boolean exerciseExists(String exName) {
@@ -139,10 +149,6 @@ public class WorkoutManager {
     public static JSONObject workoutsJSON(Context context) throws JSONException {
         String workoutsJSON = Util.readFromInternal(workoutFile, context);
         assert workoutsJSON != null;
-        /*for (String workoutName : workoutNames) {
-            JSONObject workout = getWorkoutJSONFromFile(workoutName, context);
-            workouts.put(workoutName, workout);
-        }*/
         return new JSONObject(workoutsJSON);
     }
 
@@ -169,10 +175,8 @@ public class WorkoutManager {
     }
 
     public static JSONObject getWorkoutJSONFromFile(String workoutName, Context context) throws JSONException {
-        //TODO use json file
-        String contents = getWorkoutTextFromFile(workoutName, context);
-        assert contents != null;
-        return generateWorkoutJSONFromString(contents, workoutName, context);
+        JSONObject workouts = workoutsJSON(context);
+        return workouts.getJSONObject(workoutName);
     }
 
     public static JSONObject generateWorkoutJSONFromString(String text, String name, Context context) throws JSONException {

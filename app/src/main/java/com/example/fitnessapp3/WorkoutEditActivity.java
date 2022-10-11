@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
+import java.util.List;
+
 public class WorkoutEditActivity extends AppCompatActivity {
 
     @Override
@@ -16,7 +18,7 @@ public class WorkoutEditActivity extends AppCompatActivity {
         setContentView(R.layout.activity_workout_edit);
 
         LinearLayout linear = findViewById(R.id.linear_layout_workout_edit);
-        String[] workoutNames = WorkoutManager.getWorkoutNames();
+        List<String> workoutNames = WorkoutManager.getWorkoutNamesList();
         for (String s : workoutNames) {
             Button b = new Button(this);
             b.setText(s);

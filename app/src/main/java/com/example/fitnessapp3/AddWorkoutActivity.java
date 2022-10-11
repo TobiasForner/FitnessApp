@@ -135,7 +135,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
         TextView workoutNameText = findViewById(R.id.text_workout_name);
         workoutNameText.setText(workoutName);
         TextView workoutText = findViewById(R.id.editText_workout_body);
-        String workoutBody = WorkoutManager.getWorkoutTextFromFile(workoutName, this);
+        String workoutBody = WorkoutManager.getWorkoutText(workoutName, this);
         workoutText.setText(workoutBody);
 
         Button add_edit = findViewById(R.id.add_edit_workout_button);
