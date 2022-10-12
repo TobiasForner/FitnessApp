@@ -16,6 +16,12 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,53 +66,83 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
             openDialog(workoutName.getText().toString(), 0);
             return;
         }
-        if (checkWorkoutString(workoutText.getText().toString())) {
-            WorkoutManager.addWorkout(workoutName.getText().toString(), workoutText.getText().toString(), this);
+        JSONObject workout = parseWorkout(workoutName.getText().toString(), workoutText.getText().toString());
 
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+        if (workout != null) {
+            WorkoutManager.addWorkoutJSON(workout, this);
         }
-
     }
 
-    public boolean checkWorkoutString(String text) {
-        String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
-        for (String line : lines) {
-            if (!checkWorkoutLine(line)) {
-                return false;
+    private JSONObject parseWorkout(String name, String text) {
+        JSONObject result = new JSONObject();
+        try {
+            result.put("name", name);
+            String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
+            List<JSONObject> componentGroups = new ArrayList<>();
+            for (String line : lines) {
+                JSONObject group = parseWorkoutLine(line);
+                if (group == null) {
+                    return null;
+                } else {
+                    componentGroups.add(group);
+                }
             }
+            result.put("componentGroups", new JSONArray(componentGroups));
+            return result;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
         }
-        return true;
     }
 
-    private boolean checkWorkoutLine(String line) {
+    private JSONObject parseWorkoutLine(String line) {
         line = Util.strip(line);
         if (line.equals("")) {
-            return false;
+            return null;
         }
         Matcher m = workoutGroupP.matcher(line);
         if (m.matches()) {
             String g = m.group(1);
             assert g != null;
             String[] parts = g.split(",");
-            if (validExerciseNames(parts)) {
-                if (m.groupCount() == 2) {
-                    String times = m.group(2);
-                    try {
-                        assert times != null;
-                        Integer.parseInt(times);
-                    } catch (NumberFormatException nfe) {
-                        return false;
-                    }
+            int times = 1;
+            if (m.groupCount() == 2) {
+                String timesStr = m.group(2);
+                try {
+                    assert timesStr != null;
+                    times = Integer.parseInt(timesStr);
+                } catch (NumberFormatException nfe) {
+                    return null;
                 }
-                return true;
-            } else {
-                return false;
             }
+            return parseGroup(parts, times);
 
         } else {
             String[] parts = line.split(",");
-            return validExerciseNames(parts);
+            return parseGroup(parts, 1);
+
+        }
+    }
+
+    private JSONObject parseGroup(String[] parts, int repetitions) {
+        List<String> groupComponents = new ArrayList<>();
+        for (String exName : parts) {
+            String strippedName = Util.strip(exName);
+            groupComponents.add(strippedName);
+        }
+        try {
+            JSONObject group = new JSONObject();
+            group.put("components", new JSONArray(groupComponents));
+            group.put("repetitions", repetitions);
+            if (validExerciseNames(parts)) {
+                return group;
+            } else {
+                return null;
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -157,8 +193,10 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
             //Overwrite
             TextView workoutName = findViewById(R.id.text_workout_name);
             TextView workoutText = findViewById(R.id.editText_workout_body);
-            if (checkWorkoutString(workoutText.getText().toString())) {
-                WorkoutManager.addWorkout(workoutName.getText().toString(), workoutText.getText().toString(), this);
+            JSONObject workout = parseWorkout(workoutName.getText().toString(), workoutText.getText().toString());
+
+            if (workout != null) {
+                WorkoutManager.addWorkoutJSON(workout, this);
                 CurrentWorkout.assureNotInProgress(workoutName.getText().toString(), this);
 
                 Intent intent = new Intent(this, MainActivity.class);

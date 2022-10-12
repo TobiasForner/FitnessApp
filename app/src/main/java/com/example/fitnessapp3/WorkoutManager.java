@@ -42,6 +42,19 @@ public class WorkoutManager {
             JSONObject workouts = new JSONObject(Objects.requireNonNull(Util.readFromInternal(workoutFile, context)));
             JSONObject toAdd = generateWorkoutJSONFromString(workoutBody, name, context);
             workouts.put(name, toAdd);
+            overwriteWorkouts(workouts, context);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addWorkoutJSON(JSONObject workout, Context context) {
+        try {
+            JSONObject workouts = new JSONObject(Objects.requireNonNull(Util.readFromInternal(workoutFile, context)));
+            String name = workout.getString("name");
+            workouts.put(name, workout);
+            overwriteWorkouts(workouts, context);
+            readWorkoutNames(context);
         } catch (JSONException e) {
             e.printStackTrace();
         }
