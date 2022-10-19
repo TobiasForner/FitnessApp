@@ -50,16 +50,14 @@ public class Exercise extends WorkoutComponent {
 
     private final String name;
     private final ExType type;
-    private int parameter;//weight for weighted exercises, duration for duration-based exercises
     private final boolean weighted;
-    private String abbrev;
 
     public Exercise(String name, ExType type, boolean weighted) {
         this.name = name;
         this.type = type;
         this.weighted = weighted;
-        this.parameter = 0;
-        this.abbrev = "";
+        //weight for weighted exercises, duration for duration-based exercises
+        int parameter = 0;
     }
 
     public String getName() {
@@ -68,14 +66,6 @@ public class Exercise extends WorkoutComponent {
 
     public ExType getType() {
         return type;
-    }
-
-    public void setAbbrev(String abbrev) {
-        this.abbrev = abbrev;
-    }
-
-    public String getAbbrev() {
-        return this.abbrev;
     }
 
     public boolean isWeighted() {

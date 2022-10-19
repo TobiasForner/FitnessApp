@@ -13,36 +13,30 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class ExerciseManager {
     private final Map<String, WorkoutComponent> nameToEx;
-    private final Map<String, String> abbrevToFullName;
 
     public ExerciseManager(Context context) {
         nameToEx = new HashMap<>();
-        abbrevToFullName = new HashMap<>();
         readExerciseDetails(context);
         Log.d("ExerciseManager", nameToEx.keySet().toString());
     }
 
     public void initExerciseDetails(Context context) {
-        addExercise("Pull Up", Exercise.ExType.REPS, true, "PU", context);
-        addExercise("Ring Dip", Exercise.ExType.REPS, true, "RD", context);
-        addExercise("Push Up", Exercise.ExType.REPS, true, "PshU", context);
-        addExercise("Row", Exercise.ExType.REPS, true, "Row", context);
-        addExercise("Rest", Exercise.ExType.REST, true, "Rest", context);
+        addExercise("Pull Up", Exercise.ExType.REPS, true,  context);
+        addExercise("Ring Dip", Exercise.ExType.REPS, true,  context);
+        addExercise("Push Up", Exercise.ExType.REPS, true,  context);
+        addExercise("Row", Exercise.ExType.REPS, true,  context);
+        addExercise("Rest", Exercise.ExType.REST, true,  context);
     }
 
-    public void addExercise(String name, Exercise.ExType exType, boolean weighted, String abbrev, Context context) {
-        if (!abbrev.equals("")) {
-            updateAbbreviations(abbrev, name);
-        }
+    public void addExercise(String name, Exercise.ExType exType, boolean weighted, Context context) {
 
-        nameToEx.put(name, getExerciseFromDetails(name, exType, weighted, abbrev));
+
+        nameToEx.put(name, getExerciseFromDetails(name, exType, weighted));
         writeExercisesToJSON(context);
     }
 
@@ -51,7 +45,7 @@ public class ExerciseManager {
         WorkoutComponent comp = getWorkoutComponent(exName);
         if (comp.isExercise()) {
             Exercise ex = (Exercise) comp;
-            addExercise(strippedName, ex.getType(), ex.isWeighted(), ex.getAbbrev(), context);
+            addExercise(strippedName, ex.getType(), ex.isWeighted(), context);
         }
     }
 
@@ -82,23 +76,6 @@ public class ExerciseManager {
         }
 
         return new JSONArray(exercises);
-    }
-
-    public JSONObject abbreviationsJson() throws JSONException {
-        JSONObject res = new JSONObject();
-        for (Map.Entry<String, String> entry : this.abbrevToFullName.entrySet()) {
-            res.put(entry.getKey(), entry.getValue());
-        }
-
-        return res;
-    }
-
-    public void overwriteAbbreviationsJson(JSONObject abbrevs) throws JSONException {
-        for (Iterator<String> it = abbrevs.keys(); it.hasNext(); ) {
-            String key = it.next();
-            abbrevToFullName.put(key, abbrevs.getString(key));
-        }
-        //TODO store abbreviations in internal storage
     }
 
     public void readExerciseDetails(Context context) {
@@ -157,32 +134,23 @@ public class ExerciseManager {
     }
 
     public WorkoutComponent getWorkoutComponent(String exName) {
-        String name = abbrevToFullName.getOrDefault(exName, exName);
-        assert name != null;
-        if (isRest(name)) {
-            return parseRest(name);
-        } else if (nameToEx.containsKey(name)) {
-            return nameToEx.get(name);
+
+        assert exName != null;
+        if (isRest(exName)) {
+            return parseRest(exName);
+        } else if (nameToEx.containsKey(exName)) {
+            return nameToEx.get(exName);
         } else {
             Log.e("ExerciseManager", "Exercise " + exName + " not defined.");
             return null;
         }
     }
 
-    private WorkoutComponent getExerciseFromDetails(String exName, Exercise.ExType exType, boolean weighted, String abbrev) {
+    private WorkoutComponent getExerciseFromDetails(String exName, Exercise.ExType exType, boolean weighted) {
         if (exType == Exercise.ExType.REST) {
             return new Rest(180000);
         }
-        Exercise exercise = new Exercise(exName, exType, weighted);
-        exercise.setAbbrev(abbrev);
-        return exercise;
-    }
-
-    private void updateAbbreviations(String abbrev, String name) {
-        String[] abbreviations = abbrev.split(",");
-        for (String abbreviation : abbreviations) {
-            abbrevToFullName.put(abbreviation, name);
-        }
+        return new Exercise(exName, exType, weighted);
     }
 
     public boolean exerciseExists(String exName) {

@@ -196,8 +196,6 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
                             ExerciseManager exerciseManager = new ExerciseManager(this);
                             JSONArray exercises = backup.getJSONArray("exercises");
                             exerciseManager.overwriteExerciseDetailsJSON(exercises,this);
-                            JSONObject abbrevs = backup.getJSONObject("abbreviations");
-                            exerciseManager.overwriteAbbreviationsJson(abbrevs);
                             JSONObject workouts = backup.getJSONObject("workouts");
                             WorkoutManager.overwriteWorkouts(workouts, this);
                         } catch (JSONException e) {
@@ -222,8 +220,6 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         ExerciseManager exerciseManager = new ExerciseManager(this);
         JSONArray exercises = exerciseManager.exercisesJson();
         res.put("exercises", exercises);
-        JSONObject abbreviations = exerciseManager.abbreviationsJson();
-        res.put("abbreviations", abbreviations);
         // store workout details
         JSONObject workoutsJSON = WorkoutManager.workoutsJSON(this);
         res.put("workouts", workoutsJSON);

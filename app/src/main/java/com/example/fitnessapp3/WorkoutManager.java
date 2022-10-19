@@ -147,8 +147,8 @@ public class WorkoutManager {
         return exerciseManager.exerciseExists(exName);
     }
 
-    public static void addExercise(String name, Exercise.ExType exType, boolean weighted, String abbrev, Context context) {
-        exerciseManager.addExercise(name, exType, weighted, abbrev, context);
+    public static void addExercise(String name, Exercise.ExType exType, boolean weighted, Context context) {
+        exerciseManager.addExercise(name, exType, weighted, context);
     }
 
     public static ArrayList<String> getExerciseNames() {
