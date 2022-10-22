@@ -7,7 +7,7 @@
     tools:context=".WorkoutActivity">
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/button_workout_log_exercise"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="76dp"
@@ -26,6 +26,7 @@
         android:ems="10"
         android:hint="@string/weight"
         android:inputType="number"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="@+id/exerciseName"
         app:layout_constraintStart_toStartOf="@+id/exerciseName"
         app:layout_constraintTop_toBottomOf="@+id/text_weight_header" />
@@ -38,6 +39,7 @@
         android:ems="10"
         android:hint="@string/reps"
         android:inputType="number"
+        android:minHeight="48dp"
         app:layout_constraintEnd_toEndOf="@+id/exerciseName"
         app:layout_constraintStart_toStartOf="@+id/exerciseName"
         app:layout_constraintTop_toBottomOf="@+id/setProgressText" />
@@ -66,7 +68,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView7"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="48dp"
@@ -106,7 +107,7 @@
         app:layout_constraintEnd_toEndOf="@+id/prev_results_body"
         app:layout_constraintHorizontal_bias="0.023"
         app:layout_constraintStart_toStartOf="@+id/prev_results_body"
-        app:layout_constraintTop_toBottomOf="@+id/button3" />
+        app:layout_constraintTop_toBottomOf="@+id/button_workout_log_exercise" />
 
     <TextView
         android:id="@+id/prev_results_body"
@@ -114,9 +115,9 @@
         android:layout_height="131dp"
         android:text="@string/prev_results"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/button3"
+        app:layout_constraintEnd_toEndOf="@+id/button_workout_log_exercise"
         app:layout_constraintHorizontal_bias="0.493"
-        app:layout_constraintStart_toStartOf="@+id/button3"
+        app:layout_constraintStart_toStartOf="@+id/button_workout_log_exercise"
         app:layout_constraintTop_toBottomOf="@+id/prev_results_header"
         app:layout_constraintVertical_bias="0.152" />
 

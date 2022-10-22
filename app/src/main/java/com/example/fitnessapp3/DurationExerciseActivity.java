@@ -94,11 +94,11 @@ public class DurationExerciseActivity extends AppCompatActivity {
         try {
             duration = Integer.parseInt(durationText.getText().toString());
             if(duration==0){
-                showPopupWindowClick(durationText, "Please enter a valid duration.");
+                showPopupWindowClick(durationText);
                 return;
             }
         } catch (NumberFormatException e) {
-            showPopupWindowClick(durationText, "Please enter a valid duration.");
+            showPopupWindowClick(durationText);
             return;
         }
 
@@ -172,7 +172,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
         timer.cancel();
     }
 
-    private void showPopupWindowClick(View view, String text) {
+    private void showPopupWindowClick(View view) {
 
         // inflate the popup_continue_previous_workout.xml of the popup window
         LayoutInflater inflater = (LayoutInflater)
@@ -188,7 +188,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
         popupWindow.showAtLocation(view, Gravity.CENTER, 0, 0);
 
         TextView popUpText = popupView.findViewById(R.id.popup_text);
-        popUpText.setText(text);
+        popUpText.setText("Please enter a valid duration.");
 
         // dismiss the popup window when touched
         popupView.setOnTouchListener((v, event) -> {

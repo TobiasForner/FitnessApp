@@ -29,9 +29,9 @@ public class PositiveNegativeDialogFragment extends DialogFragment {
 
     // Use this instance of the interface to deliver action events
     NoticeDialogListener listener;
-    int messageID;
-    int positiveTextID;
-    int negativeTextID;
+    final int messageID;
+    final int positiveTextID;
+    final int negativeTextID;
     private String message;
     private final String messageExtra;
     private final int version;

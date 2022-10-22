@@ -83,6 +83,7 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
     public void logExercise(View view) {
+        assert view.getId()==R.id.button_workout_log_exercise;
         Exercise exercise = (Exercise) CurrentWorkout.getNextWorkoutComponent();
         TextView repNum = findViewById(R.id.repNumberInput);
         String repNumText = repNum.getText().toString();

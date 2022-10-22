@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">Fitness App</string>
     <string name="quick_access">Quick Access</string>
-    <string name="quick_workout_button">Quick Workout</string>
     <string name="your_workouts_header">Your Workouts</string>
     <string name="rest">Rest</string>
     <string name="skip">Skip</string>
@@ -43,7 +42,6 @@
     <string name="choose_workout_to_edit">Choose workout to edit</string>
     <string name="duration">Duration</string>
     <string name="start">Start</string>
-    <string name="manage_workouts">Manage Workouts</string>
     <string name="opens_an_activity_for_managing_editing_workouts">opens an activity for managing/editing workouts</string>
     <string name="goes_back">goes back by finishing the activity</string>
     <string name="choose_exercise_to_edit">Choose exercise to edit</string>

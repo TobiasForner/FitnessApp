@@ -46,7 +46,6 @@
         app:layout_constraintVertical_bias="0.762" />
 
     <TextView
-        android:id="@+id/textView17"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/remaining_time"

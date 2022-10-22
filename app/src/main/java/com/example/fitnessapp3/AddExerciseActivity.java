@@ -64,6 +64,7 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
     }
 
     public void addExercise(View view) {
+        assert view.getId()==R.id.button_add_exercise;
         TextView exName = findViewById(R.id.editTextExName);
         String exerciseName = exName.getText().toString();
         if (WorkoutManager.exerciseExists(exerciseName)) {
