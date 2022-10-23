@@ -54,6 +54,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
     }
 
     public void addWorkout(View view) {
+        assert view.getId()==R.id.add_edit_workout_button;
         TextView workoutName = findViewById(R.id.text_workout_name);
         if (workoutName.getText().equals("")) {
             return;

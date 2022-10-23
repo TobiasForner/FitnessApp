@@ -32,7 +32,7 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
             exType = "";
         }
 
-        Spinner exerciseTypeSpinner = findViewById(R.id.spinner_extype);
+        Spinner exerciseTypeSpinner = findViewById(R.id.spinner_exType);
         exerciseTypeSpinner.setOnItemSelectedListener(this);
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
                 R.array.exercise_types_array, android.R.layout.simple_spinner_item);

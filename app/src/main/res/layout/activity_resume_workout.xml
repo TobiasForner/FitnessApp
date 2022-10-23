@@ -15,6 +15,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:id="@+id/resume_workout_act_continue_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="resumeWorkout"

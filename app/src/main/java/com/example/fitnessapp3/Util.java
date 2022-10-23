@@ -15,7 +15,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 public class Util {
-    public static String WORKOUT_IN_PROGRESS="workout_in_progress.txt";
     public static final String WORKOUT_IN_PROGRESS_JSON="workout_in_progress.json";
 
     public static void writeFileOnInternalStorage(Context context, String filename, String fileContents){

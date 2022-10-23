@@ -1,12 +1,12 @@
 package com.example.fitnessapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.List;
 
@@ -36,10 +36,12 @@ public class WorkoutEditActivity extends AppCompatActivity {
     }
 
     public void goBack(View v) {
+        assert v.getId() == R.id.imageButton_back;
         finish();
     }
 
     public void goToAddWorkout(View v) {
+        assert v.getId() == R.id.workout_edit_add_workout_button;
         Intent intent = new Intent(this, AddWorkoutActivity.class);
         startActivity(intent);
     }

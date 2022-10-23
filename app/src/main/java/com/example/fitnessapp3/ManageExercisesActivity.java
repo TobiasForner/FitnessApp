@@ -1,12 +1,12 @@
 package com.example.fitnessapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ManageExercisesActivity extends AppCompatActivity {
     public static final String WEIGHTED = "com.example.fitnessapp3.WEIGHTED";
@@ -36,6 +36,7 @@ public class ManageExercisesActivity extends AppCompatActivity {
     }
 
     public void goToAddExercise(View v) {
+        assert v.getId() == R.id.manage_exercises_act_go_to_add;
         Intent intent = new Intent(this, AddExerciseActivity.class);
         startActivity(intent);
     }
@@ -48,7 +49,7 @@ public class ManageExercisesActivity extends AppCompatActivity {
             Exercise exercise = (Exercise) workoutComponent;
             intent.putExtra(WEIGHTED, exercise.isWeighted());
             Exercise.ExType type = exercise.getType();
-            String typeString= type.toString();
+            String typeString = type.toString();
             intent.putExtra(TYPE, typeString);
             startActivity(intent);
         }

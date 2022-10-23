@@ -89,6 +89,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     public void startDuration(View view) {
+        assert view.getId()==R.id.button_start_duration;
         final EditText durationText = findViewById(R.id.editText_duration);
         final int duration;
         try {
@@ -167,6 +168,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     public void skipTimer(View view) {
+        assert view.getId()==R.id.duration_exercise_skip_button;
         playSound = false;
         timer.onFinish();
         timer.cancel();

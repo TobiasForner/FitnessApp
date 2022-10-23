@@ -1,8 +1,5 @@
 package com.example.fitnessapp3;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -11,6 +8,9 @@ import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -39,6 +39,7 @@ public class RestActivity extends AppCompatActivity {
     }
 
     public void skipTimer(View view) {
+        assert view.getId() == R.id.rest_act_skip_button;
         timer.cancel();
         playSound = false;
         timer.onFinish();
@@ -98,7 +99,7 @@ public class RestActivity extends AppCompatActivity {
         }.start();
     }
 
-    private void finishActivity(){
+    private void finishActivity() {
         if (CurrentWorkout.hasNextExercise()) {
             goToNextActivity();
         } else {

@@ -33,15 +33,6 @@ public class Exercise extends WorkoutComponent {
         }
     }
 
-    public static String typeToString(ExType type){
-        if(type==ExType.DURATION){
-            return "Duration";
-        }
-        else {
-            return "Reps";
-        }
-    }
-
     private final String name;
     private final ExType type;
     private final boolean weighted;
@@ -50,8 +41,6 @@ public class Exercise extends WorkoutComponent {
         this.name = name;
         this.type = type;
         this.weighted = weighted;
-        //weight for weighted exercises, duration for duration-based exercises
-        int parameter = 0;
     }
 
     public String getName() {

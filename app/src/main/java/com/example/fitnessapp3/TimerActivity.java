@@ -1,7 +1,5 @@
 package com.example.fitnessapp3;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -9,6 +7,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,6 +18,7 @@ public class TimerActivity extends AppCompatActivity {
     CountDownTimer timer;
     int timeElapsed = 0;
     boolean playSound;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +35,7 @@ public class TimerActivity extends AppCompatActivity {
     }
 
     public void skipTimer(View view) {
+        assert view.getId() == R.id.timer_skip_button;
         timer.cancel();
         playSound = false;
         timer.onFinish();

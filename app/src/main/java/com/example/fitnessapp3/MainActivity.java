@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
 
         Button addExercise = findViewById(R.id.go_to_add_exercise_button);
         Button timerButton = findViewById(R.id.timerButton);
-        Button initWorkoutsButton = findViewById(R.id.initWorkoutsButton);
+        Button initWorkoutsButton = findViewById(R.id.init_workouts_button);
         addExercise.setWidth(buttonWidth);
         timerButton.setWidth(buttonWidth);
         initWorkoutsButton.setWidth(buttonWidth);
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
             mGetContent.launch(uri);
         });
 
-        do_restore=false;
+        do_restore = false;
         //register callback for restore file
         ActivityResultLauncher<String[]> restoreRes = registerForActivityResult(new ActivityResultContracts.OpenDocument(),
                 uri -> {
@@ -163,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
                     ContentResolver contentResolver = getContentResolver();
 
                     InputStream inputStream;
-                    String contents="";
+                    String contents = "";
                     try {
                         inputStream = contentResolver.openInputStream(resUri);
                         InputStreamReader inputStreamReader =
@@ -184,18 +184,18 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    Log.d("MainActivity", "content read: "+contents);
+                    Log.d("MainActivity", "content read: " + contents);
                     //todo restore content
                     DialogFragment dialog;
                     dialog = new PositiveNegativeDialogFragment(R.string.confirm_restore, R.string.yes, R.string.cancel, "", 0);
 
                     dialog.show(getSupportFragmentManager(), "NoticeDialogFragment");
-                    if(do_restore){
+                    if (do_restore) {
                         try {
                             JSONObject backup = new JSONObject(contents);
                             ExerciseManager exerciseManager = new ExerciseManager(this);
                             JSONArray exercises = backup.getJSONArray("exercises");
-                            exerciseManager.overwriteExerciseDetailsJSON(exercises,this);
+                            exerciseManager.overwriteExerciseDetailsJSON(exercises, this);
                             JSONObject workouts = backup.getJSONObject("workouts");
                             WorkoutManager.overwriteWorkouts(workouts, this);
                         } catch (JSONException e) {
@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
     }
 
     public void startTimer(View view) {
+        assert view.getId() == R.id.timerButton;
         Intent intent = new Intent(this, TimerActivity.class);
         int time = 180000;
         intent.putExtra(EXTRA_MESSAGE, time);
@@ -242,11 +243,13 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
     }
 
     public void goToAddExercise(View view) {
+        assert view.getId() == R.id.go_to_add_exercise_button;
         Intent intent = new Intent(this, AddExerciseActivity.class);
         startActivity(intent);
     }
 
     public void initWorkoutNamesFile(View view) {
+        assert view.getId() == R.id.init_workouts_button;
         Startup.initWorkoutNamesFile(this);
     }
 
@@ -259,11 +262,13 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
     }
 
     public void openEditWorkouts(View view) {
+        assert view.getId() == R.id.go_to_edit_workouts_main_activity;
         Intent intent = new Intent(this, WorkoutEditActivity.class);
         startActivity(intent);
     }
 
-    public void goToManageExercises(View v) {
+    public void goToManageExercises(View view) {
+        assert view.getId() == R.id.button_go_to_manage_exercises;
         Intent intent = new Intent(this, ManageExercisesActivity.class);
         startActivity(intent);
     }

@@ -15,7 +15,8 @@ public class StringOccurrenceCounter implements ToIntFunction<String> {
         if (s==null){
             throw new NullPointerException();
         }else{
-            int prev = sToCount.getOrDefault(s, 0);
+            Integer prev = sToCount.getOrDefault(s, 0);
+            assert prev !=null;
             sToCount.put(s, prev + 1);
             return prev;
         }
