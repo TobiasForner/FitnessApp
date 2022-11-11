@@ -16,7 +16,11 @@ public class WorkoutEditActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_edit);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         LinearLayout linear = findViewById(R.id.linear_layout_workout_edit);
         List<String> workoutNames = WorkoutManager.getWorkoutNamesList();
         for (String s : workoutNames) {

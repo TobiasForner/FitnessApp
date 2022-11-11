@@ -51,59 +51,6 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        LinearLayout.LayoutParams params = new
-                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-        //params.setMargins(5,5,5,5);
-        LinearLayout linear = findViewById(R.id.workout_linear_layout);
-        linear.setGravity(Gravity.CENTER);
-        for (String s : WorkoutManager.getWorkoutNamesList()) {
-            TextView t = new TextView(this);
-            t.setText(s);
-            t.setTextSize(30);
-            t.setGravity(Gravity.CENTER);
-            t.setTextColor(Color.WHITE);
-
-            MaterialCardView c = new MaterialCardView(this);
-
-            c.setMinimumHeight(200);
-            c.setStrokeColor(Color.GRAY);
-            c.setStrokeWidth(3);
-            c.setForegroundGravity(Gravity.CENTER);
-            c.setBackgroundColor(Color.TRANSPARENT);
-            Util.setMargins(c, 100, 100, 100, 100);
-            LinearLayout cLinear = new LinearLayout(this);
-            cLinear.setOrientation(LinearLayout.VERTICAL);
-            cLinear.addView(t, params);
-            c.addView(cLinear);
-
-            TextView exercises = new TextView(this);
-            exercises.setTextColor(Color.WHITE);
-            exercises.setGravity(Gravity.CENTER);
-
-            HashSet<String> foundExercises = new HashSet<>();
-            ArrayList<String> exNames = new ArrayList<>();
-            Workout w = WorkoutManager.getWorkout(s, this);
-            for (int i = 0; i < Objects.requireNonNull(w).getLength(); i++) {
-                WorkoutComponent comp = w.getComponentAt(i);
-                if (comp.isExercise()) {
-                    String exName = comp.getName();
-                    if (!foundExercises.contains(exName)) {
-                        foundExercises.add(exName);
-                        exNames.add(exName);
-                    }
-                }
-            }
-
-            String overview = String.join(", ", exNames);
-            exercises.setText(overview);
-            cLinear.addView(exercises, params);
-
-
-            c.setOnClickListener((v) -> startWorkout(s));
-            linear.addView(c);
-            Space space = new Space(this);
-            linear.addView(space);
-        }
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -212,6 +159,64 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
             tmp[0] = "application/json";
             restoreRes.launch(tmp);
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LinearLayout.LayoutParams params = new
+                LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+        LinearLayout linear = findViewById(R.id.workout_linear_layout);
+        linear.setGravity(Gravity.CENTER);
+        linear.removeAllViews();
+        for (String s : WorkoutManager.getWorkoutNamesList()) {
+            TextView t = new TextView(this);
+            t.setText(s);
+            t.setTextSize(30);
+            t.setGravity(Gravity.CENTER);
+            t.setTextColor(Color.WHITE);
+
+            MaterialCardView c = new MaterialCardView(this);
+
+            c.setMinimumHeight(200);
+            c.setStrokeColor(Color.GRAY);
+            c.setStrokeWidth(3);
+            c.setForegroundGravity(Gravity.CENTER);
+            c.setBackgroundColor(Color.TRANSPARENT);
+            Util.setMargins(c, 100, 100, 100, 100);
+            LinearLayout cLinear = new LinearLayout(this);
+            cLinear.setOrientation(LinearLayout.VERTICAL);
+            cLinear.addView(t, params);
+            c.addView(cLinear);
+
+            TextView exercises = new TextView(this);
+            exercises.setTextColor(Color.WHITE);
+            exercises.setGravity(Gravity.CENTER);
+
+            HashSet<String> foundExercises = new HashSet<>();
+            ArrayList<String> exNames = new ArrayList<>();
+            Workout w = WorkoutManager.getWorkout(s, this);
+            for (int i = 0; i < Objects.requireNonNull(w).getLength(); i++) {
+                WorkoutComponent comp = w.getComponentAt(i);
+                if (comp.isExercise()) {
+                    String exName = comp.getName();
+                    if (!foundExercises.contains(exName)) {
+                        foundExercises.add(exName);
+                        exNames.add(exName);
+                    }
+                }
+            }
+
+            String overview = String.join(", ", exNames);
+            exercises.setText(overview);
+            cLinear.addView(exercises, params);
+
+
+            c.setOnClickListener((v) -> startWorkout(s));
+            linear.addView(c);
+            Space space = new Space(this);
+            linear.addView(space);
+        }
     }
 
     private JSONObject fullJSONData() throws JSONException {
