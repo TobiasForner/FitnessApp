@@ -205,7 +205,7 @@ public class WorkoutManager {
     }
 
     private static JSONObject parseWorkoutLineJSON(String line, Context context) throws JSONException {
-        //todo improve parsing
+        //todo improve parsing using patterns from AddWorkoutActivity
         Log.d("WorkoutManager", "parseWorkoutLine: start");
         if (line.equals("")) {
             throw new IllegalArgumentException("Empty workout line.");

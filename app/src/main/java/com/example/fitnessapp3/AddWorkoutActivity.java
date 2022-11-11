@@ -121,7 +121,6 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
         } else {
             String[] parts = line.split(",");
             return parseGroup(parts, 1);
-
         }
     }
 
