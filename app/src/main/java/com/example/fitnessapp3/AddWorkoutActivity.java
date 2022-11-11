@@ -71,6 +71,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
 
         if (workout != null) {
             WorkoutManager.addWorkoutJSON(workout, this);
+            finish();
         }
     }
 
