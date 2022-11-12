@@ -48,4 +48,5 @@
     <string name="choose_exercise_to_edit">Choose exercise to edit</string>
     <string name="manage_exercises">Manage Exercises</string>
     <string name="exercise_scroll_view_description">Scrollable surface with buttons for workouts to start</string>
+    <string name="delete">delete</string>
 </resources>

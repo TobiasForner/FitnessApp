@@ -27,6 +27,19 @@ public class WorkoutManager {
         readWorkoutNames(context);
     }
 
+    public static void deleteWorkout(String name, Context context) {
+        String contentsJSON = Util.readFromInternal(workoutFile, context);
+        try {
+            assert contentsJSON != null;
+            JSONObject workouts = new JSONObject(contentsJSON);
+            workouts.remove(name);
+            overwriteWorkouts(workouts, context);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        readWorkoutNames(context);
+    }
+
     public static void addWorkout(String name, String workoutBody, Context context) {
         addWorkoutName(name, context);
         String filename = name + "_workout.txt";

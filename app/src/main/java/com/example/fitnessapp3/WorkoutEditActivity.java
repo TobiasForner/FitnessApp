@@ -2,6 +2,7 @@ package com.example.fitnessapp3;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -23,12 +24,31 @@ public class WorkoutEditActivity extends AppCompatActivity {
         super.onResume();
         LinearLayout linear = findViewById(R.id.linear_layout_workout_edit);
         List<String> workoutNames = WorkoutManager.getWorkoutNamesList();
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int width = displayMetrics.widthPixels;
+        int buttonWidth = width  - 200;
+        linear.removeAllViews();
         for (String s : workoutNames) {
+            LinearLayout horizontal = new LinearLayout(this);
+
             Button b = new Button(this);
             b.setText(s);
             b.setOnClickListener(this::editWorkout);
-            linear.addView(b);
+            b.setWidth(buttonWidth);
+            horizontal.addView(b);
+
+            Button delButton = new Button(this);
+            delButton.setText(R.string.delete);
+            delButton.setOnClickListener((View v)->deleteWorkout(s));
+            horizontal.addView(delButton);
+            linear.addView(horizontal);
         }
+    }
+
+    private void deleteWorkout(String workoutName){
+        WorkoutManager.deleteWorkout(workoutName, this);
+        this.onResume();
     }
 
     private void editWorkout(View v) {
