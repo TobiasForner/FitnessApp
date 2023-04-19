@@ -27,11 +27,13 @@
     <string name="workout_invalid">Workout Invalid</string>
     <string name="confirm_restore">This will overwrite all existing data. Do you want to proceed?</string>
     <string name="edit_workout">Edit Workout</string>
+    <string name="edit_exercise">Edit Exercise</string>
     <string name="edit">Edit</string>
     <string name="restore">Restore</string>
     <string name="enter_workout_text">Enter Workout Text</string>
     <string name="exercise_does_not_exists">The exercise %1$s does not exist. Would you like to add it?</string>
-    <string name="exercise_exists">The exercise %1$s already exists. Would you like to overwrite it?</string>
+    <string name="exercise_exists">The exercise%1$s already exists. Would you like to overwrite it?</string>
+    <string name="exercise_overwrite">Would you like to overwrite the exercise %1$s?</string>
     <string name="add">Add</string>
     <string name="cancel">Cancel</string>
     <string name="workout_name_already_exists">A workout with the name %1$s already exists. Would you like to edit it instead?</string>

@@ -38,20 +38,15 @@ public class ManageExercisesActivity extends AppCompatActivity {
     public void goToAddExercise(View v) {
         assert v.getId() == R.id.manage_exercises_act_go_to_add;
         Intent intent = new Intent(this, AddExerciseActivity.class);
+        intent.putExtra(AddWorkoutActivity.EXNAME, "");
         startActivity(intent);
     }
 
     public void editExercise(View v) {
-        WorkoutComponent workoutComponent = WorkoutManager.getWorkoutComponentFromName(((Button) v).getText().toString());
-        if (workoutComponent.isExercise()) {
-            Intent intent = new Intent(this, AddExerciseActivity.class);
-            intent.putExtra(AddWorkoutActivity.EXNAME, workoutComponent.getName());
-            Exercise exercise = (Exercise) workoutComponent;
-            intent.putExtra(WEIGHTED, exercise.isWeighted());
-            Exercise.ExType type = exercise.getType();
-            String typeString = type.toString();
-            intent.putExtra(TYPE, typeString);
-            startActivity(intent);
-        }
+        Intent intent = new Intent(this, AddExerciseActivity.class);
+        String exName = ((Button) v).getText().toString();
+        intent.putExtra(AddWorkoutActivity.EXNAME, exName);
+        intent.putExtra(AddExerciseActivity.EDIT, true);
+        startActivity(intent);
     }
 }

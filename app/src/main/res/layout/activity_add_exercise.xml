@@ -16,7 +16,7 @@
         app:layout_constraintTop_toTopOf="@+id/textView10" />
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/textViewAddExerciseHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="36dp"
@@ -44,9 +44,9 @@
         android:layout_marginBottom="404dp"
         android:text="@string/weighted"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="@+id/textViewAddExerciseHeader"
         app:layout_constraintHorizontal_bias="0.517"
-        app:layout_constraintStart_toStartOf="@+id/textView9" />
+        app:layout_constraintStart_toStartOf="@+id/textViewAddExerciseHeader" />
 
     <EditText
         android:id="@+id/editTextExName"
@@ -57,9 +57,9 @@
         android:hint="@string/exercise_name"
         android:inputType="textPersonName"
         android:minHeight="48dp"
-        app:layout_constraintEnd_toEndOf="@+id/textView9"
-        app:layout_constraintStart_toStartOf="@+id/textView9"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+        app:layout_constraintEnd_toEndOf="@+id/textViewAddExerciseHeader"
+        app:layout_constraintStart_toStartOf="@+id/textViewAddExerciseHeader"
+        app:layout_constraintTop_toBottomOf="@+id/textViewAddExerciseHeader" />
 
     <Button
         android:id="@+id/button_add_exercise"
@@ -68,7 +68,7 @@
         android:onClick="addExercise"
         android:text="@string/add_exercise"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/textView9"
-        app:layout_constraintStart_toStartOf="@+id/textView9"
+        app:layout_constraintEnd_toEndOf="@+id/textViewAddExerciseHeader"
+        app:layout_constraintStart_toStartOf="@+id/textViewAddExerciseHeader"
         app:layout_constraintTop_toBottomOf="@+id/switch1" />
 </androidx.constraintlayout.widget.ConstraintLayout>
