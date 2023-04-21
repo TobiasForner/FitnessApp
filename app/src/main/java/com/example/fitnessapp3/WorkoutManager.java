@@ -20,10 +20,9 @@ public class WorkoutManager {
 
     private final static String workoutFile = "workouts.json";
     private static List<String> workoutNamesList;
-    private static ExerciseManager exerciseManager;
 
     public static void init(Context context) {
-        exerciseManager = new ExerciseManager(context);
+
         readWorkoutNames(context);
     }
 
@@ -155,22 +154,6 @@ public class WorkoutManager {
         return workoutNamesList.contains(name);
     }
 
-    public static boolean exerciseExists(String exName) {
-        return exerciseManager.exerciseExists(exName);
-    }
-
-    public static void addExercise(String name, Exercise.ExType exType, boolean weighted, Context context) {
-        exerciseManager.addExercise(name, exType, weighted, context);
-    }
-
-    public static ArrayList<String> getExerciseNames() {
-        return exerciseManager.getExerciseNames();
-    }
-
-    public static WorkoutComponent getWorkoutComponentFromName(String name) {
-        return exerciseManager.getWorkoutComponent(name);
-    }
-
     public static JSONObject workoutsJSON(Context context) throws JSONException {
         String workoutsJSON = Util.readFromInternal(workoutFile, context);
         assert workoutsJSON != null;
@@ -178,6 +161,7 @@ public class WorkoutManager {
     }
 
     public static Workout getWorkout(String workoutName, Context context) {
+        ExerciseManager exerciseManager = new ExerciseManager(context);
         Workout result = new Workout(workoutName);
         try {
             JSONObject workout = getWorkoutJSONFromFile(workoutName, context);
@@ -220,6 +204,7 @@ public class WorkoutManager {
     private static JSONObject parseWorkoutLineJSON(String line, Context context) throws JSONException {
         //todo improve parsing using patterns from AddWorkoutActivity
         Log.d("WorkoutManager", "parseWorkoutLine: start");
+        ExerciseManager exerciseManager = new ExerciseManager(context);
         if (line.equals("")) {
             throw new IllegalArgumentException("Empty workout line.");
         }

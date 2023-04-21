@@ -148,9 +148,10 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
     }
 
     private boolean validExerciseNames(String[] exNames) {
+        ExerciseManager exerciseManager = new ExerciseManager(this);
         for (String part : exNames) {
             String tmp = Util.strip(part);
-            if (!WorkoutManager.exerciseExists(tmp)) {
+            if (!exerciseManager.exerciseExists(tmp)) {
                 openDialog(tmp, 1);
                 return false;
             }

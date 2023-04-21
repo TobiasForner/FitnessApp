@@ -96,7 +96,8 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
         assert view.getId() == R.id.button_add_exercise;
         TextView exName = findViewById(R.id.editTextExName);
         String exerciseName = exName.getText().toString();
-        if (WorkoutManager.exerciseExists(exerciseName)) {
+        ExerciseManager exerciseManager = new ExerciseManager(this);
+        if (exerciseManager.exerciseExists(exerciseName)) {
             openDialog(exerciseName);
         } else {
             finishAndAdd();
@@ -119,7 +120,8 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
         TextView exName = findViewById(R.id.editTextExName);
         String exerciseName = exName.getText().toString();
         Exercise.ExType type = Exercise.ExType.fromString(exType);
-        WorkoutManager.addExercise(exerciseName, type, weighted, this);
+        ExerciseManager exerciseManager = new ExerciseManager(this);
+        exerciseManager.addExercise(exerciseName, type, weighted, this);
         finish();
     }
 

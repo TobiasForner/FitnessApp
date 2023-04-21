@@ -34,10 +34,17 @@ public class ExerciseManager {
     }
 
     public void addExercise(String name, Exercise.ExType exType, boolean weighted, Context context) {
+        String strippedName = Util.strip(name);
 
-
-        nameToEx.put(name, getExerciseFromDetails(name, exType, weighted));
+        nameToEx.put(strippedName, getExerciseFromDetails(name, exType, weighted));
         writeExercisesToJSON(context);
+    }
+
+    public void deleteExercise(String exerciseName, Context context){
+        if(nameToEx.containsKey(exerciseName)){
+            nameToEx.remove(exerciseName);
+            writeExercisesToJSON(context);
+        }
     }
 
     public void addStrippedExercise(String exName, Context context) {
