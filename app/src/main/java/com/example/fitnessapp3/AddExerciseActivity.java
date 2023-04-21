@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -35,6 +36,9 @@ public class AddExerciseActivity extends AppCompatActivity implements AdapterVie
         if (edit) {
             TextView header = findViewById(R.id.textViewAddExerciseHeader);
             header.setText(R.string.edit_exercise);
+
+            Button overwriteButton = findViewById(R.id.button_add_exercise);
+            overwriteButton.setText(R.string.overwrite);
         }
 
         if (exerciseManager.exerciseExists(exName)) {
