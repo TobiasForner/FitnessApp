@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fitnessapp3.SetResults.SetResult;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -43,28 +45,36 @@ public class DurationExerciseActivity extends AppCompatActivity {
     public void init() {
         setSetProgress();
         setPrevResults();
-        copyPreviousNumbers();
+        copyPreviousSetResult();
         setWeightInvisibleIfUnweighted();
     }
+
 
     private void setSetProgress() {
         TextView setProg = findViewById(R.id.duration_exercise_set_progress);
         setProg.setText(CurrentWorkout.getSetString());
     }
 
-    private void copyPreviousNumbers() {
+
+    private void copyPreviousSetResult() {
         if (!CurrentWorkout.useLastWorkout) {
             return;
         }
-        String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
-        if (prevNums.length > 0) {
-            TextView dur = findViewById(R.id.editText_duration);
-            dur.setText(prevNums[0]);
+        SetResult setResult = CurrentWorkout.getPrevSetResultsOfCurrentPosition();
+        if (setResult == null) {
+            return;
         }
-        if (prevNums.length > 1) {
-            EditText weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
-            weight_text.setText(prevNums[1]);
+        if(!setResult.isDuration()){
+            return;
         }
+
+        TextView dur = findViewById(R.id.editText_duration);
+        String repNr = String.valueOf(setResult.getRepNr());
+        dur.setText(repNr);
+
+
+        EditText weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
+        weight_text.setText(String.valueOf(setResult.getAddedWeight()));
     }
 
     private void setPrevResults() {
@@ -89,12 +99,12 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     public void startDuration(View view) {
-        assert view.getId()==R.id.button_start_duration;
+        assert view.getId() == R.id.button_start_duration;
         final EditText durationText = findViewById(R.id.editText_duration);
         final int duration;
         try {
             duration = Integer.parseInt(durationText.getText().toString());
-            if(duration==0){
+            if (duration == 0) {
                 showPopupWindowClick(durationText);
                 return;
             }
@@ -168,7 +178,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     public void skipTimer(View view) {
-        assert view.getId()==R.id.duration_exercise_skip_button;
+        assert view.getId() == R.id.duration_exercise_skip_button;
         playSound = false;
         timer.onFinish();
         timer.cancel();

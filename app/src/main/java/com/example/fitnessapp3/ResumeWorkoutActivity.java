@@ -1,9 +1,7 @@
 package com.example.fitnessapp3;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,22 +19,16 @@ public class ResumeWorkoutActivity extends AppCompatActivity {
 
     public void goToMainActivity(View view) {
         assert view.getId() == R.id.button_cancel;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("workout_is_in_progress", false);
-        editor.apply();
+        CurrentWorkout.setInProgress(false, this);
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
     public void resumeWorkout(View view) {
         assert view.getId() == R.id.resume_workout_act_continue_button;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        if (sharedPreferences.getBoolean("workout_is_in_progress", false)) {
+        if (CurrentWorkout.workoutIsInProgress(this)) {
             CurrentWorkout.restoreWorkoutInProgress(this);
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putBoolean("workout_is_in_progress", true);
-            editor.apply();
+
             Intent nextIntent = ActivityTransition.goToNextActivityInWorkout(this);
             nextIntent.setFlags(nextIntent.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(nextIntent);

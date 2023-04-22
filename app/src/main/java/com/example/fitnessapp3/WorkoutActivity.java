@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.fitnessapp3.SetResults.SetResult;
 
 
 public class WorkoutActivity extends AppCompatActivity {
@@ -34,6 +37,7 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
     public void init() {
+        //TODO untangle from duration-based exercises
         TextView exName = findViewById(R.id.exerciseName);
         TextView setProg = findViewById(R.id.setProgressText);
         exName.setText(CurrentWorkout.getWorkoutComponentName());
@@ -41,16 +45,7 @@ public class WorkoutActivity extends AppCompatActivity {
         if (nextWorkoutComponent.isExercise()) {
             Exercise exercise = (Exercise) nextWorkoutComponent;
             TextView exNum = findViewById(R.id.exerciseNumberInput);
-            if (CurrentWorkout.useLastWorkout) {
-                String[] prevNums = CurrentWorkout.getPrevResultsOfCurrentPosition();
-                if (prevNums.length >= 1) {
-                    if (exercise.isWeighted() && prevNums.length == 2) {
-                        exNum.setText(prevNums[0]);
-                    }
-                    TextView repNum = findViewById(R.id.repNumberInput);
-                    repNum.setText(prevNums[1]);
-                }
-            }
+            copyPreviousSetResult();
             if (exercise.getType() == Exercise.ExType.DURATION) {
                 exNum.setHint("Duration");
             } else if (!exercise.isWeighted()) {
@@ -59,6 +54,25 @@ public class WorkoutActivity extends AppCompatActivity {
             setPrevResults();
         }
         setProg.setText(CurrentWorkout.getSetString());
+    }
+
+    private void copyPreviousSetResult() {
+        if (!CurrentWorkout.useLastWorkout) {
+            return;
+        }
+        SetResult setResult = CurrentWorkout.getPrevSetResultsOfCurrentPosition();
+        if (setResult == null) {
+            return;
+        }
+        if(setResult.isDuration()){
+            return;
+        }
+
+        TextView repNum = findViewById(R.id.repNumberInput);
+        repNum.setText(String.valueOf(setResult.getRepNr()));
+
+        TextView exNum = findViewById(R.id.exerciseNumberInput);
+        exNum.setText(String.valueOf(setResult.getAddedWeight()));
     }
 
     private void hideWeightElements() {
@@ -81,6 +95,8 @@ public class WorkoutActivity extends AppCompatActivity {
             prevResultsHeaderView.setVisibility(View.INVISIBLE);
         }
     }
+
+
 
     public void logExercise(View view) {
         assert view.getId()==R.id.button_workout_log_exercise;

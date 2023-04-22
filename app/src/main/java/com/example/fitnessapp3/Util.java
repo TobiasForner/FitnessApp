@@ -16,7 +16,7 @@ import java.nio.charset.StandardCharsets;
 
 public class Util {
     public static final String WORKOUT_IN_PROGRESS_JSON="workout_in_progress.json";
-
+    public static final String WORKOUT_IS_IN_PROGRESS_JSON = "workout_is_in_progress.json";
     public static void writeFileOnInternalStorage(Context context, String filename, String fileContents){
         try (FileOutputStream fos = context.openFileOutput(filename, Context.MODE_PRIVATE)) {
             fos.write(fileContents.getBytes());

@@ -1,6 +1,7 @@
 package com.example.fitnessapp3;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -16,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -27,18 +29,26 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class CurrentWorkout {
-    public static String[] lastWorkout;
     public static String workoutName;
     public static boolean useLastWorkout;
     public static String[] currentWorkout;
     public static List<String> setStrings;
+
+    //has an entry for each position that states the number of sets of this exercise completed so
+    // far. The first occurrence of each exercise is marked with a zero
     protected static List<Integer> numberOfExercise;
     protected static Map<String, ArrayList<SetResult>> exToResults;
+
+    protected static Map<String, ArrayList<SetResult>> lastWorkoutExToResults;
     private static Workout workout;
 
     private static int currentWorkoutEnqueuePos;
 
+    private static final String WorkoutIsInProgressFieldName = "is_in_progress";
+
+
     public static void finishWorkout(Activity activity) {
+        //TODO store as JSON
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
         Set<String> lastWorkoutDef = new HashSet<>();
         Set<String> workoutResults = Objects.requireNonNull(sharedPreferences.getStringSet(workoutName + "_results", lastWorkoutDef));
@@ -52,22 +62,15 @@ public class CurrentWorkout {
         editor.putStringSet(workoutName + "_results", workoutResults);
         editor.apply();
 
-        disableWorkoutInProgress(activity);
+        setInProgress(false, activity);
+        saveFinalResults(activity);
         Util.writeFileOnInternalStorage(activity, workoutName + "last_result.txt", lastResults);
-    }
-
-    private static void disableWorkoutInProgress(Activity activity) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("workout_is_in_progress", false);
-        editor.putString("workout_in_progress", "");
-        editor.apply();
     }
 
     public static void init(String workoutName, Activity activity) {
         CurrentWorkout.workoutName = workoutName;
         workout = WorkoutManager.getWorkout(workoutName, activity);
-        if (workout.getLength()==0) {
+        if (workout.getLength() == 0) {
             handleWorkoutDoesNotExist();
             return;
         }
@@ -81,8 +84,7 @@ public class CurrentWorkout {
         Map<String, Integer> exCounts = counter.getCountMap();
         setStrings = IntStream.range(0, numberOfExercise.size()).mapToObj(i -> formatSetString(i, exCounts)).collect(Collectors.toList());
 
-        exToResults = exCounts.entrySet().stream().filter(e -> !e.getKey().equals("Rest"))
-                .collect(Collectors.toMap(Map.Entry::getKey, e -> new ArrayList<>()));
+        exToResults = exCounts.entrySet().stream().filter(e -> !e.getKey().equals("Rest")).collect(Collectors.toMap(Map.Entry::getKey, e -> new ArrayList<>()));
         for (Map.Entry<String, Integer> pair : exCounts.entrySet()) {
             if (!pair.getKey().equals("Rest")) {
                 for (int i = 0; i < pair.getValue(); i++) {
@@ -91,7 +93,7 @@ public class CurrentWorkout {
             }
 
         }
-        tryInitLastWorkout(activity, workoutLength);
+        tryInitLastWorkoutJSON(activity);
         saveProgress(activity);
     }
 
@@ -108,15 +110,55 @@ public class CurrentWorkout {
         return setNum + "/" + finalSetNumber;
     }
 
-    private static void tryInitLastWorkout(Activity activity, int workoutLength) {
-        useLastWorkout = false;
-        String lastWorkoutString = Util.readFromInternal(workoutName + "last_result.txt", activity);
-        if (lastWorkoutString == null) {
+
+    private static void tryInitLastWorkoutJSON(Activity activity) {
+        String contentsJSON = Util.readFromInternal(workoutName + "last_result.json", activity);
+        if (contentsJSON == null) {
+            Log.d("CurrentWorkout", "contents of previous workout are null.");
             return;
         }
-        if (lastWorkoutString.length() > 0) {
-            lastWorkout = lastWorkoutString.split(";");
-            useLastWorkout = lastWorkout.length == workoutLength;
+        try {
+            JSONObject lastWorkout = new JSONObject(contentsJSON);
+            JSONObject lastResults = lastWorkout.getJSONObject("exResults");
+            lastWorkoutExToResults = new HashMap<>();
+            for (String ex : exToResults.keySet()) {
+                JSONArray repr = lastResults.getJSONArray(ex);
+                ArrayList<SetResult> setResults = new ArrayList<>();
+                for (int i = 0; i < repr.length(); i++) {
+                    SetResult setResult = SetResult.fromJSON(repr.getJSONObject(i));
+                    setResults.add(setResult);
+                }
+                lastWorkoutExToResults.put(ex, setResults);
+            }
+            useLastWorkout = true;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private static void saveFinalResults(Activity activity) {
+        JSONObject workoutProgress = new JSONObject();
+        try {
+            workoutProgress.put("name", workoutName);
+
+            JSONObject exerciseResults = new JSONObject();
+            for (String ex : exToResults.keySet()) {
+                ArrayList<SetResult> setResults = exToResults.get(ex);
+                ArrayList<JSONObject> repr = new ArrayList<>();
+                assert setResults != null;
+                for (SetResult sr : setResults) {
+                    repr.add(sr.toJSON());
+                }
+
+                exerciseResults.put(ex, new JSONArray(repr));
+            }
+            workoutProgress.put("exResults", exerciseResults);
+            Util.writeFileOnInternalStorage(activity, workoutName + "last_result.json", workoutProgress.toString());
+        } catch (JSONException e) {
+            Log.e("CurrentWorkout", "saveFinalResults: failed to store set results");
+            e.printStackTrace();
         }
     }
 
@@ -220,8 +262,16 @@ public class CurrentWorkout {
         return workout.getCurrentComponent().getName();
     }
 
-    public static String[] getPrevResultsOfCurrentPosition() {
-        return lastWorkout[workout.getPosition()].split(",");
+    public static SetResult getPrevSetResultsOfCurrentPosition() {
+        String compName = workout.getCurrentComponent().getName();
+        if (lastWorkoutExToResults.containsKey(compName)) {
+            ArrayList<SetResult> setResults = lastWorkoutExToResults.get(compName);
+            int setPos = numberOfExercise.get(workout.getPosition());
+            assert setResults != null;
+            int usePos = Math.min(setPos, setResults.size() - 1);
+            return setResults.get(usePos);
+        }
+        return null;
     }
 
     public static String getSetString() {
@@ -229,11 +279,7 @@ public class CurrentWorkout {
     }
 
     private static void saveProgress(Activity activity) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-
-        editor.putBoolean("workout_is_in_progress", true);
-        editor.apply();
+        setInProgress(true, activity);
 
         JSONObject workoutProgress = new JSONObject();
         try {
@@ -302,6 +348,7 @@ public class CurrentWorkout {
                             currResults.set(i, ithRes);
                         }
                     }
+                    setInProgress(true, activity);
                 } catch (JSONException e) {
                     Log.e("CurrentWorkout", "restoreWorkoutInProgress: failed to load from JSON");
                 }
@@ -311,9 +358,16 @@ public class CurrentWorkout {
         }
     }
 
-    private static boolean workoutIsInProgress(Activity activity) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(activity);
-        return sharedPreferences.getBoolean("workout_is_in_progress", false);
+    public static boolean workoutIsInProgress(Context context) {
+        String progressText = Util.readFromInternal(Util.WORKOUT_IS_IN_PROGRESS_JSON, context);
+        try {
+            assert progressText != null;
+            JSONObject progress = new JSONObject(progressText);
+            return progress.getBoolean(WorkoutIsInProgressFieldName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private static void tryAddToWorkout(String resString) {
@@ -346,13 +400,23 @@ public class CurrentWorkout {
                     JSONObject progress = new JSONObject(contentsJSON);
                     String inProgressName = (String) progress.get("name");
                     if (workoutName.equals(inProgressName)) {
-                        disableWorkoutInProgress(activity);
+                        setInProgress(false, activity);
                     }
                 } catch (JSONException e) {
                     Log.e("CurrentWorkout", "assureNotInProgress: failed to check JSON");
-                    disableWorkoutInProgress(activity);
+                    setInProgress(false, activity);
                 }
             }
+        }
+    }
+
+    public static void setInProgress(boolean b, Context context) {
+        JSONObject workout_in_progress = new JSONObject();
+        try {
+            workout_in_progress.put("is_in_progress", b);
+            Util.writeFileOnInternalStorage(context, Util.WORKOUT_IS_IN_PROGRESS_JSON, workout_in_progress.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }
