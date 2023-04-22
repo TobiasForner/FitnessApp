@@ -1,7 +1,6 @@
 package com.example.fitnessapp3;
 
 import android.content.Context;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,11 +14,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class WorkoutManager {
 
     private final static String workoutFile = "workouts.json";
     private static List<String> workoutNamesList;
+
+    private final static Pattern workoutGroupP = Pattern.compile("\\[(.*)]\\s*x?\\s*(\\d+)?$");
 
     public static void init(Context context) {
 
@@ -51,7 +54,7 @@ public class WorkoutManager {
 
         try {
             JSONObject workouts = new JSONObject(Objects.requireNonNull(Util.readFromInternal(workoutFile, context)));
-            JSONObject toAdd = generateWorkoutJSONFromString(workoutBody, name, context);
+            JSONObject toAdd = generateWorkoutJSONFromString(workoutBody, name);
             workouts.put(name, toAdd);
             overwriteWorkouts(workouts, context);
         } catch (JSONException e) {
@@ -188,93 +191,64 @@ public class WorkoutManager {
         return workouts.getJSONObject(workoutName);
     }
 
-    public static JSONObject generateWorkoutJSONFromString(String text, String name, Context context) throws JSONException {
+    public static JSONObject generateWorkoutJSONFromString(String text, String name) throws JSONException {
         String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
         JSONObject workout = new JSONObject();
         workout.put("name", name);
         List<JSONObject> componentGroups = new ArrayList<>();
         for (String line : lines) {
-            JSONObject group = parseWorkoutLineJSON(line, context);
+            //JSONObject group = parseWorkoutLineJSON(line, context);
+            JSONObject group = parseWorkoutLineJSONNew(line);
             componentGroups.add(group);
         }
         workout.put("componentGroups", new JSONArray(componentGroups));
         return workout;
     }
 
-    private static JSONObject parseWorkoutLineJSON(String line, Context context) throws JSONException {
-        //todo improve parsing using patterns from AddWorkoutActivity
-        Log.d("WorkoutManager", "parseWorkoutLine: start");
-        ExerciseManager exerciseManager = new ExerciseManager(context);
+
+    private static JSONObject parseWorkoutLineJSONNew(String line) {
+        line = Util.strip(line);
         if (line.equals("")) {
-            throw new IllegalArgumentException("Empty workout line.");
+            return null;
         }
-        String[] parts = line.split("\\[");
-        if (parts.length != 1 && parts.length != 2) {
-            throw new IllegalArgumentException("parseWorkoutLine: line has invalid format: " + line);
-        }
-        if (parts.length == 2 && !parts[0].equals("")) {
-            throw new IllegalArgumentException("parseWorkoutLine: line has invalid format: " + line);
-        }
-        String[] bodyAndTimes;
-        if (parts.length == 2) {
-            bodyAndTimes = parts[1].split("]");
-        } else {
-            bodyAndTimes = parts[0].split("]");
-        }
-        String[] exerciseNames = bodyAndTimes[0].split(",");
-        for (String exName : exerciseNames) {
-            if (!exerciseManager.exerciseExists(exName)) {
-                throw new IllegalArgumentException("parseWorkoutLine: line contains invalid exercise '" + exName + "': " + line);
-            }
-
-            String strippedName = Util.strip(exName);
-            if (!exerciseManager.exerciseExists(strippedName)) {
-                exerciseManager.addStrippedExercise(exName, context);
-            }
-        }
-        String timesStr;
-        if (bodyAndTimes.length >= 2) {
-            timesStr = bodyAndTimes[1];
-
-        } else {
-            // pattern without [...] x ..., default times to 1
-            timesStr = "x1";
-        }
-        timesStr = Util.strip(timesStr);
-        if (timesStr.length() >= 2) {
-            if (timesStr.charAt(0) == 'x' | timesStr.charAt(0) == 'X') {
-                String timesString = timesStr.substring(1);
+        Matcher m = workoutGroupP.matcher(line);
+        if (m.matches()) {
+            String g = m.group(1);
+            assert g != null;
+            String[] parts = g.split(",");
+            int times = 1;
+            if (m.groupCount() == 2) {
+                String timesStr = m.group(2);
                 try {
-                    int times = Integer.parseInt(timesString);
-
-                    List<String> groupComponents = new ArrayList<>();
-                    for (String exName : exerciseNames) {
-                        String strippedName = Util.strip(exName);
-                        groupComponents.add(strippedName);
-                    }
-                    JSONObject group = new JSONObject();
-                    group.put("repetitions", times);
-                    group.put("components", new JSONArray(groupComponents));
-                    return group;
-
+                    assert timesStr != null;
+                    times = Integer.parseInt(timesStr);
                 } catch (NumberFormatException nfe) {
-                    throw new RuntimeException("Error parsing number.");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    throw new RuntimeException("JSON error.");
+                    return null;
                 }
             }
-            throw new RuntimeException("Invalid state.");
+            return parseGroup(parts, times);
+
         } else {
-            List<String> groupComponents = new ArrayList<>();
-            for (String exName : exerciseNames) {
-                String strippedName = Util.strip(exName);
-                groupComponents.add(strippedName);
-            }
+            String[] parts = line.split(",");
+            return parseGroup(parts, 1);
+        }
+    }
+
+    private static JSONObject parseGroup(String[] parts, int repetitions) {
+        List<String> groupComponents = new ArrayList<>();
+        for (String exName : parts) {
+            String strippedName = Util.strip(exName);
+            groupComponents.add(strippedName);
+        }
+        try {
             JSONObject group = new JSONObject();
-            group.put("repetitions", 1);
             group.put("components", new JSONArray(groupComponents));
+            group.put("repetitions", repetitions);
             return group;
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }
