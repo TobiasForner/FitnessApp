@@ -3,9 +3,7 @@ package com.example.fitnessapp3;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -14,9 +12,7 @@ public class StartActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
 
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (sharedPreferences.getBoolean("workout_is_in_progress", false)) {
+        if (CurrentWorkout.workoutIsInProgress(this)) {
             Intent intent = new Intent(this, ResumeWorkoutActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
