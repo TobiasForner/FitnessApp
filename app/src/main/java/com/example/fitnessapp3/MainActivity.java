@@ -278,6 +278,12 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         startActivity(intent);
     }
 
+    public void goToWeight(View view) {
+        assert view.getId() == R.id.go_to_weight_button;
+        Intent intent = new Intent(this, WeightActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     public void onDialogPositiveClick(DialogFragment dialog) {
 

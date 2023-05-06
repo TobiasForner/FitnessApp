@@ -3,30 +3,60 @@
 
     <application
         android:name=".Startup"
-        android:exported="false"
         android:allowBackup="true"
+        android:exported="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
-        <activity android:name=".TimerActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ManageExercisesActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".DurationExerciseActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".StartActivity"
+        <activity
+            android:name=".MainActivity2"
+            android:exported="false" />
+        <activity
+            android:name=".WeightActivity"
+            android:exported="false"
+            android:label="@string/title_activity_weight"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+        <activity
+            android:name=".TimerActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ManageExercisesActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".DurationExerciseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".StartActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".WorkoutEditActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".ResumeWorkoutActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".AddWorkoutActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".AddExerciseActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".WorkoutActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".RestActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".MainActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".WorkoutEditActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".ResumeWorkoutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AddWorkoutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".AddExerciseActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".WorkoutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RestActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
