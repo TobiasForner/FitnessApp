@@ -228,6 +228,9 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         // store workout details
         JSONObject workoutsJSON = WorkoutManager.workoutsJSON(this);
         res.put("workouts", workoutsJSON);
+        // store logged weight
+        JSONObject loggedWeight = WeightActivity.getPastWeights(this);
+        res.put("weight", loggedWeight);
         // store results for last workouts (set strings)
         // TODO
         return res;

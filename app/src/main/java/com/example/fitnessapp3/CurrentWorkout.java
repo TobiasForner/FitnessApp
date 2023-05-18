@@ -274,6 +274,19 @@ public class CurrentWorkout {
         return null;
     }
 
+    public static SetResult getPrevSetResultsOfCurrentExercise() {
+        String compName = workout.getCurrentComponent().getName();
+        if (exToResults.containsKey(compName)) {
+            ArrayList<SetResult> setResults = exToResults.get(compName);
+            int setPos = numberOfExercise.get(workout.getPosition());
+            assert setResults != null;
+            if (setPos > 0) {
+                return setResults.get(setPos - 1);
+            }
+        }
+        return null;
+    }
+
     public static String getSetString() {
         return setStrings.get(workout.getPosition());
     }

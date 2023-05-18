@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
@@ -57,14 +56,16 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
     private void copyPreviousSetResult() {
+        SetResult setResult;
         if (!CurrentWorkout.useLastWorkout) {
-            return;
+            setResult = CurrentWorkout.getPrevSetResultsOfCurrentExercise();
+        } else {
+            setResult = CurrentWorkout.getPrevSetResultsOfCurrentPosition();
         }
-        SetResult setResult = CurrentWorkout.getPrevSetResultsOfCurrentPosition();
         if (setResult == null) {
             return;
         }
-        if(setResult.isDuration()){
+        if (setResult.isDuration()) {
             return;
         }
 
@@ -97,9 +98,8 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
 
-
     public void logExercise(View view) {
-        assert view.getId()==R.id.button_workout_log_exercise;
+        assert view.getId() == R.id.button_workout_log_exercise;
         Exercise exercise = (Exercise) CurrentWorkout.getNextWorkoutComponent();
         TextView repNum = findViewById(R.id.repNumberInput);
         String repNumText = repNum.getText().toString();

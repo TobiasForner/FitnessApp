@@ -57,14 +57,16 @@ public class DurationExerciseActivity extends AppCompatActivity {
 
 
     private void copyPreviousSetResult() {
+        SetResult setResult;
         if (!CurrentWorkout.useLastWorkout) {
-            return;
+            setResult = CurrentWorkout.getPrevSetResultsOfCurrentExercise();
+        } else {
+            setResult = CurrentWorkout.getPrevSetResultsOfCurrentPosition();
         }
-        SetResult setResult = CurrentWorkout.getPrevSetResultsOfCurrentPosition();
         if (setResult == null) {
             return;
         }
-        if(!setResult.isDuration()){
+        if (!setResult.isDuration()) {
             return;
         }
 

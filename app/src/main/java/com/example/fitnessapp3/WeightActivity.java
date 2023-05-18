@@ -1,8 +1,8 @@
 package com.example.fitnessapp3;
 
+import android.content.Context;
 import android.os.Bundle;
 
-import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,7 +15,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,7 +43,7 @@ public class WeightActivity extends AppCompatActivity {
         Date today = Calendar.getInstance().getTime();
         String date = dateFormat.format(today);
 
-        JSONObject weightLog = getPastWeights();
+        JSONObject weightLog = getPastWeights(this);
 
         try {
             JSONArray logs = weightLog.getJSONArray("logs");
@@ -61,11 +60,11 @@ public class WeightActivity extends AppCompatActivity {
         }
     }
 
-    private JSONObject getPastWeights() {
+    public static JSONObject getPastWeights(Context context) {
         JSONObject weightLog;
-        if (Util.contextHasFile(this, "weight_log.json")) {
+        if (Util.contextHasFile(context, "weight_log.json")) {
             Log.d("WeightActivity", "weight log file exists.");
-            String contentsJSON = Util.readFromInternal("weight_log.json", this);
+            String contentsJSON = Util.readFromInternal("weight_log.json", context);
             try {
                 assert contentsJSON != null;
                 weightLog = new JSONObject(contentsJSON);
@@ -87,7 +86,7 @@ public class WeightActivity extends AppCompatActivity {
     }
 
     private void updatePastWeight() {
-        JSONObject weightLog = getPastWeights();
+        JSONObject weightLog = getPastWeights(this);
         try {
             JSONArray logs = weightLog.getJSONArray("logs");
             StringBuilder newText = new StringBuilder();
@@ -99,7 +98,7 @@ public class WeightActivity extends AppCompatActivity {
                 newText.append(entry.getString("date"));
                 newText.append(":  ");
                 newText.append(entry.getString("weight"));
-                ;
+
             }
             TextView pastWeightView = findViewById(R.id.pastWeightTextView);
             pastWeightView.setText(newText);
