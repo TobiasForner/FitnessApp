@@ -16,8 +16,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class WeightActivity extends AppCompatActivity {
@@ -89,16 +92,19 @@ public class WeightActivity extends AppCompatActivity {
         JSONObject weightLog = getPastWeights(this);
         try {
             JSONArray logs = weightLog.getJSONArray("logs");
-            StringBuilder newText = new StringBuilder();
+            List<String> logList = new ArrayList<>();
             for (int i = 0; i < logs.length(); i++) {
-                if (i > 0) {
+                JSONObject entry = logs.getJSONObject(i);
+                String text = entry.getString("date") + ":  " + entry.getString("weight");
+                logList.add(text);
+            }
+            logList.sort(Collections.reverseOrder());
+            StringBuilder newText = new StringBuilder();
+            for (String weight: logList) {
+                if (newText.length()>0) {
                     newText.append("\n");
                 }
-                JSONObject entry = logs.getJSONObject(i);
-                newText.append(entry.getString("date"));
-                newText.append(":  ");
-                newText.append(entry.getString("weight"));
-
+                newText.append(weight);
             }
             TextView pastWeightView = findViewById(R.id.pastWeightTextView);
             pastWeightView.setText(newText);
