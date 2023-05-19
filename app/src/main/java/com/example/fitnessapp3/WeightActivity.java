@@ -18,7 +18,6 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -88,28 +87,51 @@ public class WeightActivity extends AppCompatActivity {
         return weightLog;
     }
 
-    private void updatePastWeight() {
+    private List<JSONObject> getSortedWeightDates() {
+        List<JSONObject> logList = new ArrayList<>();
         JSONObject weightLog = getPastWeights(this);
         try {
             JSONArray logs = weightLog.getJSONArray("logs");
-            List<String> logList = new ArrayList<>();
+
             for (int i = 0; i < logs.length(); i++) {
                 JSONObject entry = logs.getJSONObject(i);
-                String text = entry.getString("date") + ":  " + entry.getString("weight");
-                logList.add(text);
+                logList.add(entry);
             }
-            logList.sort(Collections.reverseOrder());
-            StringBuilder newText = new StringBuilder();
-            for (String weight: logList) {
-                if (newText.length()>0) {
-                    newText.append("\n");
+            logList.sort((o1, o2) -> {
+                try {
+                    return o2.getString("date").compareTo(o1.getString("date"));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
                 }
-                newText.append(weight);
-            }
-            TextView pastWeightView = findViewById(R.id.pastWeightTextView);
-            pastWeightView.setText(newText);
+            });
+
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+        return logList;
+    }
+
+    private void updatePastWeight() {
+        List<JSONObject> logList = getSortedWeightDates();
+        StringBuilder newText = new StringBuilder();
+        for (JSONObject entry : logList) {
+            if (newText.length() > 0) {
+                newText.append("\n");
+            }
+            try {
+                newText.append(entry.getString("date")).append(":  ").append(entry.getString("weight"));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        TextView pastWeightView = findViewById(R.id.pastWeightTextView);
+        pastWeightView.setText(newText);
+
+        TextView editTextWeight = findViewById(R.id.editTextWeight);
+        try {
+            editTextWeight.setText(logList.get(0).getString("weight"));
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
         }
     }
 }
