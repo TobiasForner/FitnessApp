@@ -172,15 +172,28 @@ public class CurrentWorkout {
         numberOfExercise = new ArrayList<>(workoutLength);
     }
 
-    public static boolean hasNextExercise() {
+    public static boolean hasCurrentExercise() {
         return workout.hasNextExercise();
     }
 
-    public static WorkoutComponent getNextWorkoutComponent() throws IllegalArgumentException {
-        if (!hasNextExercise()) {
+    public static boolean hasNextExercise() {
+        return workout.getPosition()<workout.getLength()-1;
+    }
+
+    public static WorkoutComponent getCurrentWorkoutComponent() throws IllegalArgumentException {
+        if (!hasCurrentExercise()) {
             throw new IllegalArgumentException("No next exercise!");
         }
         return workout.getCurrentComponent();
+    }
+
+    public static WorkoutComponent getNextWorkoutComponent() throws IllegalArgumentException {
+        if (hasNextExercise()) {
+            return workout.getComponentAt(workout.getPosition()+1);
+        }else{
+            throw new IllegalArgumentException("No next exercise!");
+        }
+
     }
 
     public static void goBack() {

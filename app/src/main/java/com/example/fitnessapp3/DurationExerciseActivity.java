@@ -92,7 +92,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void setWeightInvisibleIfUnweighted() {
-        if (!((Exercise) CurrentWorkout.getNextWorkoutComponent()).isWeighted()) {
+        if (!((Exercise) CurrentWorkout.getCurrentWorkoutComponent()).isWeighted()) {
             View weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
             View weight_header = findViewById(R.id.duration_exercise_weight_header);
             weight_header.setVisibility(View.INVISIBLE);
@@ -146,7 +146,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
                     ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                     toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
                 }
-                if (CurrentWorkout.hasNextExercise()) {
+                if (CurrentWorkout.hasCurrentExercise()) {
                     goToNextActivity();
                 } else {
                     finishWorkout();
@@ -156,7 +156,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void logDuration(int duration) {
-        if (((Exercise) CurrentWorkout.getNextWorkoutComponent()).isWeighted()) {
+        if (((Exercise) CurrentWorkout.getCurrentWorkoutComponent()).isWeighted()) {
             TextView weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
             int weight = Integer.parseInt(weight_text.getText().toString());
             CurrentWorkout.logWeightedDuration(duration, weight, this);
@@ -171,7 +171,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void goToNextActivity() {
-        if (!CurrentWorkout.hasNextExercise()) {
+        if (!CurrentWorkout.hasCurrentExercise()) {
             CurrentWorkout.finishWorkout(this);
             startActivity(ActivityTransition.goToNextActivityInWorkout(this));
             finish();

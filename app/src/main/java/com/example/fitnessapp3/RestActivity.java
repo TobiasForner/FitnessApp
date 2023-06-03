@@ -36,6 +36,16 @@ public class RestActivity extends AppCompatActivity {
 
         ProgressBar progressBar = findViewById(R.id.progressbar_rest);
         CurrentWorkout.setProgress(progressBar);
+
+        TextView nextExercise = findViewById(R.id.textView_next_exercise);
+        if(CurrentWorkout.hasNextExercise()){
+            WorkoutComponent comp = CurrentWorkout.getNextWorkoutComponent();
+            String nextName = comp.getName();
+            nextExercise.setText(nextName);
+        }else{
+            TextView upNext = findViewById(R.id.textView_upnext);
+            upNext.setVisibility(View.INVISIBLE);
+        }
     }
 
     public void skipTimer(View view) {
@@ -91,7 +101,7 @@ public class RestActivity extends AppCompatActivity {
                     ToneGenerator toneGenerator = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
                     toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
                 }
-                if (CurrentWorkout.hasNextExercise() && CurrentWorkout.getNextWorkoutComponent().isRest()) {
+                if (CurrentWorkout.hasCurrentExercise() && CurrentWorkout.getCurrentWorkoutComponent().isRest()) {
                     restartActivity();
                 }
                 finishActivity();
@@ -100,7 +110,7 @@ public class RestActivity extends AppCompatActivity {
     }
 
     private void finishActivity() {
-        if (CurrentWorkout.hasNextExercise()) {
+        if (CurrentWorkout.hasCurrentExercise()) {
             goToNextActivity();
         } else {
             CurrentWorkout.finishWorkout(this);

@@ -11,10 +11,10 @@ public class ActivityTransition {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(origin);
         if (!sharedPreferences.getBoolean("workout_is_in_progress", false)) {
             nextIntent = new Intent(origin, MainActivity.class);
-        } else if (CurrentWorkout.hasNextExercise()) {
-            if (CurrentWorkout.getNextWorkoutComponent().isRest()) {
+        } else if (CurrentWorkout.hasCurrentExercise()) {
+            if (CurrentWorkout.getCurrentWorkoutComponent().isRest()) {
                 nextIntent= restIntent(origin);
-            } else if (((Exercise) CurrentWorkout.getNextWorkoutComponent()).getType() == Exercise.ExType.DURATION) {
+            } else if (((Exercise) CurrentWorkout.getCurrentWorkoutComponent()).getType() == Exercise.ExType.DURATION) {
                 nextIntent = new Intent(origin, DurationExerciseActivity.class);
             } else {
                 nextIntent = new Intent(origin, WorkoutActivity.class);
@@ -27,7 +27,7 @@ public class ActivityTransition {
 
     private static Intent restIntent(Activity origin){
         Intent nextIntent = new Intent(origin, RestActivity.class);
-        int time = ((Rest) CurrentWorkout.getNextWorkoutComponent()).getRestTime();
+        int time = ((Rest) CurrentWorkout.getCurrentWorkoutComponent()).getRestTime();
         nextIntent.putExtra(MainActivity.EXTRA_MESSAGE, time);
         nextIntent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");
         return nextIntent;

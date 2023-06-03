@@ -24,7 +24,7 @@ public class WorkoutActivity extends AppCompatActivity {
 
         this.setTitle(CurrentWorkout.workoutName);
 
-        if (CurrentWorkout.hasNextExercise()) {
+        if (CurrentWorkout.hasCurrentExercise()) {
             init();
         } else {
             Intent intent = new Intent(this, MainActivity.class);
@@ -40,7 +40,7 @@ public class WorkoutActivity extends AppCompatActivity {
         TextView exName = findViewById(R.id.exerciseName);
         TextView setProg = findViewById(R.id.setProgressText);
         exName.setText(CurrentWorkout.getWorkoutComponentName());
-        WorkoutComponent nextWorkoutComponent = CurrentWorkout.getNextWorkoutComponent();
+        WorkoutComponent nextWorkoutComponent = CurrentWorkout.getCurrentWorkoutComponent();
         if (nextWorkoutComponent.isExercise()) {
             Exercise exercise = (Exercise) nextWorkoutComponent;
             TextView exNum = findViewById(R.id.exerciseNumberInput);
@@ -100,7 +100,7 @@ public class WorkoutActivity extends AppCompatActivity {
 
     public void logExercise(View view) {
         assert view.getId() == R.id.button_workout_log_exercise;
-        Exercise exercise = (Exercise) CurrentWorkout.getNextWorkoutComponent();
+        Exercise exercise = (Exercise) CurrentWorkout.getCurrentWorkoutComponent();
         TextView repNum = findViewById(R.id.repNumberInput);
         String repNumText = repNum.getText().toString();
         int repNumInt;
@@ -124,7 +124,7 @@ public class WorkoutActivity extends AppCompatActivity {
             CurrentWorkout.logExercise(0, repNumInt, this);
         }
 
-        if (CurrentWorkout.hasNextExercise()) {
+        if (CurrentWorkout.hasCurrentExercise()) {
             startActivity(ActivityTransition.goToNextActivityInWorkout(this));
         } else {
             CurrentWorkout.finishWorkout(this);
