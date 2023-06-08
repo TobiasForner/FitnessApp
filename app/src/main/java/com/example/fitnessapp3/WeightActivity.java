@@ -11,25 +11,83 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYGraphWidget;
+import com.androidplot.xy.XYPlot;
+import com.androidplot.xy.XYSeries;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 public class WeightActivity extends AppCompatActivity {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weight);
         updatePastWeight();
+
+        XYPlot plot = (XYPlot) findViewById(R.id.plot);
+
+        List<JSONObject> weights = getSortedWeightDates();
+        Collections.reverse(weights);
+        List<Float> weightNumbers = weights.stream().map(x -> {
+            try {
+                return Float.parseFloat(x.getString("weight"));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
+
+        List<String> dateLabels = weights.stream().map(x -> {
+            try {
+                return x.getString("date");
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.toList());
+
+        // turn the above arrays into XYSeries':
+        // (Y_VALS_ONLY means use the element index as the x value)
+        XYSeries weightSeries = new SimpleXYSeries(
+                weightNumbers, SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Weight");
+
+        // create formatters to use for drawing a series using LineAndPointRenderer
+        // and configure them from xml:
+        LineAndPointFormatter series1Format =
+                new LineAndPointFormatter(this, R.xml.line_point_formatter_with_labels);
+
+
+        // add a new series' to the xyplot:
+        plot.addSeries(weightSeries, series1Format);
+        plot.getGraph().setMarginBottom(200);
+
+        plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
+            @Override
+            public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
+                int i = Math.round(((Number) obj).floatValue());
+                return toAppendTo.append(dateLabels.get(i));
+            }
+
+            @Override
+            public Object parseObject(String source, ParsePosition pos) {
+                return dateLabels.indexOf(source);
+            }
+        });
     }
 
     public void logWeight(View view) {
