@@ -3,12 +3,10 @@ package com.example.fitnessapp3;
 
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
@@ -262,10 +260,13 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
     }
 
     private void startWorkout() {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean("workout_is_in_progress", true);
-        editor.apply();
+        try {
+            JSONObject appStatus = new JSONObject(Objects.requireNonNull(Util.readFromInternal("app_status.json", this)));
+            appStatus.put("workout_is_in_progress", true);
+            Util.writeFileOnInternalStorage(this, "app_status.json", appStatus.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         startActivity(ActivityTransition.goToNextActivityInWorkout(this));
     }
 

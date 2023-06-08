@@ -2,24 +2,33 @@ package com.example.fitnessapp3;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Objects;
 
 public class ActivityTransition {
     public static Intent goToNextActivityInWorkout(Activity origin) {
         Intent nextIntent;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(origin);
-        if (!sharedPreferences.getBoolean("workout_is_in_progress", false)) {
-            nextIntent = new Intent(origin, MainActivity.class);
-        } else if (CurrentWorkout.hasCurrentExercise()) {
-            if (CurrentWorkout.getCurrentWorkoutComponent().isRest()) {
-                nextIntent= restIntent(origin);
-            } else if (((Exercise) CurrentWorkout.getCurrentWorkoutComponent()).getType() == Exercise.ExType.DURATION) {
-                nextIntent = new Intent(origin, DurationExerciseActivity.class);
-            } else {
-                nextIntent = new Intent(origin, WorkoutActivity.class);
+        try {
+            JSONObject appStatus = new JSONObject(Objects.requireNonNull(Util.readFromInternal("app_status.json", origin)));
+            if(appStatus.getBoolean("workout_is_in_progress") && CurrentWorkout.hasCurrentExercise()){
+                if (CurrentWorkout.getCurrentWorkoutComponent().isRest()) {
+                    nextIntent= restIntent(origin);
+                } else if (((Exercise) CurrentWorkout.getCurrentWorkoutComponent()).getType() == Exercise.ExType.DURATION) {
+                    nextIntent = new Intent(origin, DurationExerciseActivity.class);
+                } else {
+                    nextIntent = new Intent(origin, WorkoutActivity.class);
+                }
             }
-        } else {
+            else{
+                nextIntent = new Intent(origin, MainActivity.class);
+            }
+            return nextIntent;
+        }catch(JSONException e){
+            e.printStackTrace();
             nextIntent = new Intent(origin, MainActivity.class);
         }
         return nextIntent;

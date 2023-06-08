@@ -2,56 +2,61 @@ package com.example.fitnessapp3;
 
 import android.app.Application;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Objects;
+
 
 public class Startup extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        //editor.putBoolean("FIRSTRUN", true);
-        editor.apply();
-        if (sharedPreferences.getBoolean("FIRSTRUN", true)) {
-            // Code to run once
-            initWorkoutNamesFile(this);
-
-            initExercises(editor);
-            editor.putBoolean("FIRSTRUN", false);
-            Set<String> workoutNames = new HashSet<>();
-            workoutNames.add("RR");
-            editor.putStringSet("Workouts", workoutNames);
-            editor.putString("RR", getRRString());
-            editor.apply();
-
-            Context context = getApplicationContext();
-            initWorkoutNamesFile(context);
-            ExerciseManager exerciseManager = new ExerciseManager(context);
-            exerciseManager.initExerciseDetails(context);
-            WorkoutManager.init(this);
-            String sep = System.getProperty("line.separator");
-            String rrForFileString = "[Pull Up,Rest]x5" + sep + "[Ring Dip,Rest]x3" + sep +
-                    "[Row,Rest,Push Up,Rest]x2" + sep + "Row,Rest,Push Up" + sep;
-            WorkoutManager.addWorkout("RR", rrForFileString, this);
-        } else {
-            WorkoutManager.init(this);
+        JSONObject appStatus;
+        if(Util.contextHasFile(this, "app_status.json")){
+            try {
+                appStatus = new JSONObject(Objects.requireNonNull(Util.readFromInternal("app_status.json", this)));
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            appStatus = new JSONObject();
+            try {
+                appStatus.put("first_run", true);
+                appStatus.put("workout_is_in_progress", false);
+                Util.writeFileOnInternalStorage(this,"app_status.json",appStatus.toString());
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
-    }
+        try {
+            if (appStatus.getBoolean("first_run")) {
+                // Code to run once
+                initWorkoutNamesFile(this);
+                appStatus.put("first_run", false);
+                Util.writeFileOnInternalStorage(this,"app_status.json",appStatus.toString());
 
-    public static void initExercises(SharedPreferences.Editor editor) {
-        editor.putString("Pull Up", "ExerciseType=Reps;Weighted=true;Abbreviation=Pull Up");
-        editor.putString("Ring Dip", "ExerciseType=Reps;Weighted=true;Abbreviation=RD");
-        editor.putString("Push Up", "ExerciseType=Reps;Weighted=true;Abbreviation=PshU");
-        editor.putString("Row", "ExerciseType=Reps;Weighted=true;Abbreviation=Row");
-        editor.apply();
+                Context context = getApplicationContext();
+                initWorkoutNamesFile(context);
+                ExerciseManager exerciseManager = new ExerciseManager(context);
+                exerciseManager.initExerciseDetails(context);
+                WorkoutManager.init(this);
+                String sep = System.getProperty("line.separator");
+                String rrForFileString = "[Pull Up,Rest]x5" + sep + "[Ring Dip,Rest]x3" + sep +
+                        "[Row,Rest,Push Up,Rest]x2" + sep + "Row,Rest,Push Up" + sep;
+                WorkoutManager.addWorkout("RR", rrForFileString, this);
+            } else {
+                WorkoutManager.init(this);
+            }
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static void initWorkoutNamesFile(Context context) {
@@ -62,26 +67,5 @@ public class Startup extends Application {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private String getRRString() {
-        StringBuilder rrString = new StringBuilder();
-        for (int i = 0; i < 5; i++) {
-            rrString.append("Pull Up,WEIGHT;");
-            rrString.append("Rest,REST,180000;");
-        }
-        for (int i = 0; i < 3; i++) {
-            rrString.append("Ring Dip,WEIGHT;");
-            rrString.append("Rest,REST,180000;");
-        }
-        for (int i = 0; i < 3; i++) {
-            rrString.append("Row,WEIGHT;");
-            rrString.append("Rest,REST,180000;");
-            rrString.append("Push Up,WEIGHT;");
-            if (i < 2) {
-                rrString.append("Rest,REST,180000;");
-            }
-        }
-        return rrString.toString();
     }
 }
