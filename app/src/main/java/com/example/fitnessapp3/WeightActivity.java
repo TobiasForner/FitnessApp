@@ -41,7 +41,11 @@ public class WeightActivity extends AppCompatActivity {
         setContentView(R.layout.activity_weight);
         updatePastWeight();
 
-        XYPlot plot = (XYPlot) findViewById(R.id.plot);
+        updatePlot();
+    }
+
+    private void updatePlot(){
+        XYPlot plot = findViewById(R.id.plot);
 
         List<JSONObject> weights = getSortedWeightDates();
         Collections.reverse(weights);
