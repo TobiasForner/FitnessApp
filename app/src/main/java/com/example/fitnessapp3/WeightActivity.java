@@ -1,5 +1,7 @@
 package com.example.fitnessapp3;
 
+import static com.androidplot.xy.StepMode.INCREMENT_BY_VAL;
+
 import android.content.Context;
 import android.os.Bundle;
 
@@ -44,7 +46,7 @@ public class WeightActivity extends AppCompatActivity {
         updatePlot();
     }
 
-    private void updatePlot(){
+    private void updatePlot() {
         XYPlot plot = findViewById(R.id.plot);
 
         List<JSONObject> weights = getSortedWeightDates();
@@ -65,6 +67,7 @@ public class WeightActivity extends AppCompatActivity {
             }
         }).collect(Collectors.toList());
 
+
         // turn the above arrays into XYSeries':
         // (Y_VALS_ONLY means use the element index as the x value)
         XYSeries weightSeries = new SimpleXYSeries(
@@ -76,14 +79,16 @@ public class WeightActivity extends AppCompatActivity {
                 new LineAndPointFormatter(this, R.xml.line_point_formatter_with_labels);
 
 
-        // add a new series' to the xyplot:
         plot.addSeries(weightSeries, series1Format);
         plot.getGraph().setMarginBottom(200);
+        plot.getGraph().setMarginTop(50);
+        plot.setDomainStep(INCREMENT_BY_VAL, 1);
 
         plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
             @Override
             public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
-                int i = Math.round(((Number) obj).floatValue());
+                float posF = ((Number) obj).floatValue();
+                int i = Math.round(posF);
                 return toAppendTo.append(dateLabels.get(i));
             }
 
@@ -92,6 +97,7 @@ public class WeightActivity extends AppCompatActivity {
                 return dateLabels.indexOf(source);
             }
         });
+        plot.redraw();
     }
 
     public void logWeight(View view) {
@@ -122,6 +128,7 @@ public class WeightActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        updatePlot();
     }
 
     public static JSONObject getPastWeights(Context context) {
