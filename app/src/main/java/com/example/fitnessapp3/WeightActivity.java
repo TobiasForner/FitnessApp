@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -26,11 +27,10 @@ import org.json.JSONObject;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
@@ -109,9 +109,9 @@ public class WeightActivity extends AppCompatActivity {
             return;
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd.HH-mm", Locale.getDefault());
-        Date today = Calendar.getInstance().getTime();
-        String date = dateFormat.format(today);
+        LocalDateTime t = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd.HH-mm", Locale.getDefault());
+        String date = t.format(dateTimeFormatter);
 
         JSONObject weightLog = getPastWeights(this);
 
@@ -129,6 +129,11 @@ public class WeightActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         updatePlot();
+        View focusView = this.getCurrentFocus();
+        if (focusView != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(focusView.getWindowToken(), 0);
+        }
     }
 
     public static JSONObject getPastWeights(Context context) {
