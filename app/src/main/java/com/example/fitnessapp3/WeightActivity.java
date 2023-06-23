@@ -52,6 +52,7 @@ public class WeightActivity extends AppCompatActivity {
 
     private void updatePlot() {
         XYPlot plot = findViewById(R.id.plot);
+        plot.clear();
 
         List<JSONObject> weights = getSortedWeightDates();
         Collections.reverse(weights);
@@ -146,6 +147,7 @@ public class WeightActivity extends AppCompatActivity {
         plot.getGraph().setMarginBottom(200);
         plot.getGraph().setMarginTop(50);
         plot.getGraph().setPaddingTop(50);
+        plot.setDomainBoundaries(-1, aggregatedWeights.size(), BoundaryMode.FIXED);
         plot.setDomainStep(INCREMENT_BY_VAL, 1);
         plot.setRangeBoundaries(aggregatedWeights.stream().min(Float::compareTo).orElse(70.0f) - 0.5, aggregatedWeights.stream().max(Float::compareTo).orElse(82.f) + 0.5, BoundaryMode.FIXED);
         //Log.d("WeightActivity", "" + plot.getGraph().range);
@@ -155,7 +157,10 @@ public class WeightActivity extends AppCompatActivity {
             public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
                 float posF = ((Number) obj).floatValue();
                 int i = Math.round(posF);
-                return toAppendTo.append(consideredDates.get(i));
+                if (i < consideredDates.size() && 0 <= i) {
+                    return toAppendTo.append(consideredDates.get(i));
+                }
+                return toAppendTo.append("");
             }
 
             @Override
