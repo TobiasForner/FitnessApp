@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constrain"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".DurationExerciseActivity">
@@ -28,27 +29,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/editText_duration"
-        app:layout_constraintEnd_toEndOf="@+id/editText_duration"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/editText_duration"
-        tools:text="@string/duration" />
-
-    <EditText
         android:id="@+id/editText_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="84dp"
-        android:ems="10"
-        android:hint="@string/duration"
-        android:inputType="number"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display3"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.432"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/duration_exercise_name" />
+        app:layout_constraintTop_toBottomOf="@+id/duration_exercise_name"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/duration_exercise_weight_header"
@@ -57,23 +48,23 @@
         android:text="@string/weight"
         app:layout_constraintBottom_toTopOf="@+id/duration_exercise_weight_edit_text"
         app:layout_constraintEnd_toEndOf="@+id/duration_exercise_weight_edit_text"
-        app:layout_constraintHorizontal_bias="0.011"
+        app:layout_constraintHorizontal_bias="0.036"
         app:layout_constraintStart_toStartOf="@+id/duration_exercise_weight_edit_text"
-        app:layout_constraintTop_toBottomOf="@+id/editText_duration"
+        app:layout_constraintTop_toTopOf="@+id/duration_exercise_weight_edit_text"
         app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/duration_exercise_weight_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
+        android:layout_marginTop="24dp"
         android:ems="10"
         android:hint="@string/weight"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.502"
+        app:layout_constraintHorizontal_bias="0.537"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_duration" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
     <Button
         android:id="@+id/button_start_duration"
@@ -84,10 +75,10 @@
         android:text="@string/start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/duration_exercise_weight_edit_text"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.409"
         app:layout_constraintStart_toStartOf="@+id/duration_exercise_weight_edit_text"
         app:layout_constraintTop_toBottomOf="@+id/duration_exercise_weight_edit_text"
-        app:layout_constraintVertical_bias="0.005" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/duration_exercise_skip_button"
@@ -107,15 +98,18 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/duration_exercise_name"
         app:layout_constraintEnd_toEndOf="@+id/duration_exercise_name"
+        app:layout_constraintHorizontal_bias="0.502"
         app:layout_constraintStart_toStartOf="@+id/duration_exercise_name"
-        app:layout_constraintTop_toBottomOf="@+id/duration_exercise_name" />
+        app:layout_constraintTop_toBottomOf="@+id/duration_exercise_name"
+        app:layout_constraintVertical_bias="0.171" />
 
     <TextView
         android:id="@+id/duration_exercise_prev_results_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="328dp"
+        android:layout_marginTop="392dp"
         android:text="@string/prev_results"
         app:layout_constraintEnd_toEndOf="@+id/button_start_duration"
         app:layout_constraintHorizontal_bias="0.437"
@@ -133,4 +127,30 @@
         app:layout_constraintStart_toStartOf="@+id/duration_exercise_prev_results_header"
         app:layout_constraintTop_toBottomOf="@+id/duration_exercise_prev_results_header"
         app:layout_constraintVertical_bias="0.0" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="146dp"
+        android:layout_height="192dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_duration">
+
+        <NumberPicker
+            android:id="@+id/activity_duration_seconds_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/activity_duration_minute_picker"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <NumberPicker
+            android:id="@+id/activity_duration_minute_picker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

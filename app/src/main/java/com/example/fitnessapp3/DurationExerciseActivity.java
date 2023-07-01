@@ -2,6 +2,7 @@ package com.example.fitnessapp3;
 
 import android.media.AudioManager;
 import android.media.ToneGenerator;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Gravity;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -26,11 +28,16 @@ public class DurationExerciseActivity extends AppCompatActivity {
     private boolean playSound;
 
     private CountDownTimer timer;
+    private NumberPicker minutesPicker;
+    private NumberPicker secondsPicker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_duration_exercise);
+
+        minutesPicker = findViewById(R.id.activity_duration_minute_picker);
+        secondsPicker = findViewById(R.id.activity_duration_seconds_picker);
 
         ProgressBar progressBar = findViewById(R.id.progressBar_duration_exercise);
         CurrentWorkout.setProgress(progressBar);
@@ -47,6 +54,29 @@ public class DurationExerciseActivity extends AppCompatActivity {
         setPrevResults();
         copyPreviousSetResult();
         setWeightInvisibleIfUnweighted();
+        setDurationPicker();
+    }
+
+    private void setDurationPicker() {
+        minutesPicker.setMinValue(0);
+        minutesPicker.setMaxValue(59);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            minutesPicker.setTextSize(50f);
+        }
+
+
+        secondsPicker.setMinValue(0);
+        secondsPicker.setMaxValue(59);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            secondsPicker.setTextSize(50f);
+        }
+
+        SetResult prevResult = getPrevSetResult();
+        if (prevResult == null) {
+            return;
+        }
+        minutesPicker.setValue(prevResult.getRepNr() / 60);
+        secondsPicker.setValue(prevResult.getRepNr() % 60);
     }
 
 
@@ -55,14 +85,19 @@ public class DurationExerciseActivity extends AppCompatActivity {
         setProg.setText(CurrentWorkout.getSetString());
     }
 
-
-    private void copyPreviousSetResult() {
+    private SetResult getPrevSetResult() {
         SetResult setResult;
         if (!CurrentWorkout.useLastWorkout) {
             setResult = CurrentWorkout.getPrevSetResultsOfCurrentExercise();
         } else {
             setResult = CurrentWorkout.getPrevSetResultsOfCurrentPosition();
         }
+        return setResult;
+    }
+
+
+    private void copyPreviousSetResult() {
+        SetResult setResult = getPrevSetResult();
         if (setResult == null) {
             return;
         }
@@ -73,6 +108,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
         TextView dur = findViewById(R.id.editText_duration);
         String repNr = String.valueOf(setResult.getRepNr());
         dur.setText(repNr);
+        dur.setVisibility(View.INVISIBLE);
 
 
         EditText weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
@@ -102,10 +138,11 @@ public class DurationExerciseActivity extends AppCompatActivity {
 
     public void startDuration(View view) {
         assert view.getId() == R.id.button_start_duration;
-        final EditText durationText = findViewById(R.id.editText_duration);
+        final TextView durationText = findViewById(R.id.editText_duration);
         final int duration;
         try {
-            duration = Integer.parseInt(durationText.getText().toString());
+            //duration = Integer.parseInt(durationText.getText().toString());
+            duration = minutesPicker.getValue() * 60 + secondsPicker.getValue();
             if (duration == 0) {
                 showPopupWindowClick(durationText);
                 return;
@@ -115,9 +152,22 @@ public class DurationExerciseActivity extends AppCompatActivity {
             return;
         }
 
+        durationText.setVisibility(View.VISIBLE);
         durationText.setEnabled(false);
         durationText.setClickable(false);
         durationText.setFocusable(false);
+        durationText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        //durationText.setTextSize(30);
+
+        minutesPicker.setEnabled(false);
+        minutesPicker.setClickable(false);
+        minutesPicker.setFocusable(false);
+        minutesPicker.setVisibility(View.INVISIBLE);
+        secondsPicker.setEnabled(false);
+        secondsPicker.setClickable(false);
+        secondsPicker.setFocusable(false);
+        secondsPicker.setVisibility(View.INVISIBLE);
+
         Button skipButton = findViewById(R.id.duration_exercise_skip_button);
         skipButton.setVisibility(View.VISIBLE);
         Button startButton = findViewById(R.id.button_start_duration);
@@ -128,7 +178,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void createTimer(int duration) {
-        final EditText durationText = findViewById(R.id.editText_duration);
+        final TextView durationText = findViewById(R.id.editText_duration);
 
         timer = new CountDownTimer(duration * 1000L, 1000) {
 
