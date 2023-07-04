@@ -168,6 +168,13 @@ public class DurationExerciseActivity extends AppCompatActivity {
         secondsPicker.setFocusable(false);
         secondsPicker.setVisibility(View.INVISIBLE);
 
+        TextView minHeader = findViewById(R.id.duration_exercise_min_header);
+        minHeader.setEnabled(false);
+        minHeader.setVisibility(View.INVISIBLE);
+        TextView secHeader = findViewById(R.id.duration_exercise_sec_header);
+        secHeader.setEnabled(false);
+        secHeader.setVisibility(View.INVISIBLE);
+
         Button skipButton = findViewById(R.id.duration_exercise_skip_button);
         skipButton.setVisibility(View.VISIBLE);
         Button startButton = findViewById(R.id.button_start_duration);

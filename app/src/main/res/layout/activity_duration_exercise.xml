@@ -57,12 +57,12 @@
         android:id="@+id/duration_exercise_weight_edit_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="20dp"
         android:ems="10"
         android:hint="@string/weight"
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.527"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
 
@@ -75,7 +75,7 @@
         android:text="@string/start"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/duration_exercise_weight_edit_text"
-        app:layout_constraintHorizontal_bias="0.434"
+        app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toStartOf="@+id/duration_exercise_weight_edit_text"
         app:layout_constraintTop_toBottomOf="@+id/duration_exercise_weight_edit_text"
         app:layout_constraintVertical_bias="0.0" />
@@ -109,10 +109,9 @@
         android:id="@+id/duration_exercise_prev_results_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="340dp"
+        android:layout_marginTop="420dp"
         android:text="@string/prev_results"
         app:layout_constraintEnd_toEndOf="@+id/button_start_duration"
-        app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintStart_toStartOf="@+id/button_start_duration"
         app:layout_constraintTop_toBottomOf="@+id/duration_exercise_skip_button" />
 
@@ -123,7 +122,7 @@
         android:text="@string/prev_results"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/duration_exercise_prev_results_header"
-        app:layout_constraintHorizontal_bias="0.507"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/duration_exercise_prev_results_header"
         app:layout_constraintTop_toBottomOf="@+id/duration_exercise_prev_results_header"
         app:layout_constraintVertical_bias="0.0" />
@@ -155,7 +154,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/duration_exercise_min_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/min"
@@ -166,7 +165,7 @@
             app:layout_constraintVertical_bias="0.526" />
 
         <TextView
-            android:id="@+id/textView12"
+            android:id="@+id/duration_exercise_sec_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/sec"
