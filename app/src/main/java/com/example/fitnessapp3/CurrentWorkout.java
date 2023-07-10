@@ -102,6 +102,9 @@ public class CurrentWorkout {
             JSONObject lastResults = lastWorkout.getJSONObject("exResults");
             lastWorkoutExToResults = new HashMap<>();
             for (String ex : exToResults.keySet()) {
+                if (!lastResults.has(ex)) {
+                    continue;
+                }
                 JSONArray repr = lastResults.getJSONArray(ex);
                 ArrayList<SetResult> setResults = new ArrayList<>();
                 for (int i = 0; i < repr.length(); i++) {
@@ -157,7 +160,7 @@ public class CurrentWorkout {
     }
 
     public static boolean hasNextExercise() {
-        return workout.getPosition()<workout.getLength()-1;
+        return workout.getPosition() < workout.getLength() - 1;
     }
 
     public static WorkoutComponent getCurrentWorkoutComponent() throws IllegalArgumentException {
@@ -169,8 +172,8 @@ public class CurrentWorkout {
 
     public static WorkoutComponent getNextWorkoutComponent() throws IllegalArgumentException {
         if (hasNextExercise()) {
-            return workout.getComponentAt(workout.getPosition()+1);
-        }else{
+            return workout.getComponentAt(workout.getPosition() + 1);
+        } else {
             throw new IllegalArgumentException("No next exercise!");
         }
 
