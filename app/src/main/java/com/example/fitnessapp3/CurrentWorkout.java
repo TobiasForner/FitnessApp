@@ -183,7 +183,7 @@ public class CurrentWorkout {
         workout.goBack();
     }
 
-    public static void logExercise(int exNum, int repNum, Activity activity) {
+    public static void logExercise(int exNum, int repNum, Activity activity, int pos) {
         currentWorkout[workout.getPosition()] = exNum + "," + repNum;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
@@ -191,18 +191,22 @@ public class CurrentWorkout {
         SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
         currentSetResult.setRepNr(repNum);
         currentSetResult.setAddedWeight(exNum);
-        workout.proceed();
+        if (pos == getWorkoutPosition()) {
+            workout.proceed();
+        }
         saveProgress(activity);
     }
 
-    public static void logRest(int millis, Activity activity) {
+    public static void logRest(int millis, Activity activity, int pos) {
         currentWorkout[workout.getPosition()] = "" + millis;
-        workout.proceed();
+        if (pos == getWorkoutPosition()) {
+            workout.proceed();
+        }
         saveProgress(activity);
     }
 
 
-    public static void logDuration(int duration, Activity activity) {
+    public static void logDuration(int duration, Activity activity, int pos) {
         currentWorkout[workout.getPosition()] = "" + duration;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
@@ -211,11 +215,13 @@ public class CurrentWorkout {
         currentSetResult.setRepNr(duration);
         currentSetResult.setAddedWeight(0);
         currentSetResult.setIsDuration(true);
-        workout.proceed();
+        if (pos == getWorkoutPosition()) {
+            workout.proceed();
+        }
         saveProgress(activity);
     }
 
-    public static void logWeightedDuration(int duration, int weight, Activity activity) {
+    public static void logWeightedDuration(int duration, int weight, Activity activity, int pos) {
         currentWorkout[workout.getPosition()] = "" + duration + "," + weight + "," + true;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
@@ -224,7 +230,9 @@ public class CurrentWorkout {
         currentSetResult.setRepNr(duration);
         currentSetResult.setAddedWeight(weight);
         currentSetResult.setIsDuration(true);
-        workout.proceed();
+        if (pos == getWorkoutPosition()) {
+            workout.proceed();
+        }
         saveProgress(activity);
     }
 

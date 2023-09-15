@@ -31,6 +31,8 @@ public class DurationExerciseActivity extends AppCompatActivity {
     private NumberPicker minutesPicker;
     private NumberPicker secondsPicker;
 
+    private int pos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,6 +49,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
         exName.setText(CurrentWorkout.getWorkoutComponentName());
         timer = null;
         init();
+        pos = CurrentWorkout.getWorkoutPosition();
     }
 
     public void init() {
@@ -216,9 +219,9 @@ public class DurationExerciseActivity extends AppCompatActivity {
         if (((Exercise) CurrentWorkout.getCurrentWorkoutComponent()).isWeighted()) {
             TextView weight_text = findViewById(R.id.duration_exercise_weight_edit_text);
             int weight = Integer.parseInt(weight_text.getText().toString());
-            CurrentWorkout.logWeightedDuration(duration, weight, this);
+            CurrentWorkout.logWeightedDuration(duration, weight, this, pos);
         } else {
-            CurrentWorkout.logDuration(duration, this);
+            CurrentWorkout.logDuration(duration, this, pos);
         }
     }
 

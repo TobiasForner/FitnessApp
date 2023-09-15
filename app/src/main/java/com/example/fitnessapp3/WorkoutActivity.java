@@ -17,6 +17,8 @@ import com.example.fitnessapp3.SetResults.SetResult;
 
 public class WorkoutActivity extends AppCompatActivity {
 
+    private int pos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,6 +32,8 @@ public class WorkoutActivity extends AppCompatActivity {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         }
+
+        pos = CurrentWorkout.getWorkoutPosition();
 
         ProgressBar progressBar = findViewById(R.id.progressBar_workout);
         CurrentWorkout.setProgress(progressBar);
@@ -115,13 +119,13 @@ public class WorkoutActivity extends AppCompatActivity {
             String exNumText = exNum.getText().toString();
             try {
                 int exNumInt = Integer.parseInt(exNumText);
-                CurrentWorkout.logExercise(exNumInt, repNumInt, this);
+                CurrentWorkout.logExercise(exNumInt, repNumInt, this, pos);
             } catch (NumberFormatException e) {
                 showPopupWindowClick(exNum, getString(R.string.popup));
                 return;
             }
         } else {
-            CurrentWorkout.logExercise(0, repNumInt, this);
+            CurrentWorkout.logExercise(0, repNumInt, this, pos);
         }
 
         if (CurrentWorkout.hasCurrentExercise()) {

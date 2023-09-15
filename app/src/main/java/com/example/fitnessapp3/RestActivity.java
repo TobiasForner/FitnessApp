@@ -22,6 +22,8 @@ public class RestActivity extends AppCompatActivity {
     int timeElapsed = 0;
     boolean playSound;
 
+    private int pos;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         playSound = true;
@@ -38,14 +40,16 @@ public class RestActivity extends AppCompatActivity {
         CurrentWorkout.setProgress(progressBar);
 
         TextView nextExercise = findViewById(R.id.textView_next_exercise);
-        if(CurrentWorkout.hasNextExercise()){
+        if (CurrentWorkout.hasNextExercise()) {
             WorkoutComponent comp = CurrentWorkout.getNextWorkoutComponent();
             String nextName = comp.getName();
             nextExercise.setText(nextName);
-        }else{
+        } else {
             TextView upNext = findViewById(R.id.textView_upnext);
             upNext.setVisibility(View.INVISIBLE);
         }
+
+        pos = CurrentWorkout.getWorkoutPosition();
     }
 
     public void skipTimer(View view) {
@@ -73,7 +77,7 @@ public class RestActivity extends AppCompatActivity {
     }
 
     private void logRest(int millis) {
-        CurrentWorkout.logRest(millis, this);
+        CurrentWorkout.logRest(millis, this, pos);
     }
 
     private void goToNextActivity() {
