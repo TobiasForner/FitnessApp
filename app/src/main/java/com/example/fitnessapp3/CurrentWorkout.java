@@ -12,10 +12,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -44,7 +47,48 @@ public class CurrentWorkout {
         String lastResults = String.join(";", currentWorkout);
         setInProgress(false, activity);
         saveFinalResults(activity);
+        logWorkoutCompletion(activity);
         Util.writeFileOnInternalStorage(activity, workoutName + "last_result.txt", lastResults);
+    }
+
+    private static void logWorkoutCompletion(Context context) {
+        String workoutStats = Util.readFromInternal("workout_stats.json", context);
+        JSONObject workoutStatsJSON;
+        if (workoutStats == null) {
+            workoutStatsJSON = new JSONObject();
+        } else {
+            try {
+                workoutStatsJSON = new JSONObject(workoutStats);
+            } catch (JSONException e) {
+                workoutStatsJSON = new JSONObject();
+            }
+        }
+        JSONObject currWorkoutStats;
+        if (workoutStatsJSON.has(workoutName)) {
+            try {
+                currWorkoutStats = workoutStatsJSON.getJSONObject(workoutName);
+            } catch (JSONException e) {
+                currWorkoutStats = new JSONObject();
+            }
+        } else {
+            currWorkoutStats = new JSONObject();
+        }
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd.HH-mm", Locale.getDefault());
+        LocalDateTime t = LocalDateTime.now();
+        String date = t.format(dateTimeFormatter);
+        try {
+            currWorkoutStats.put("lastCompletion", date);
+            int count = 1;
+            if (currWorkoutStats.has("count")) {
+                count = currWorkoutStats.getInt("count") + 1;
+            }
+            currWorkoutStats.put("count", count);
+            workoutStatsJSON.put(workoutName, currWorkoutStats);
+        } catch (JSONException e) {
+            Log.e("CurrentWorkout", "Could not log workout completion");
+        }
+        Util.writeFileOnInternalStorage(context, "workout_stats.json", workoutStatsJSON.toString());
+
     }
 
     public static void init(String workoutName, Activity activity) {

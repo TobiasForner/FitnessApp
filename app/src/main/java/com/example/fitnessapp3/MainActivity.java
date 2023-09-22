@@ -37,7 +37,11 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity implements PositiveNegativeDialogFragment.NoticeDialogListener {
@@ -167,7 +171,48 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         LinearLayout linear = findViewById(R.id.workout_linear_layout);
         linear.setGravity(Gravity.CENTER);
         linear.removeAllViews();
-        for (String s : WorkoutManager.getWorkoutNamesList()) {
+        List<String> workoutNames = WorkoutManager.getWorkoutNamesList();
+        workoutNames.sort(Comparator.naturalOrder());
+        Map<String, WorkoutStats> workoutToSortScore = new HashMap<>();
+        //load workoutStats to determine sorting
+        String workoutStats = Util.readFromInternal("workout_stats.json", this);
+        JSONObject workoutStatsJSON;
+        if (workoutStats == null) {
+            workoutStatsJSON = new JSONObject();
+        } else {
+            try {
+                workoutStatsJSON = new JSONObject(workoutStats);
+            } catch (JSONException e) {
+                workoutStatsJSON = new JSONObject();
+            }
+        }
+        for (String s : workoutNames) {
+            JSONObject currWorkoutStats;
+            WorkoutStats cWorkoutStats = new WorkoutStats(0, "", 999999999);
+            cWorkoutStats.posInSortedNames = workoutNames.indexOf(s);
+            if (workoutStatsJSON.has(s)) {
+                try {
+                    currWorkoutStats = workoutStatsJSON.getJSONObject(s);
+
+                    if (currWorkoutStats.has("count")) {
+                        cWorkoutStats.count = currWorkoutStats.getInt("count");
+                    }
+
+                    if (currWorkoutStats.has("lastCompletion")) {
+                        cWorkoutStats.lastCompletedDate = currWorkoutStats.getString("lastCompletion");
+                    }
+                    workoutToSortScore.put(s, cWorkoutStats);
+
+                } catch (JSONException e) {
+                    workoutToSortScore.put(s, cWorkoutStats);
+                }
+            } else {
+                workoutToSortScore.put(s, cWorkoutStats);
+            }
+        }
+        Log.d("MainActivity", "sort scores for workout: " + workoutToSortScore);
+        workoutNames.sort((s1, s2) -> Objects.requireNonNull(workoutToSortScore.get(s1)).compareTo(Objects.requireNonNull(workoutToSortScore.get(s2))));
+        for (String s : workoutNames) {
             TextView t = new TextView(this);
             t.setText(s);
             t.setTextSize(30);
