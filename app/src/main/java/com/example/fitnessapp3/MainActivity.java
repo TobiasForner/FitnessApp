@@ -188,7 +188,7 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         }
         for (String s : workoutNames) {
             JSONObject currWorkoutStats;
-            WorkoutStats cWorkoutStats = new WorkoutStats(0, "", 999999999);
+            WorkoutStats cWorkoutStats = new WorkoutStats(0, "", 999999999, 99999999,9999999);
             cWorkoutStats.posInSortedNames = workoutNames.indexOf(s);
             if (workoutStatsJSON.has(s)) {
                 try {
@@ -210,6 +210,19 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
                 workoutToSortScore.put(s, cWorkoutStats);
             }
         }
+        workoutNames.sort(Comparator.comparingInt(s -> Objects.requireNonNull(workoutToSortScore.get(s)).count));
+        for (String s : workoutNames) {
+            WorkoutStats cWorkoutStats = workoutToSortScore.get(s);
+            assert cWorkoutStats != null;
+            cWorkoutStats.posInSortedCounts = workoutNames.indexOf(s);
+        }
+        workoutNames.sort(Comparator.comparing(s -> Objects.requireNonNull(workoutToSortScore.get(s)).lastCompletedDate));
+        for (String s : workoutNames) {
+            WorkoutStats cWorkoutStats = workoutToSortScore.get(s);
+            assert cWorkoutStats != null;
+            cWorkoutStats.posInSortedDates = workoutNames.indexOf(s);
+        }
+
         Log.d("MainActivity", "sort scores for workout: " + workoutToSortScore);
         workoutNames.sort((s1, s2) -> Objects.requireNonNull(workoutToSortScore.get(s1)).compareTo(Objects.requireNonNull(workoutToSortScore.get(s2))));
         for (String s : workoutNames) {
