@@ -24,8 +24,8 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayout"
         style="@style/Widget.Design.TextInputLayout"
-        android:layout_width="421dp"
-        android:layout_height="269dp"
+        android:layout_width="385dp"
+        android:layout_height="265dp"
         android:layout_marginTop="88dp"
         android:hint="@string/enter_workout_text"
         app:boxCornerRadiusBottomEnd="5dp"
@@ -48,8 +48,8 @@
 
     <EditText
         android:id="@+id/text_workout_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="396dp"
+        android:layout_height="50dp"
         android:layout_marginTop="28dp"
         android:ems="10"
         android:hint="@string/workout_name"
