@@ -16,14 +16,12 @@
             android:label="@string/title_activity_weight"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
-            android:name=".TimerActivity"
-            android:screenOrientation="portrait" />
+            android:name=".TimerActivity" />
         <activity
             android:name=".ManageExercisesActivity"
-            android:screenOrientation="portrait" />
+           />
         <activity
-            android:name=".DurationExerciseActivity"
-            android:screenOrientation="portrait" />
+            android:name=".DurationExerciseActivity" />
         <activity
             android:name=".StartActivity"
             android:exported="true">
@@ -34,26 +32,23 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WorkoutEditActivity"
-            android:screenOrientation="portrait" />
+            android:name=".WorkoutEditActivity" />
         <activity
             android:name=".ResumeWorkoutActivity"
-            android:screenOrientation="portrait" />
+             />
         <activity
             android:name=".AddWorkoutActivity"
-            android:screenOrientation="portrait" />
+            />
         <activity
-            android:name=".AddExerciseActivity"
-            android:screenOrientation="portrait" />
+            android:name=".AddExerciseActivity"/>
         <activity
             android:name=".WorkoutActivity"
-            android:screenOrientation="portrait" />
+            />
         <activity
             android:name=".RestActivity"
-            android:screenOrientation="portrait" />
+             />
         <activity
-            android:name=".MainActivity"
-            android:screenOrientation="portrait" />
+            android:name=".MainActivity" />
     </application>
 
 </manifest>
