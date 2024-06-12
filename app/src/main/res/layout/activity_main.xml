@@ -169,6 +169,18 @@
         app:layout_constraintEnd_toStartOf="@+id/go_to_add_exercise_button"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/timerButton"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <Button
+        android:id="@+id/button_to_weight2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="goToWeight2"
+        android:text="Weight2"
+        app:layout_constraintBottom_toBottomOf="@+id/go_to_weight_button"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton"
+        app:layout_constraintStart_toEndOf="@+id/go_to_weight_button"
+        app:layout_constraintTop_toTopOf="@+id/go_to_weight_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

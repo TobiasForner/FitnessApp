@@ -69,4 +69,5 @@ dependencies {
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
     implementation "com.androidplot:androidplot-core:1.5.10"
+    implementation("com.patrykandpatrick.vico:compose:2.0.0-alpha.19")
 }
