@@ -122,7 +122,12 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
     val pastWeights = getSortedWeightDates(activity)
     val lastWeight = pastWeights.last().getString("weight")
     var text by remember { mutableStateOf(lastWeight) }
-    val weight = text.toFloat()
+    val weight = try {
+        text.toFloat()
+    } catch (_: NumberFormatException) {
+        0f
+    }
+
 
     val weightModifiers: MutableList<Pair<String, Float>> = mutableListOf()
     weightModifiers.add(Pair("Schwarze Jogginghose", 0.6f))
