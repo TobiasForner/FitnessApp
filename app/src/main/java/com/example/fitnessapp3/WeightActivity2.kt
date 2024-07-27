@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Scaffold
@@ -40,6 +42,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottomAxis
@@ -105,7 +108,7 @@ fun ActivityContent(activity: WeightActivity2) {
                 VicoChart(
                     Modifier
                         .padding(innerPadding)
-                        .height(400.dp), weights = pastWeights, xToDateMapKey = xToDateMapKey
+                        .height(250.dp), weights = pastWeights, xToDateMapKey = xToDateMapKey
                 )
                 PastWeightText(
                     Modifier
@@ -155,7 +158,14 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    Column {
+    val openModifierDialog = remember {
+        mutableStateOf(false)
+    }
+    Column(modifier = Modifier.padding(top = 30.dp)) {
+        if (openModifierDialog.value) {
+            AddWeightModifierDialog(openModifierDialog, weightModifiers)
+        }
+
         Row(modifier = modifier) {
             TextField(
                 value = text,
@@ -177,13 +187,75 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
             }
         }
         Text("${activatedModifiers.toList()} (-$adjustment): $finalWeight")
-        LazyColumn {
+        LazyColumn(modifier = Modifier.height(200.dp)) {
             items(weightModifiers.size) { item ->
                 WeightModifierCard(
                     modifier = Modifier.fillMaxWidth(),
                     text = weightModifiers[item].first,
                     activated = activatedModifiers[item],
                     onClick = { activatedModifiers[item] = activatedModifiers[item].not() })
+            }
+        }
+        Button(
+            modifier = Modifier.padding(top = 10.dp),
+            onClick = { openModifierDialog.value = true }) {
+            Text("Popup!")
+        }
+    }
+}
+
+@Composable
+fun AddWeightModifierDialog(
+    openModifierDialog: MutableState<Boolean>,
+    weightModifiers: MutableList<Pair<String, Float>>
+) {
+    var name by remember { mutableStateOf("") }
+    var weight by remember { mutableStateOf("") }
+    val focusManager = LocalFocusManager.current
+    Dialog(onDismissRequest = { openModifierDialog.value = false }) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(5.dp),
+            shape = RoundedCornerShape(5.dp),
+        ) {
+            Column {
+
+                TextField(
+                    modifier = Modifier.height(70.dp),
+                    value = name,
+                    onValueChange = {
+                        Log.d("WeightActivity2", "new weight: $it")
+                        name = it
+                    },
+                    label = { Text(text = "Modifier Name") },
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                )
+                TextField(
+                    modifier = Modifier.height(70.dp),
+                    value = weight,
+                    onValueChange = {
+                        Log.d("WeightActivity2", "new weight: $it")
+                        weight = it
+                    },
+                    label = { Text(text = "Weight deduction") },
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row {
+                    Button(onClick = { openModifierDialog.value = false }) {
+                        Text(text = "Dismiss")
+                    }
+                    Button(onClick = {
+                        val modValue = weight.toFloat()
+                        weightModifiers.add(Pair(name, modValue))
+                    }) {
+                        Text(text = "Add")
+                    }
+                }
             }
         }
     }
