@@ -43,6 +43,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.fitnessapp3.Util.readFromInternal
+import com.example.fitnessapp3.Util.writeFileOnInternalStorage
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottomAxis
@@ -140,11 +142,8 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
     }
 
 
-    val weightModifiers: MutableList<Pair<String, Float>> = mutableListOf()
-    weightModifiers.add(Pair("Schwarze Jogginghose", 0.6f))
-    weightModifiers.add(Pair("Kurze Schlafanzughose", 0.15f))
-    weightModifiers.add(Pair("T-Shirt", 0.17f))
-    weightModifiers.add(Pair("Fleece-Jacke", 0.5f))
+    val weightModifiers = loadWeightModifiers(activity).toMutableList()
+
 
     val activatedModifiers = remember {
         mutableStateListOf<Boolean>()
@@ -171,7 +170,7 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
     }
     Column(modifier = Modifier.padding(top = 30.dp)) {
         if (openModifierDialog.value) {
-            AddWeightModifierDialog(openModifierDialog, weightModifiers)
+            AddWeightModifierDialog(openModifierDialog, weightModifiers, context = activity)
         }
 
         Row(modifier = modifier) {
@@ -204,7 +203,7 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
             items(weightModifiers.size) { item ->
                 WeightModifierCard(
                     modifier = Modifier.fillMaxWidth(),
-                    text = weightModifiers[item].first,
+                    text = "${weightModifiers[item].first}: ${weightModifiers[item].second}",
                     activated = activatedModifiers[item],
                     onClick = { activatedModifiers[item] = activatedModifiers[item].not() })
             }
@@ -212,15 +211,39 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
         Button(
             modifier = Modifier.padding(top = 10.dp),
             onClick = { openModifierDialog.value = true }) {
-            Text("Popup!")
+            Text("Add Modifier!")
         }
     }
+}
+
+fun loadWeightModifiers(context: Context): List<Pair<String, Float>> {
+    val weightModifiers = readFromInternal("weight_modifiers.json", context)
+    val res = emptyList<Pair<String, Float>>().toMutableList()
+    if (weightModifiers == null) {
+        return res
+    }
+    val wm = JSONObject(weightModifiers)
+
+    for (name in wm.keys()) {
+        val value = wm.getString(name).toFloat()
+        res.add(Pair(name, value))
+    }
+    return res
+}
+
+fun storeWeightModifiers(context: Context, weightModifiers: List<Pair<String, Float>>) {
+    val obj = JSONObject()
+    for (p in weightModifiers) {
+        obj.put(p.first, p.second.toString())
+    }
+    writeFileOnInternalStorage(context, "weight_modifiers.json", obj.toString())
 }
 
 @Composable
 fun AddWeightModifierDialog(
     openModifierDialog: MutableState<Boolean>,
-    weightModifiers: MutableList<Pair<String, Float>>
+    weightModifiers: MutableList<Pair<String, Float>>,
+    context: Context
 ) {
     var name by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
@@ -265,6 +288,8 @@ fun AddWeightModifierDialog(
                     Button(onClick = {
                         val modValue = weight.toFloat()
                         weightModifiers.add(Pair(name, modValue))
+                        storeWeightModifiers(context, weightModifiers)
+                        openModifierDialog.value = false
                     }) {
                         Text(text = "Add")
                     }
@@ -520,7 +545,7 @@ fun getPastWeights(context: Context?): JSONObject {
     var weightLog: JSONObject
     if (Util.contextHasFile(context, "weight_log.json")) {
         Log.d("WeightActivity", "weight log file exists.")
-        val contentsJSON = Util.readFromInternal("weight_log.json", context)
+        val contentsJSON = readFromInternal("weight_log.json", context)
         try {
             assert(contentsJSON != null)
             weightLog = JSONObject(contentsJSON)
