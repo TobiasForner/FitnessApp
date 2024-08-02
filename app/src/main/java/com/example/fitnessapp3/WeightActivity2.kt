@@ -123,7 +123,15 @@ fun ActivityContent(activity: WeightActivity2) {
 @Composable
 fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JSONObject) -> Unit) {
     val pastWeights = getSortedWeightDates(activity)
-    val lastWeight = pastWeights.last().getString("weight")
+    //val lastWeight = pastWeights.last().getString("weight")
+
+    val lastWeight =
+        if (pastWeights.last().has("original_weight")) {
+            pastWeights.last().getString("original_weight")
+        } else {
+            pastWeights.last().getString("weight")
+        }
+    
     var text by remember { mutableStateOf(lastWeight) }
     val weight = try {
         text.toFloat()
@@ -179,7 +187,12 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
             )
             Spacer(modifier.width(5.dp))
             Button(onClick = {
-                logWeight(roundToNDigits(finalWeight, 1).toString(), appendWeight, activity)
+                logWeight(
+                    weight,
+                    adjustment,
+                    appendWeight,
+                    activity
+                )
                 keyboardController?.hide()
                 focusManager.clearFocus()
             }) {
@@ -288,12 +301,12 @@ fun roundToNDigits(num: Float, digits: Int): Float {
     return (num * mult).roundToInt().toFloat() / mult
 }
 
-fun logWeight(weight: String, appendWeight: (JSONObject) -> Unit, context: Context) {
-    if (weight.isEmpty()) {
-        Log.d("WeightActivity", "empty weight, skipping")
-        return
-    }
-
+fun logWeight(
+    originalWeight: Float,
+    weightModifier: Float,
+    appendWeight: (JSONObject) -> Unit,
+    context: Context
+) {
     val t = LocalDateTime.now()
     val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd.HH-mm", Locale.getDefault())
     val date = t.format(dateTimeFormatter)
@@ -304,11 +317,14 @@ fun logWeight(weight: String, appendWeight: (JSONObject) -> Unit, context: Conte
         val logs = weightLog.getJSONArray("logs")
         val newWeight = JSONObject()
         newWeight.put("date", date)
-        newWeight.put("weight", weight)
+        newWeight.put("original_weight", originalWeight.toString())
+        val weight = originalWeight - weightModifier
+        newWeight.put("weight", weight.toString())
+        newWeight.put("weight_modifier", weightModifier.toString())
         logs.put(newWeight)
         appendWeight(newWeight)
         weightLog.put("logs", logs)
-        Util.writeFileOnInternalStorage(context, "weight_log.json", weightLog.toString())
+        writeFileOnInternalStorage(context, "weight_log.json", weightLog.toString())
         Log.d("WeightActivity", "Logged weight $weight on $date")
         updatePastWeight(context)
     } catch (e: JSONException) {
