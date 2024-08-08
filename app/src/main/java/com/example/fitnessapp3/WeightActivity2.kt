@@ -7,6 +7,9 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,12 +18,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -101,7 +106,7 @@ fun ActivityContent(activity: WeightActivity2) {
                 WeightInput(
                     modifier = Modifier
                         .padding(innerPadding)
-                        .height(100f.dp)
+                        .height(120f.dp)
                         .padding(top = 10.dp, start = 10.dp),
                     activity = activity,
                     appendWeight = ::appendWeight
@@ -125,7 +130,6 @@ fun ActivityContent(activity: WeightActivity2) {
 @Composable
 fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JSONObject) -> Unit) {
     val pastWeights = getSortedWeightDates(activity)
-    //val lastWeight = pastWeights.last().getString("weight")
 
     val lastWeight =
         if (pastWeights.last().has("original_weight")) {
@@ -133,7 +137,7 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
         } else {
             pastWeights.last().getString("weight")
         }
-    
+
     var text by remember { mutableStateOf(lastWeight) }
     val weight = try {
         text.toFloat()
@@ -168,9 +172,24 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
     val openModifierDialog = remember {
         mutableStateOf(false)
     }
+
+    val openModifierEditDialog = remember {
+        mutableStateOf(false)
+    }
+
+    val editPosition = remember {
+        mutableIntStateOf(1)
+    }
     Column(modifier = Modifier.padding(top = 30.dp)) {
         if (openModifierDialog.value) {
             AddWeightModifierDialog(openModifierDialog, weightModifiers, context = activity)
+        } else if (openModifierEditDialog.value) {
+            EditWeightModifierDialog(
+                openModifierEditDialog,
+                weightModifiers,
+                position = editPosition.intValue,
+                context = activity
+            )
         }
 
         Row(modifier = modifier) {
@@ -205,7 +224,12 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
                     modifier = Modifier.fillMaxWidth(),
                     text = "${weightModifiers[item].first}: ${weightModifiers[item].second}",
                     activated = activatedModifiers[item],
-                    onClick = { activatedModifiers[item] = activatedModifiers[item].not() })
+                    onClick = { activatedModifiers[item] = activatedModifiers[item].not() },
+                    onLongClick = {
+                        Log.d("Weight2", "long click for position $item")
+                        editPosition.intValue = item
+                        openModifierEditDialog.value = true
+                    })
             }
         }
         Button(
@@ -240,6 +264,74 @@ fun storeWeightModifiers(context: Context, weightModifiers: List<Pair<String, Fl
 }
 
 @Composable
+fun EditWeightModifierDialog(
+    openModifierDialog: MutableState<Boolean>,
+    weightModifiers: MutableList<Pair<String, Float>>,
+    position: Int,
+    context: Context
+) {
+    val pair = weightModifiers[position]
+    var name = pair.first
+    var weight = pair.second
+    val focusManager = LocalFocusManager.current
+    Dialog(onDismissRequest = { openModifierDialog.value = false }) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(240.dp)
+                .padding(5.dp),
+            shape = RoundedCornerShape(5.dp),
+        ) {
+            Column {
+                Button(onClick = {
+                    weightModifiers.removeAt(position)
+                    storeWeightModifiers(context, weightModifiers)
+                    openModifierDialog.value = false
+                }) {
+                    Text(text = "Delete Modifier")
+                }
+
+                TextField(
+                    modifier = Modifier.wrapContentSize(),
+                    value = name,
+                    onValueChange = {
+                        Log.d("WeightActivity2", "new name: $it")
+                        name = it
+                    },
+                    label = { Text(text = "Modifier Name") },
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text)
+                )
+                TextField(
+                    modifier = Modifier.wrapContentSize(),
+                    value = weight.toString(),
+                    onValueChange = {
+                        Log.d("WeightActivity2", "edited weight: $it")
+                        weight = it.toFloat()
+                    },
+                    label = { Text(text = "Weight deduction") },
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Row {
+                    Button(onClick = { openModifierDialog.value = false }) {
+                        Text(text = "Dismiss")
+                    }
+                    Button(onClick = {
+                        weightModifiers[position] = Pair(name, weight)
+                        storeWeightModifiers(context, weightModifiers)
+                        openModifierDialog.value = false
+                    }) {
+                        Text(text = "Overwrite")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun AddWeightModifierDialog(
     openModifierDialog: MutableState<Boolean>,
     weightModifiers: MutableList<Pair<String, Float>>,
@@ -252,7 +344,7 @@ fun AddWeightModifierDialog(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(200.dp)
+                .wrapContentSize(unbounded = true)
                 .padding(5.dp),
             shape = RoundedCornerShape(5.dp),
         ) {
@@ -299,8 +391,15 @@ fun AddWeightModifierDialog(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WeightModifierCard(modifier: Modifier, text: String, activated: Boolean, onClick: () -> Unit) {
+fun WeightModifierCard(
+    modifier: Modifier,
+    text: String,
+    activated: Boolean,
+    onClick: () -> Unit,
+    onLongClick: () -> Unit
+) {
     val colors = if (activated) {
         CardColors(
             containerColor = androidx.compose.ui.graphics.Color.White,
@@ -316,7 +415,16 @@ fun WeightModifierCard(modifier: Modifier, text: String, activated: Boolean, onC
             disabledContainerColor = androidx.compose.ui.graphics.Color.Black
         )
     }
-    ElevatedCard(modifier = modifier, onClick = onClick, colors = colors) {
+    ElevatedCard(
+        modifier = modifier.combinedClickable(
+            interactionSource = remember {
+                MutableInteractionSource()
+            },
+            indication = rememberRipple(bounded = true),
+            onClick = onClick,
+            onLongClick = onLongClick
+        ).padding(5.dp), colors = colors
+    ) {
         Text(text)
     }
 }
