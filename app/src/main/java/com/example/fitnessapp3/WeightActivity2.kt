@@ -416,22 +416,24 @@ fun WeightModifierCard(
         )
     }
     ElevatedCard(
-        modifier = modifier.combinedClickable(
-            interactionSource = remember {
-                MutableInteractionSource()
-            },
-            indication = rememberRipple(bounded = true),
-            onClick = onClick,
-            onLongClick = onLongClick
-        ).padding(5.dp), colors = colors
+        modifier = modifier
+            .combinedClickable(
+                interactionSource = remember {
+                    MutableInteractionSource()
+                },
+                indication = rememberRipple(bounded = true),
+                onClick = onClick,
+                onLongClick = onLongClick
+            )
+            .padding(5.dp), colors = colors
     ) {
         Text(text)
     }
 }
 
 fun roundToNDigits(num: Float, digits: Int): Float {
-    val mult = 10f.pow(digits)
-    return (num * mult).roundToInt().toFloat() / mult
+    val multiplier = 10f.pow(digits)
+    return (num * multiplier).roundToInt().toFloat() / multiplier
 }
 
 fun logWeight(
