@@ -40,6 +40,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -81,15 +84,18 @@ class WeightActivity2 : ComponentActivity() {
         enableEdgeToEdge()
 
         val activity = this
+        val wm = savedInstanceState?.getBooleanArray("weightModifiers")?.toMutableList()
+
+
 
         setContent {
-            ActivityContent(activity = activity)
+            ActivityContent(activity = activity, activatedModifiers = wm)
         }
     }
 }
 
 @Composable
-fun ActivityContent(activity: WeightActivity2) {
+fun ActivityContent(activity: WeightActivity2, activatedModifiers: MutableList<Boolean>?) {
     val pastWeights = remember {
         getSortedWeightDates(activity).toMutableStateList()
     }
@@ -109,7 +115,8 @@ fun ActivityContent(activity: WeightActivity2) {
                         .height(120f.dp)
                         .padding(top = 10.dp, start = 10.dp),
                     activity = activity,
-                    appendWeight = ::appendWeight
+                    appendWeight = ::appendWeight,
+                    activatedModifiers=activatedModifiers
                 )
 
                 VicoChart(
@@ -128,7 +135,7 @@ fun ActivityContent(activity: WeightActivity2) {
 }
 
 @Composable
-fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JSONObject) -> Unit) {
+fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JSONObject) -> Unit, activatedModifiers: MutableList<Boolean>?) {
     val pastWeights = getSortedWeightDates(activity)
 
     val lastWeight =
@@ -149,8 +156,29 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
     val weightModifiers = loadWeightModifiers(activity).toMutableList()
 
 
-    val activatedModifiers = remember {
-        mutableStateListOf<Boolean>()
+    val boolStateListSaver= Saver<SnapshotStateList<Boolean>, String>(save={
+        var res = ""
+        for (e in it){
+            res += if(e){
+                "1"
+            }else{
+                "0"
+            }
+        }
+        res
+
+    }, restore = {
+        val res = mutableStateListOf<Boolean>()
+        for (e in it.chars()){
+            if (e == '0'.code){res.add(false)}else{res.add(true)}
+
+        }
+        res
+
+    })
+    val activatedModifiers = rememberSaveable(key="activatedModifiers",saver=boolStateListSaver) {
+        if (activatedModifiers.isNullOrEmpty()) mutableStateListOf() else activatedModifiers.toMutableStateList()
+
     }
     while (activatedModifiers.size < weightModifiers.size) {
         activatedModifiers.add(false)
