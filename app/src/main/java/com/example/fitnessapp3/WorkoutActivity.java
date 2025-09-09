@@ -10,6 +10,7 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fitnessapp3.SetResults.SetResult;
@@ -37,6 +38,14 @@ public class WorkoutActivity extends AppCompatActivity {
 
         ProgressBar progressBar = findViewById(R.id.progressBar_workout);
         CurrentWorkout.setProgress(progressBar);
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true){
+            @Override
+            public void handleOnBackPressed(){
+                CurrentWorkout.goBack();
+            }
+
+        });
     }
 
     public void init() {
@@ -92,7 +101,7 @@ public class WorkoutActivity extends AppCompatActivity {
     private void setPrevResults() {
         String prevResults = CurrentWorkout.getPrevResultsInWorkout();
         TextView prevResultsView = findViewById(R.id.prev_results_body);
-        if (prevResults.length() > 0) {
+        if (!prevResults.isEmpty()) {
             prevResultsView.setText(prevResults);
         } else {
             TextView prevResultsHeaderView = findViewById(R.id.prev_results_header);
@@ -136,11 +145,6 @@ public class WorkoutActivity extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
-    }
-
-    public void onBackPressed() {
-        CurrentWorkout.goBack();
-        super.onBackPressed();
     }
 
     public void showPopupWindowClick(View view, String text) {

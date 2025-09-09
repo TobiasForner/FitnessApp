@@ -2,7 +2,6 @@ package com.example.fitnessapp3;
 
 import android.media.AudioManager;
 import android.media.ToneGenerator;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.Gravity;
@@ -16,6 +15,7 @@ import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fitnessapp3.SetResults.SetResult;
@@ -50,6 +50,13 @@ public class DurationExerciseActivity extends AppCompatActivity {
         timer = null;
         init();
         pos = CurrentWorkout.getWorkoutPosition();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true){
+            @Override
+            public void handleOnBackPressed(){
+                CurrentWorkout.goBack();
+            }
+        });
     }
 
     public void init() {
@@ -63,16 +70,12 @@ public class DurationExerciseActivity extends AppCompatActivity {
     private void setDurationPicker() {
         minutesPicker.setMinValue(0);
         minutesPicker.setMaxValue(59);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            minutesPicker.setTextSize(50f);
-        }
+        minutesPicker.setTextSize(50f);
 
 
         secondsPicker.setMinValue(0);
         secondsPicker.setMaxValue(59);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            secondsPicker.setTextSize(50f);
-        }
+        secondsPicker.setTextSize(50f);
 
         SetResult prevResult = getPrevSetResult();
         if (prevResult == null) {
@@ -121,7 +124,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     private void setPrevResults() {
         String prevResults = CurrentWorkout.getPrevResultsInWorkout();
         TextView prevResultsView = findViewById(R.id.duration_exercise_prev_results_body);
-        if (prevResults.length() > 0) {
+        if (!prevResults.isEmpty()) {
             prevResultsView.setText(prevResults);
         } else {
             TextView prevResultsHeaderView = findViewById(R.id.duration_exercise_prev_results_header);
