@@ -51,7 +51,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
         init();
         pos = CurrentWorkout.getWorkoutPosition();
 
-        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true){
+        getOnBackPressedDispatcher().addCallback( new OnBackPressedCallback(true){
             @Override
             public void handleOnBackPressed(){
                 CurrentWorkout.goBack();
