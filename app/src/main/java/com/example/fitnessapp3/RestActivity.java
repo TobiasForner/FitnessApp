@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -50,6 +51,13 @@ public class RestActivity extends AppCompatActivity {
         }
 
         pos = CurrentWorkout.getWorkoutPosition();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                CurrentWorkout.goBack();
+            }
+        });
     }
 
     public void skipTimer(View view) {
@@ -57,11 +65,6 @@ public class RestActivity extends AppCompatActivity {
         timer.cancel();
         playSound = false;
         timer.onFinish();
-    }
-
-    public void onBackPressed() {
-        CurrentWorkout.goBack();
-        super.onBackPressed();
     }
 
     protected void onSaveInstanceState(@NonNull Bundle outState) {
