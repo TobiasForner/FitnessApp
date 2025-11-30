@@ -79,7 +79,7 @@ public class WorkoutManager {
             return;
         }
         String filename = "workout_names.txt";
-        String fileContents = name + System.getProperty("line.separator");
+        String fileContents = name + System.lineSeparator();
         File file = new File(context.getFilesDir(), filename);
         try (FileOutputStream fos = new FileOutputStream(file, true)) {
             fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
@@ -192,7 +192,7 @@ public class WorkoutManager {
     }
 
     public static JSONObject generateWorkoutJSONFromString(String text, String name) throws JSONException {
-        String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
+        String[] lines = text.split(Objects.requireNonNull(System.lineSeparator()));
         JSONObject workout = new JSONObject();
         workout.put("name", name);
         List<JSONObject> componentGroups = new ArrayList<>();

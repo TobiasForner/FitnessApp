@@ -301,7 +301,7 @@ public class CurrentWorkout {
                 res.append(ithResult.getRepNr()).append(" Reps");
             }
 
-            res.append(System.getProperty("line.separator"));
+            res.append(System.lineSeparator());
         }
         return res.toString();
     }

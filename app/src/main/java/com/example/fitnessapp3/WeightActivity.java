@@ -175,7 +175,7 @@ public class WeightActivity extends AppCompatActivity {
         assert view.getId() == R.id.log_weight_button;
         EditText weightText = findViewById(R.id.editTextWeight);
         String weight = String.valueOf(weightText.getText());
-        if (weight.length() == 0) {
+        if (weight.isEmpty()) {
             Log.d("WeightActivity", "empty weight, skipping");
             return;
         }

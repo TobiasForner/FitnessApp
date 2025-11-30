@@ -79,7 +79,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
         JSONObject result = new JSONObject();
         try {
             result.put("name", name);
-            String[] lines = text.split(Objects.requireNonNull(System.getProperty("line.separator")));
+            String[] lines = text.split(Objects.requireNonNull(System.lineSeparator()));
             List<JSONObject> componentGroups = new ArrayList<>();
             for (String line : lines) {
                 JSONObject group = parseWorkoutLine(line);
@@ -99,7 +99,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
 
     private JSONObject parseWorkoutLine(String line) {
         line = Util.strip(line);
-        if (line.equals("")) {
+        if (line.isEmpty()) {
             return null;
         }
         Matcher m = workoutGroupP.matcher(line);

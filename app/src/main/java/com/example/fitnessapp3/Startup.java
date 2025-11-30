@@ -47,7 +47,7 @@ public class Startup extends Application {
                 ExerciseManager exerciseManager = new ExerciseManager(context);
                 exerciseManager.initExerciseDetails(context);
                 WorkoutManager.init(this);
-                String sep = System.getProperty("line.separator");
+                String sep = System.lineSeparator();
                 String rrForFileString = "[Pull Up,Rest]x5" + sep + "[Ring Dip,Rest]x3" + sep +
                         "[Row,Rest,Push Up,Rest]x2" + sep + "Row,Rest,Push Up" + sep;
                 WorkoutManager.addWorkout("RR", rrForFileString, this);
@@ -61,7 +61,7 @@ public class Startup extends Application {
 
     public static void initWorkoutNamesFile(Context context) {
         File file = new File(context.getFilesDir(), "workout_names.txt");
-        String fileContents = "RR" + System.getProperty("line.separator");
+        String fileContents = "RR" + System.lineSeparator();
         try (FileOutputStream fos = new FileOutputStream(file)) {
             fos.write(fileContents.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
