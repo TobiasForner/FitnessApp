@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.LinearLayout;
 
@@ -28,9 +29,9 @@ public class ManageExercisesActivity extends AppCompatActivity {
         super.onResume();
         LinearLayout linear = findViewById(R.id.linear_layout_exercise_buttons);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int width = displayMetrics.widthPixels;
+        WindowMetrics windowMetrics = getWindowManager().getCurrentWindowMetrics();
+
+        int width = windowMetrics.getBounds().width();
         int buttonWidth = width  - 200;
 
         linear.removeAllViews();

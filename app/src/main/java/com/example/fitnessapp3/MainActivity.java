@@ -7,10 +7,10 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.view.WindowMetrics;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Space;
@@ -54,10 +54,9 @@ public class MainActivity extends AppCompatActivity implements PositiveNegativeD
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        WindowMetrics windowMetrics = getWindowManager().getCurrentWindowMetrics();
 
-        int width = displayMetrics.widthPixels;
+        int width = windowMetrics.getBounds().width();
         int buttonWidth = width / 3 - 20;
 
         Button addExercise = findViewById(R.id.go_to_add_exercise_button);
