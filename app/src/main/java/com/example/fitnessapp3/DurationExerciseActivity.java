@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.fitnessapp3.SetResults.SetResult;
@@ -32,6 +33,8 @@ public class DurationExerciseActivity extends AppCompatActivity {
     private NumberPicker secondsPicker;
 
     private int pos;
+
+    private long millisRemaining = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,41 @@ public class DurationExerciseActivity extends AppCompatActivity {
                 CurrentWorkout.goBack();
             }
         });
+        millisRemaining = -1;
+
+        if(savedInstanceState!=null){
+        if(savedInstanceState.containsKey("minutesPicked")){
+            minutesPicker.setValue(savedInstanceState.getInt("minutesPicked"));
+        }
+        if(savedInstanceState.containsKey("secondsPicked")){
+            secondsPicker.setValue(savedInstanceState.getInt("secondsPicked"));
+        }
+            if(savedInstanceState.containsKey("millisRemaining")){
+                millisRemaining = savedInstanceState.getLong("millisRemaining");
+                if(millisRemaining>=0){
+                    startCountdown(millisRemaining);
+                }
+            }
+        }
+
+
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("minutesPicked", minutesPicker.getValue());
+        outState.putInt("secondsPicked", secondsPicker.getValue());
+        outState.putLong("millisRemaining", millisRemaining);
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        if(timer!=null){
+            timer.cancel();
+        }
     }
 
     public void init() {
@@ -144,12 +182,15 @@ public class DurationExerciseActivity extends AppCompatActivity {
 
     public void startDuration(View view) {
         assert view.getId() == R.id.button_start_duration;
+        final int duration = minutesPicker.getValue() * 60 + secondsPicker.getValue();
+        millisRemaining = duration * 1000L;
+        startCountdown(millisRemaining);
+    }
+
+    private void startCountdown(long millis){
         final TextView durationText = findViewById(R.id.editText_duration);
-        final int duration;
         try {
-            //duration = Integer.parseInt(durationText.getText().toString());
-            duration = minutesPicker.getValue() * 60 + secondsPicker.getValue();
-            if (duration == 0) {
+            if (millis == 0) {
                 showPopupWindowClick(durationText);
                 return;
             }
@@ -163,7 +204,6 @@ public class DurationExerciseActivity extends AppCompatActivity {
         durationText.setClickable(false);
         durationText.setFocusable(false);
         durationText.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-        //durationText.setTextSize(30);
 
         minutesPicker.setEnabled(false);
         minutesPicker.setClickable(false);
@@ -186,23 +226,23 @@ public class DurationExerciseActivity extends AppCompatActivity {
         Button startButton = findViewById(R.id.button_start_duration);
         startButton.setVisibility(View.INVISIBLE);
 
-        createTimer(duration);
-        timer.start();
+        startTimer(millis/1000);
     }
 
-    private void createTimer(int duration) {
+    private void startTimer(long millis) {
         final TextView durationText = findViewById(R.id.editText_duration);
 
-        timer = new CountDownTimer(duration * 1000L, 1000) {
+        timer = new CountDownTimer(millis * 1000L, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);
                 String formattedDate = new SimpleDateFormat("mm:ss", Locale.GERMAN).format(date);
                 durationText.setText(formattedDate);
+                millisRemaining = millisUntilFinished;
             }
 
             public void onFinish() {
-                logDuration(duration);
+                logDuration((int)millis/1000);
 
                 durationText.setText(getResources().getString(R.string.done));
                 if (playSound) {
@@ -216,6 +256,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
                 }
             }
         };
+        timer.start();
     }
 
     private void logDuration(int duration) {
