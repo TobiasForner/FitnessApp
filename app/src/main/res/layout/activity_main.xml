@@ -8,57 +8,32 @@
     tools:context=".MainActivity">
 
     <Button
-        android:id="@+id/timerButton"
-        style="@style/Widget.AppCompat.Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:background="@null"
-        android:onClick="startTimer"
-        android:text="@string/start_3min_timer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/init_workouts_button"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
-
-    <Button
         android:id="@+id/go_to_add_exercise_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="163dp"
+        android:layout_height="47dp"
+        android:layout_marginTop="20dp"
         android:background="@null"
         android:onClick="goToAddExercise"
         android:text="@string/add_exercise"
-        app:layout_constraintBottom_toBottomOf="@+id/timerButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toEndOf="@+id/timerButton"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="1.0" />
-
-    <Button
-        android:id="@+id/init_workouts_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:onClick="initWorkoutNamesFile"
-        android:text="@string/initWorkouts"
-        app:layout_constraintBottom_toBottomOf="@+id/timerButton"
+        app:layout_constraintHorizontal_bias="0.024"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/timerButton"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toBottomOf="@+id/button_to_weight2" />
 
     <Button
         android:id="@+id/button_go_to_manage_exercises"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginStart="48dp"
         android:background="@null"
         android:onClick="goToManageExercises"
         android:text="@string/manage_exercises"
-        app:layout_constraintEnd_toEndOf="@+id/timerButton"
+        app:layout_constraintBottom_toBottomOf="@+id/go_to_add_exercise_button"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/init_workouts_button"
-        app:layout_constraintTop_toBottomOf="@+id/init_workouts_button" />
+        app:layout_constraintStart_toEndOf="@+id/go_to_add_exercise_button"
+        app:layout_constraintTop_toTopOf="@+id/go_to_add_exercise_button"
+        app:layout_constraintVertical_bias="1.0" />
 
     <ImageButton
         android:id="@+id/go_to_edit_workouts_main_activity"
@@ -79,15 +54,15 @@
 
     <ScrollView
         style="@android:style/Widget.Material.ScrollView"
-        android:layout_width="373dp"
-        android:layout_height="502dp"
+        android:layout_width="370dp"
+        android:layout_height="552dp"
         android:contentDescription="@string/exercise_scroll_view_description"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.406"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView2"
-        app:layout_constraintVertical_bias="0.3">
+        app:layout_constraintVertical_bias="0.0">
 
         <LinearLayout
             android:id="@+id/workout_linear_layout"
@@ -122,22 +97,13 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/selectDirectoryButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:text="Backup"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/button_go_to_manage_exercises"
-        app:layout_constraintTop_toBottomOf="@+id/timerButton" />
-
     <ImageButton
         android:id="@+id/imageButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:background="#00FFFFFF"
+        android:contentDescription="Cog for Settings"
+        android:onClick="goToSettings"
         app:layout_constraintBottom_toTopOf="@+id/go_to_add_exercise_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.982"
@@ -147,40 +113,16 @@
         app:srcCompat="@drawable/baseline_settings_24" />
 
     <Button
-        android:id="@+id/button_restore"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:text="@string/restore"
-        app:layout_constraintBottom_toBottomOf="@+id/selectDirectoryButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.058"
-        app:layout_constraintStart_toEndOf="@+id/selectDirectoryButton"
-        app:layout_constraintTop_toTopOf="@+id/selectDirectoryButton"
-        app:layout_constraintVertical_bias="0.0" />
-
-    <Button
-        android:id="@+id/go_to_weight_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="goToWeight"
-        android:text="Weight"
-        app:layout_constraintBottom_toTopOf="@+id/timerButton"
-        app:layout_constraintEnd_toStartOf="@+id/go_to_add_exercise_button"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/timerButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.4" />
-
-    <Button
         android:id="@+id/button_to_weight2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="80dp"
         android:onClick="goToWeight2"
         android:text="Weight2"
-        app:layout_constraintBottom_toBottomOf="@+id/go_to_weight_button"
         app:layout_constraintEnd_toStartOf="@+id/imageButton"
-        app:layout_constraintStart_toEndOf="@+id/go_to_weight_button"
-        app:layout_constraintTop_toTopOf="@+id/go_to_weight_button" />
+        app:layout_constraintHorizontal_bias="0.4"
+        app:layout_constraintStart_toEndOf="@+id/textView"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

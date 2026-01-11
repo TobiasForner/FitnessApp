@@ -37,6 +37,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".SettingsActivity"
+            android:exported="false"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
+        <activity
             android:name=".WorkoutEditActivity" />
         <activity
             android:name=".ResumeWorkoutActivity"
