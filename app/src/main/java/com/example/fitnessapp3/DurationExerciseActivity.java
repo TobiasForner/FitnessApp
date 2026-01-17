@@ -58,6 +58,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
             @Override
             public void handleOnBackPressed(){
                 CurrentWorkout.goBack();
+                finish();
             }
         });
         millisRemaining = -1;
