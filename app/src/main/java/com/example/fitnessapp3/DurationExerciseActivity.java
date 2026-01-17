@@ -229,10 +229,10 @@ public class DurationExerciseActivity extends AppCompatActivity {
         startTimer(millis/1000);
     }
 
-    private void startTimer(long millis) {
+    private void startTimer(long seconds) {
         final TextView durationText = findViewById(R.id.editText_duration);
 
-        timer = new CountDownTimer(millis * 1000L, 1000) {
+        timer = new CountDownTimer(seconds * 1000L, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 Date date = new Date(millisUntilFinished);
@@ -242,7 +242,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
             }
 
             public void onFinish() {
-                logDuration((int)millis/1000);
+                logDuration((int)seconds);
 
                 durationText.setText(getResources().getString(R.string.done));
                 if (playSound) {
