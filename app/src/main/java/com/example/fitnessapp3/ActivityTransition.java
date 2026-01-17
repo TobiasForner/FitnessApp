@@ -24,12 +24,12 @@ public class ActivityTransition {
                 }
             }
             else{
-                nextIntent = new Intent(origin, MainActivity.class);
+                nextIntent = new Intent(origin, MainActivity2.class);
             }
             return nextIntent;
         }catch(JSONException e){
             e.printStackTrace();
-            nextIntent = new Intent(origin, MainActivity.class);
+            nextIntent = new Intent(origin, MainActivity2.class);
         }
         return nextIntent;
     }

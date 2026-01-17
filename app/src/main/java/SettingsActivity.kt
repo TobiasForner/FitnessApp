@@ -1,6 +1,7 @@
 package com.example.fitnessapp3
 
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -45,6 +46,7 @@ class SettingsActivity : ComponentActivity(){
 
 @Composable
 fun ActivityContent(activity: SettingsActivity) {
+    val context = LocalContext.current
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column {
@@ -58,6 +60,10 @@ fun ActivityContent(activity: SettingsActivity) {
                 BackupDirectoryPicker()
 
                 RestoreBackupButton()
+
+                Button(onClick = {context.startActivity(Intent(context, MainActivity2::class.java))}) {
+                    Text("Main 2")
+                }
             }
         }
     }
