@@ -1,6 +1,7 @@
 package com.example.fitnessapp3
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -114,79 +115,9 @@ fun ToManageExercisesActivity() {
 @Composable
 fun WorkoutList() {
     val context = LocalContext.current
+    val workoutNames = sortedWorkoutNames(context)
 
-    val workoutNames = WorkoutManager.getWorkoutNamesList()
-    workoutNames.sortWith(Comparator.naturalOrder())
-    val workoutToSortScore: MutableMap<String?, WorkoutStats> = HashMap<String?, WorkoutStats>()
 
-    //load workoutStats to determine sorting
-    val workoutStats = Util.readFromInternal("workout_stats.json", context)
-    var workoutStatsJSON: JSONObject
-    if (workoutStats == null) {
-        workoutStatsJSON = JSONObject()
-    } else {
-        workoutStatsJSON = try {
-            JSONObject(workoutStats)
-        } catch (_: JSONException) {
-            JSONObject()
-        }
-    }
-    for (s in workoutNames) {
-        val currWorkoutStats: JSONObject?
-        val cWorkoutStats = WorkoutStats(0, "", 999999999, 99999999, 9999999)
-        cWorkoutStats.posInSortedNames = workoutNames.indexOf(s)
-        if (workoutStatsJSON.has(s)) {
-            try {
-                currWorkoutStats = workoutStatsJSON.getJSONObject(s)
-
-                if (currWorkoutStats.has("count")) {
-                    cWorkoutStats.count = currWorkoutStats.getInt("count")
-                }
-
-                if (currWorkoutStats.has("lastCompletion")) {
-                    cWorkoutStats.lastCompletedDate = currWorkoutStats.getString("lastCompletion")
-                }
-                workoutToSortScore.put(s, cWorkoutStats)
-            } catch (_: JSONException) {
-                workoutToSortScore.put(s, cWorkoutStats)
-            }
-        } else {
-            workoutToSortScore.put(s, cWorkoutStats)
-        }
-    }
-    workoutNames.sortWith(Comparator.comparingInt { s: String? ->
-        val stats = workoutToSortScore[s]
-        stats?.count ?: 0
-    })
-    for (s in workoutNames) {
-        val cWorkoutStats = checkNotNull(workoutToSortScore.get(s))
-        cWorkoutStats.posInSortedCounts = workoutNames.indexOf(s)
-    }
-    workoutNames.sortWith(Comparator.comparing(Function { s: String? ->
-        val stats = workoutToSortScore[s]
-        if (stats == null) {
-            "ZZZZZZZZZZ"
-        } else {
-            stats.lastCompletedDate
-        }
-    }))
-    for (s in workoutNames) {
-        val cWorkoutStats = checkNotNull(workoutToSortScore[s])
-        cWorkoutStats.posInSortedDates = workoutNames.indexOf(s)
-    }
-
-    Log.d("MainActivity", "sort scores for workout: $workoutToSortScore")
-    workoutNames.sortWith(Comparator { s1: String?, s2: String? ->
-        val score1 = workoutToSortScore[s1]
-        val score2 = workoutToSortScore[s2]
-        if (score1 == null) {
-            1
-        } else if (score2 == null) {
-            -1
-        } else {
-            score1.compareTo(score2)
-        }
-    })
     Column() {
         Row {
             Text("Workouts", fontSize = 30.sp)
@@ -269,4 +200,81 @@ private fun startWorkout(activity: Activity) {
         e.printStackTrace()
     }
     activity.startActivity(ActivityTransition.goToNextActivityInWorkout(activity))
+}
+
+fun sortedWorkoutNames(context: Context): MutableList<String>{
+
+    val workoutNames = WorkoutManager.getWorkoutNamesList()
+    workoutNames.sortWith(Comparator.naturalOrder())
+    val workoutToSortScore: MutableMap<String?, WorkoutStats> = HashMap()
+
+    //load workoutStats to determine sorting
+    val workoutStats = Util.readFromInternal("workout_stats.json", context)
+    var workoutStatsJSON: JSONObject
+    if (workoutStats == null) {
+        workoutStatsJSON = JSONObject()
+    } else {
+        workoutStatsJSON = try {
+            JSONObject(workoutStats)
+        } catch (_: JSONException) {
+            JSONObject()
+        }
+    }
+    for (s in workoutNames) {
+        val currWorkoutStats: JSONObject?
+        val cWorkoutStats = WorkoutStats(0, "", 999999999, 99999999, 9999999)
+        cWorkoutStats.posInSortedNames = workoutNames.indexOf(s)
+        if (workoutStatsJSON.has(s)) {
+            try {
+                currWorkoutStats = workoutStatsJSON.getJSONObject(s)
+
+                if (currWorkoutStats.has("count")) {
+                    cWorkoutStats.count = currWorkoutStats.getInt("count")
+                }
+
+                if (currWorkoutStats.has("lastCompletion")) {
+                    cWorkoutStats.lastCompletedDate = currWorkoutStats.getString("lastCompletion")
+                }
+                workoutToSortScore.put(s, cWorkoutStats)
+            } catch (_: JSONException) {
+                workoutToSortScore.put(s, cWorkoutStats)
+            }
+        } else {
+            workoutToSortScore.put(s, cWorkoutStats)
+        }
+    }
+    workoutNames.sortWith(Comparator.comparingInt { s: String? ->
+        val stats = workoutToSortScore[s]
+        stats?.count ?: 0
+    })
+    for (s in workoutNames) {
+        val cWorkoutStats = checkNotNull(workoutToSortScore.get(s))
+        cWorkoutStats.posInSortedCounts = workoutNames.indexOf(s)
+    }
+    workoutNames.sortWith(Comparator.comparing(Function { s: String? ->
+        val stats = workoutToSortScore[s]
+        if (stats == null) {
+            "ZZZZZZZZZZ"
+        } else {
+            stats.lastCompletedDate
+        }
+    }))
+    for (s in workoutNames) {
+        val cWorkoutStats = checkNotNull(workoutToSortScore[s])
+        cWorkoutStats.posInSortedDates = workoutNames.indexOf(s)
+    }
+
+    Log.d("MainActivity", "sort scores for workout: $workoutToSortScore")
+    workoutNames.sortWith(Comparator { s1: String?, s2: String? ->
+        val score1 = workoutToSortScore[s1]
+        val score2 = workoutToSortScore[s2]
+        if (score1 == null) {
+            1
+        } else if (score2 == null) {
+            -1
+        } else {
+            score1.compareTo(score2)
+        }
+    })
+    return workoutNames
 }
