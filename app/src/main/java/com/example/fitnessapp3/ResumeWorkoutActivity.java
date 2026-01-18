@@ -20,7 +20,7 @@ public class ResumeWorkoutActivity extends AppCompatActivity {
     public void goToMainActivity(View view) {
         assert view.getId() == R.id.button_cancel;
         CurrentWorkout.setInProgress(false, this);
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, MainActivity2.class);
         startActivity(intent);
     }
 
