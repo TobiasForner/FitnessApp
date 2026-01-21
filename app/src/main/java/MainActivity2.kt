@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -47,7 +48,7 @@ class MainActivity2 : ComponentActivity() {
 }
 
 @Composable
-fun ActivityContent() {
+private fun ActivityContent() {
     val context = LocalContext.current
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -87,28 +88,28 @@ fun ActivityContent() {
 
 @Composable
 fun ToWeightActivity() {
-    val context = LocalContext.current as Activity
+    val context = LocalActivity.current
 
     Button(onClick = {
-        context.startActivity(Intent(context, WeightActivity2::class.java))
+        context?.startActivity(Intent(context, WeightActivity2::class.java))
     }, modifier = Modifier.fillMaxWidth()) { Text("Weight") }
 }
 
 @Composable
 fun ToAddExerciseActivity() {
-    val context = LocalContext.current as Activity
+    val context = LocalActivity.current
 
     Button(onClick = {
-        context.startActivity(Intent(context, AddExerciseActivity::class.java))
+        context?.startActivity(Intent(context, AddExerciseActivity::class.java))
     }, modifier = Modifier.fillMaxWidth()) { Text("Add Exercise") }
 }
 
 @Composable
 fun ToManageExercisesActivity() {
-    val context = LocalContext.current as Activity
+    val context = LocalActivity.current
 
     Button(onClick = {
-        context.startActivity(Intent(context, ManageExercisesActivity::class.java))
+        context?.startActivity(Intent(context, ManageExercisesActivity::class.java))
     }, modifier = Modifier.fillMaxWidth()) { Text("Manage Exercises") }
 }
 

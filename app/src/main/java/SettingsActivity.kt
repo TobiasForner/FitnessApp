@@ -26,11 +26,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.documentfile.provider.DocumentFile
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 import org.json.JSONException
 import org.json.JSONObject
 import androidx.compose.material3.AlertDialog
+import androidx.documentfile.provider.DocumentFile
 
 class SettingsActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
@@ -55,14 +54,16 @@ import com.example.fitnessapp3.Util.readFromInternal
 import com.example.fitnessapp3.Util.writeFileOnInternalStorage
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottomAxis
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStartAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.core.cartesian.Scroll
-import com.patrykandpatrick.vico.core.cartesian.data.AxisValueOverrider
+import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.core.cartesian.data.CartesianLayerRangeProvider
 import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.common.component.TextComponent
@@ -105,7 +106,7 @@ fun ActivityContent(activity: WeightActivity2, activatedModifiers: MutableList<B
         pastWeights.add(newWeightObj)
     }
 
-    val xToDateMapKey = ExtraStore.Key<Map<Float, String>>()
+    val xToDateMapKey = ExtraStore.Key<Map<Double, String>>()
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column {
@@ -176,7 +177,7 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
         res
 
     })
-    val activatedModifiers = rememberSaveable(key="activatedModifiers",saver=boolStateListSaver) {
+    val activatedModifiers = rememberSaveable(saver=boolStateListSaver) {
         if (activatedModifiers.isNullOrEmpty()) mutableStateListOf() else activatedModifiers.toMutableStateList()
 
     }
@@ -449,7 +450,7 @@ fun WeightModifierCard(
                 interactionSource = remember {
                     MutableInteractionSource()
                 },
-                indication = rememberRipple(bounded = true),
+                indication = null,
                 onClick = onClick,
                 onLongClick = onLongClick
             )
@@ -515,10 +516,10 @@ private fun updatePastWeight(context: Context) {
 fun VicoChart(
     modifier: Modifier,
     weights: List<JSONObject>,
-    xToDateMapKey: ExtraStore.Key<Map<Float, String>>
+    xToDateMapKey: ExtraStore.Key<Map<Double, String>>
 ) {
 
-    val modelProducer = remember { CartesianChartModelProducer.build() }
+    val modelProducer = remember { CartesianChartModelProducer() }
     val weightData = weightData(weights)
     Log.d("Weight2", "Original Weight data: $weights")
 
@@ -527,38 +528,40 @@ fun VicoChart(
         .forEach { data[it.value] = weightData.second[it.index] }
     Log.d("Weight2", "Weight data: $data")
 
-    val xToString = data.keys.associateBy { weightData.first.indexOf(it).toFloat() }
+    val xToString = data.keys.associateBy { weightData.first.indexOf(it).toDouble() }
     Log.d("Weight2", "$xToString")
 
 
-    val bottomFormatter = CartesianValueFormatter { x, chartValues, _ ->
-        val es = chartValues.model.extraStore
+    val bottomFormatter = CartesianValueFormatter { context, x, _ ->
+        val es = context.model.extraStore
         val x1 = es[xToDateMapKey]
         x1[x] ?: "ERROR"
+        //context.model.extraStore[xToDateMapKey][x.toInt()] as CharSequence
     }
     LaunchedEffect(Unit) {
-        modelProducer.tryRunTransaction {
+        modelProducer.runTransaction {
             lineSeries { series(xToString.keys, data.values) }
-            updateExtras { it[xToDateMapKey] = xToString }
+            extras { it[xToDateMapKey] = xToString }
         }
     }
 
-    val label = TextComponent.build {
+    val label = TextComponent(
+        color = Color.WHITE,
         minWidth =
             TextComponent.MinWidth { _, _, _, _, _ -> 150f }
-        color = Color.WHITE
-    }
-    val maxY = weightData.second.max() + 1
-    val minY = weightData.second.min() - 1
+    )
+    val maxY = weightData.second.max() + 1.toDouble()
+    val minY = weightData.second.min() - 1.toDouble()
     val scrollState = rememberVicoScrollState(initialScroll = Scroll.Absolute.End)
     CartesianChartHost(
         rememberCartesianChart(
             rememberLineCartesianLayer(
-                spacing = Dp(60f),
-                axisValueOverrider = AxisValueOverrider.fixed(minY = minY, maxY = maxY)
+                pointSpacing = Dp(60f),
+                rangeProvider = CartesianLayerRangeProvider.fixed(minY=minY, maxY = maxY),
+                //axisValueOverrider = AxisValueOverrider.fixed(minY = minY, maxY = maxY)
             ),
-            startAxis = rememberStartAxis(),
-            bottomAxis = rememberBottomAxis(
+            startAxis = VerticalAxis.rememberStart(),
+            bottomAxis = HorizontalAxis.rememberBottom(
                 label = label,
                 valueFormatter = bottomFormatter,
                 labelRotationDegrees = 45f
