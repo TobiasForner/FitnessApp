@@ -26,6 +26,9 @@
             android:name=".ManageExercisesActivity"
            />
         <activity
+            android:name=".DurationExerciseActivity2"
+            />
+        <activity
             android:name=".DurationExerciseActivity" />
         <activity
             android:name=".StartActivity"

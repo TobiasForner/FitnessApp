@@ -311,6 +311,10 @@ public class CurrentWorkout {
     }
 
     public static String getWorkoutComponentName() {
+        if(workout==null){
+
+            return null;
+        }
         return workout.getCurrentComponent().getName();
     }
 
