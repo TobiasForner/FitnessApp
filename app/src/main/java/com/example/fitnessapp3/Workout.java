@@ -32,7 +32,11 @@ public class Workout {
     }
 
     public WorkoutComponent getCurrentComponent() {
-        return workoutComponents.get(position);
+        if(position<workoutComponents.size()){
+            return workoutComponents.get(position);
+        }else{
+            return null;
+        }
     }
 
     public String getName() {

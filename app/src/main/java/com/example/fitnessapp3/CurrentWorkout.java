@@ -266,7 +266,7 @@ public class CurrentWorkout {
     }
 
     public static void logWeightedDuration(int duration, int weight, Activity activity, int pos) {
-        currentWorkout[workout.getPosition()] = "" + duration + "," + weight + "," + true;
+        currentWorkout[workout.getPosition()] = duration + "," + weight + "," + true;
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
         assert setResults != null;
@@ -281,6 +281,10 @@ public class CurrentWorkout {
     }
 
     public static String getPrevResultsInWorkout() {
+        var currentComp = workout.getCurrentComponent();
+        if (currentComp==null){
+            return "";
+        }
         String compName = workout.getCurrentComponent().getName();
         ArrayList<SetResult> prevResults = exToResults.getOrDefault(compName, null);
         if (prevResults == null || prevResults.get(0) == null) {
@@ -336,7 +340,11 @@ public class CurrentWorkout {
     }
 
     public static String getSetString() {
+        if(workout.getPosition()<setStrings.size()){
         return setStrings.get(workout.getPosition());
+        } else {
+            return "";
+        }
     }
 
     private static void saveProgress(Activity activity) {
