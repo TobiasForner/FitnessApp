@@ -1,4 +1,13 @@
 <resources>
     <!-- Base application theme. -->
+    <style name="Theme.FitnessApp.ActivityFade" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowAnimationStyle">@style/FadeAnimation</item>
+    </style>
 
+    <style name="FadeAnimation">
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityCloseEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityCloseExitAnimation">@android:anim/fade_out</item>
+    </style>
 </resources>

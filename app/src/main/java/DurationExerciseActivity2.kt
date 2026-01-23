@@ -1,6 +1,8 @@
 package com.example.fitnessapp3
 
 import android.app.Activity
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -8,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,7 +27,9 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -32,10 +37,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessapp3.timer.TimerViewModel
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 
-class DurationExerciseActivity2: ComponentActivity() {
+class DurationExerciseActivity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
 
         setContent {
             ActivityContent()
@@ -45,10 +50,10 @@ class DurationExerciseActivity2: ComponentActivity() {
 
 @Composable
 private fun ActivityContent() {
-    val activity= LocalActivity.current
+    val activity = LocalActivity.current
 
     var name = CurrentWorkout.getWorkoutComponentName()
-    if(name==null){
+    if (name == null) {
         name = "Exercise name"
     }
 
@@ -62,10 +67,10 @@ private fun ActivityContent() {
     } else {
         CurrentWorkout.getPrevSetResultsOfCurrentPosition()
     }
-    if (setResult != null &&setResult.isDuration) {
+    if (setResult != null && setResult.isDuration) {
         val repNr = setResult.repNr
         pickedSeconds = repNr.mod(60)
-        pickedMinutes = repNr/60
+        pickedMinutes = repNr / 60
     }
 
     var timerStarted by rememberSaveable { mutableStateOf(false) }
@@ -81,80 +86,109 @@ private fun ActivityContent() {
                 modifier = Modifier
                     .padding(innerPadding)
                     .fillMaxSize()
-                    .padding(top = 5.dp),
+                    .padding(top = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                LinearProgressIndicator(progress = {progress})
+                LinearProgressIndicator(progress = { progress }, strokeCap = StrokeCap.Round)
                 Text(name, fontSize = 40.sp)
-                Text(CurrentWorkout.getSetString(), fontSize = 10.sp)
-                if(timerStarted && !finished){
-                    /*Column{
-                    CountdownTimer()
-                    Button(onClick = {
-                        finished= true
-                        logDuration(60*pickedMinutes+pickedSeconds,null, activity, workoutPosition)
-
-                        goToNext(activity)
-                    }, modifier = Modifier.align(Alignment.CenterHorizontally)) {Text("Skip") }
-                    }*/
-                    TimerRunning(viewModel=timerViewModel, onFinished = {
-                        finished= true
-                        logDuration(60*pickedMinutes+pickedSeconds,null, activity, workoutPosition)
+                Text(CurrentWorkout.getSetString(), fontSize = 15.sp)
+                if (timerStarted && !finished) {
+                    TimerRunning(viewModel = timerViewModel, onFinished = {
+                        finished = true
+                        logDuration(
+                            60 * pickedMinutes + pickedSeconds,
+                            null,
+                            activity,
+                            workoutPosition
+                        )
 
                         goToNext(activity)
                     })
 
-                }else{
-                DurationPicking({timerStarted=true
-                                timerViewModel.start(60*pickedMinutes+pickedSeconds)
-                                }, pickedSeconds, pickedMinutes, {pickedSeconds=it}, {pickedMinutes=it})
-            }}
+                } else {
+                    DurationPicking({
+                        timerStarted = true
+                        timerViewModel.start(60 * pickedMinutes + pickedSeconds)
+                    }, pickedSeconds, pickedMinutes, { pickedSeconds = it }, { pickedMinutes = it })
+                }
+            }
         }
     }
 }
+
 @Composable
-fun DurationPicking(onCountdownStart: ()->Unit, pickedSeconds: Int, pickedMinutes: Int, onSecondsChange: (Int) -> Unit, onMinutesChange: (Int) -> Unit){
-    Column{
+fun DurationPicking(
+    onCountdownStart: () -> Unit,
+    pickedSeconds: Int,
+    pickedMinutes: Int,
+    onSecondsChange: (Int) -> Unit,
+    onMinutesChange: (Int) -> Unit
+) {
+    Column {
+        Spacer(modifier = Modifier.weight(0.3f))
         Row {
 
             Column(modifier = Modifier.align(Alignment.CenterVertically)) {
                 Text("min", modifier = Modifier.align(Alignment.CenterHorizontally))
                 Stepper(pickedMinutes, IntRange(0, 59), onChange = onMinutesChange, cycling = true)
             }
-            Column{
+            Column {
                 Text("sec", modifier = Modifier.align(Alignment.CenterHorizontally))
 
                 Stepper(pickedSeconds, IntRange(0, 59), onChange = onSecondsChange, cycling = true)
-            }}
-
-        Button(onClick = onCountdownStart, modifier = Modifier.align(Alignment.CenterHorizontally)){Text("Start")}
+            }
+        }
+        Spacer(modifier = Modifier.weight(0.5f))
+        Button(
+            onClick = onCountdownStart,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) { Text("Start", fontSize = 30.sp) }
 
         val prevResults = CurrentWorkout.getPrevResultsInWorkout()
-
+        Spacer(modifier = Modifier.weight(1f))
         if (!prevResults.isEmpty()) {
-            Text(prevResults, modifier = Modifier.padding(top=10.dp))
+            Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
 
 @Composable
 fun TimerRunning(
-    viewModel: TimerViewModel= viewModel(),
+    viewModel: TimerViewModel = viewModel(),
     onFinished: () -> Unit
-){
+) {
 
     val remaining by viewModel.remaining.collectAsStateWithLifecycle()
+    val remMins = remaining / 60
+    val remSecs = remaining.mod(60)
+    val timerText = String.format("%02d:%02d", remMins, remSecs)
+    var skipped = false
 
     LaunchedEffect(Unit) {
         viewModel.finished.collect {
-        onFinished()
+            onFinished()
+            if (!skipped) {
+                val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
+                toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
+            }
         }
     }
 
-    Column{
-    Text("Time left: $remaining")
-Button(onClick = {viewModel.skipTimer()}) {Text("Skip") }
+    Column {
+        Spacer(modifier = Modifier.weight(0.3f))
+        Text(timerText, fontSize = 60.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+        Spacer(modifier = Modifier.weight(0.9f))
+        Button(onClick = {
+            skipped = true
+            viewModel.skipTimer()
+        }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+            Text(
+                "Skip",
+                fontSize = 30.sp
+            )
+        }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }
 
@@ -163,47 +197,52 @@ fun Stepper(
     value: Int,
     range: IntRange,
     onChange: (Int) -> Unit,
-    cycling: Boolean
+    cycling: Boolean,
+    buttonFontSize: TextUnit = 20.sp,
+    numberFontSize: TextUnit = 30.sp
 ) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Button(
             onClick = {
                 if (value > range.first) onChange(value - 1)
-            else if (cycling){
-                onChange(range.last)
-            }}
+                else if (cycling) {
+                    onChange(range.last)
+                }
+            }
         ) {
-            Text("-")
+            Text("-", fontSize = buttonFontSize)
         }
 
         Text(
             text = value.toString().padStart(2, '0'),
             modifier = Modifier.width(32.dp),
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            fontSize = numberFontSize
         )
 
         Button(
-            onClick = { if (value < range.last) onChange(value + 1)
-            else{
-                onChange(range.first)
-            }}
+            onClick = {
+                if (value < range.last) onChange(value + 1)
+                else {
+                    onChange(range.first)
+                }
+            }
         ) {
-            Text("+")
+            Text("+", fontSize = buttonFontSize)
         }
     }
 }
 
 
-
 private fun logDuration(duration: Int, weight: Int?, activity: Activity?, workoutPosition: Int) {
-    if (weight!=null) {
+    if (weight != null) {
         CurrentWorkout.logWeightedDuration(duration, weight, activity, workoutPosition)
     } else {
         CurrentWorkout.logDuration(duration, activity, workoutPosition)
     }
 }
 
-private fun goToNext(activity: Activity?){
+private fun goToNext(activity: Activity?) {
     if (CurrentWorkout.hasCurrentExercise()) {
         goToNextActivity(activity)
     } else {
