@@ -1,5 +1,6 @@
 package com.example.fitnessapp3
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.media.AudioManager
 import android.media.ToneGenerator
@@ -14,20 +15,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -77,7 +82,16 @@ private fun ActivityContent() {
 
     val workoutPosition = CurrentWorkout.getWorkoutPosition()
 
-    val progress = workoutPosition.toFloat() / CurrentWorkout.getWorkoutLength()
+    val progress = (workoutPosition+1).toFloat() / CurrentWorkout.getWorkoutLength()
+
+
+    val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
+    var text by remember { mutableStateOf(setResult.addedWeight.toString()) }
+    val weight = try {
+        text.toFloat()
+    } catch (_: NumberFormatException) {
+        0f
+    }
 
     val timerViewModel: TimerViewModel = viewModel()
     FitnessApp3Theme {
@@ -98,7 +112,7 @@ private fun ActivityContent() {
                         finished = true
                         logDuration(
                             60 * pickedMinutes + pickedSeconds,
-                            null,
+                            if (isWeighted){weight.toInt()}else{null},
                             activity,
                             workoutPosition
                         )
@@ -110,7 +124,8 @@ private fun ActivityContent() {
                     DurationPicking({
                         timerStarted = true
                         timerViewModel.start(60 * pickedMinutes + pickedSeconds)
-                    }, pickedSeconds, pickedMinutes, { pickedSeconds = it }, { pickedMinutes = it })
+                    }, pickedSeconds, pickedMinutes, { pickedSeconds = it }, { pickedMinutes = it }, isWeighted,
+                        onWeightChange = {text=it})
                 }
             }
         }
@@ -123,8 +138,16 @@ fun DurationPicking(
     pickedSeconds: Int,
     pickedMinutes: Int,
     onSecondsChange: (Int) -> Unit,
-    onMinutesChange: (Int) -> Unit
+    onMinutesChange: (Int) -> Unit,
+    isWeighted: Boolean,
+    onWeightChange: (String) -> Unit
 ) {
+    val setResult = if (!CurrentWorkout.useLastWorkout) {
+        CurrentWorkout.getPrevSetResultsOfCurrentExercise()
+    } else {
+        CurrentWorkout.getPrevSetResultsOfCurrentPosition()
+    }
+
     Column {
         Spacer(modifier = Modifier.weight(0.3f))
         Row {
@@ -139,20 +162,31 @@ fun DurationPicking(
                 Stepper(pickedSeconds, IntRange(0, 59), onChange = onSecondsChange, cycling = true)
             }
         }
+        if (isWeighted) {
+
+            TextField(
+                value = setResult.addedWeight.toString(),
+                onValueChange = onWeightChange,
+                label = { Text("Weight") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
+        }
         Spacer(modifier = Modifier.weight(0.5f))
         Button(
             onClick = onCountdownStart,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) { Text("Start", fontSize = 30.sp) }
 
-        val prevResults = CurrentWorkout.getPrevResultsInWorkout()
+
         Spacer(modifier = Modifier.weight(1f))
+        val prevResults = CurrentWorkout.getPrevResultsInWorkout()
         if (!prevResults.isEmpty()) {
             Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))
         }
     }
 }
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun TimerRunning(
     viewModel: TimerViewModel = viewModel(),
