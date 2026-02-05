@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -27,8 +26,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -152,12 +149,12 @@ fun DurationPicking(
 
             Column(modifier = Modifier.align(Alignment.CenterVertically)) {
                 Text("min", modifier = Modifier.align(Alignment.CenterHorizontally))
-                Stepper(pickedMinutes, IntRange(0, 59), onChange = onMinutesChange, cycling = true)
+                NumberStepper(pickedMinutes, IntRange(0, 59), onChange = onMinutesChange, cycling = true)
             }
             Column {
                 Text("sec", modifier = Modifier.align(Alignment.CenterHorizontally))
 
-                Stepper(pickedSeconds, IntRange(0, 59), onChange = onSecondsChange, cycling = true)
+                NumberStepper(pickedSeconds, IntRange(0, 59), onChange = onSecondsChange, cycling = true)
             }
         }
         if (isWeighted) {
@@ -189,15 +186,6 @@ private fun logDuration(duration: Int, weight: Int?, activity: Activity?, workou
         CurrentWorkout.logWeightedDuration(duration, weight, activity, workoutPosition)
     } else {
         CurrentWorkout.logDuration(duration, activity, workoutPosition)
-    }
-}
-
-private fun goToNext(activity: Activity?) {
-    if (CurrentWorkout.hasCurrentExercise()) {
-        goToNextActivity(activity)
-    } else {
-        CurrentWorkout.finishWorkout(activity)
-        goToNextActivity(activity)
     }
 }
 
