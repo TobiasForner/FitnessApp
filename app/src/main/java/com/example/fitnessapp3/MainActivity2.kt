@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fitnessapp3.R
 import com.example.fitnessapp3.ui.SettingsActivity
-import com.example.fitnessapp3.WeightActivity2
+import com.example.fitnessapp3.ui.WeightActivity2
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.WorkoutManager
 import com.example.fitnessapp3.data.WorkoutStats

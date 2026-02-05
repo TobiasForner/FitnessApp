@@ -18,7 +18,6 @@ import androidx.fragment.app.DialogFragment;
 import com.example.fitnessapp3.data.CurrentWorkout;
 import com.example.fitnessapp3.R;
 import com.example.fitnessapp3.util.Util;
-import com.example.fitnessapp3.WeightActivity2;
 import com.example.fitnessapp3.data.Workout;
 import com.example.fitnessapp3.data.WorkoutComponent;
 import com.example.fitnessapp3.data.WorkoutManager;
