@@ -1,9 +1,6 @@
-package com.example.fitnessapp3.com.example.fitnessapp3.ui
+package com.example.fitnessapp3.ui
 
-import android.annotation.SuppressLint
 import android.app.Activity
-import android.media.AudioManager
-import android.media.ToneGenerator
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
@@ -17,12 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -31,18 +26,18 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.Exercise
-import com.example.fitnessapp3.timer.TimerViewModel
-import com.example.fitnessapp3.ui.ActivityTransition
+import com.example.fitnessapp3.ui.components.ExerciseHeader
+import com.example.fitnessapp3.ui.components.TimerViewModel
+import com.example.fitnessapp3.ui.components.NumberStepper
+import com.example.fitnessapp3.ui.components.Timer
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 
 class DurationExerciseActivity2 : ComponentActivity() {
@@ -111,7 +106,9 @@ private fun ActivityContent() {
                 Text(name, fontSize = 40.sp)
                 Text(CurrentWorkout.getSetString(), fontSize = 15.sp)
                 if (timerStarted && !finished) {
-                    TimerRunning(viewModel = timerViewModel, onFinished = {
+                    Column{
+                        Spacer(modifier = Modifier.weight(0.3f))
+                    Timer(modifier=Modifier.weight(1.0f),viewModel = timerViewModel, onFinished = {
                         finished = true
                         logDuration(
                             60 * pickedMinutes + pickedSeconds,
@@ -120,8 +117,11 @@ private fun ActivityContent() {
                             workoutPosition
                         )
 
-                        goToNext(activity)
-                    })
+                        goToNextActivity(activity)
+                    },
+                        skippable = true)
+                        Spacer(modifier = Modifier.weight(1f))
+                    }
 
                 } else {
                     DurationPicking({
@@ -188,88 +188,6 @@ fun DurationPicking(
         }
     }
 }
-
-@SuppressLint("DefaultLocale")
-@Composable
-fun TimerRunning(
-    viewModel: TimerViewModel = viewModel(),
-    onFinished: () -> Unit
-) {
-
-    val remaining by viewModel.remaining.collectAsStateWithLifecycle()
-    val remMins = remaining / 60
-    val remSecs = remaining.mod(60)
-    val timerText = String.format("%02d:%02d", remMins, remSecs)
-    var skipped = false
-
-    LaunchedEffect(Unit) {
-        viewModel.finished.collect {
-            onFinished()
-            if (!skipped) {
-                val toneGenerator = ToneGenerator(AudioManager.STREAM_MUSIC, 100)
-                toneGenerator.startTone(ToneGenerator.TONE_CDMA_PIP, 150)
-            }
-        }
-    }
-
-    Column {
-        Spacer(modifier = Modifier.weight(0.3f))
-        Text(timerText, fontSize = 60.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
-        Spacer(modifier = Modifier.weight(0.9f))
-        Button(onClick = {
-            skipped = true
-            viewModel.skipTimer()
-        }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
-            Text(
-                "Skip",
-                fontSize = 30.sp
-            )
-        }
-        Spacer(modifier = Modifier.weight(1f))
-    }
-}
-
-@Composable
-fun Stepper(
-    value: Int,
-    range: IntRange,
-    onChange: (Int) -> Unit,
-    cycling: Boolean,
-    buttonFontSize: TextUnit = 20.sp,
-    numberFontSize: TextUnit = 30.sp
-) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Button(
-            onClick = {
-                if (value > range.first) onChange(value - 1)
-                else if (cycling) {
-                    onChange(range.last)
-                }
-            }
-        ) {
-            Text("-", fontSize = buttonFontSize)
-        }
-
-        Text(
-            text = value.toString().padStart(2, '0'),
-            modifier = Modifier.width(32.dp),
-            textAlign = TextAlign.Center,
-            fontSize = numberFontSize
-        )
-
-        Button(
-            onClick = {
-                if (value < range.last) onChange(value + 1)
-                else {
-                    onChange(range.first)
-                }
-            }
-        ) {
-            Text("+", fontSize = buttonFontSize)
-        }
-    }
-}
-
 
 private fun logDuration(duration: Int, weight: Int?, activity: Activity?, workoutPosition: Int) {
     if (weight != null) {

@@ -1,4 +1,4 @@
-package com.example.fitnessapp3.timer
+package com.example.fitnessapp3.ui.components
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -25,6 +25,9 @@ class TimerViewModel(
     private val _finished = MutableSharedFlow<Unit>()
     val finished: SharedFlow<Unit> = _finished
 
+    private val _skipped = MutableStateFlow(false)
+    val skipped: StateFlow<Boolean> = _skipped
+
     private var job: Job? = null
 
     fun start(seconds: Int) {
@@ -37,6 +40,7 @@ class TimerViewModel(
         job?.cancel()
         job = null
         _remaining.value = 0
+        _skipped.value = true
         savedStateHandle.remove<Long>(END_TIME)
 
         viewModelScope.launch {
@@ -54,8 +58,11 @@ class TimerViewModel(
                     _finished.emit(Unit)
                     break
                 }
-                _remaining.value = (remainingMs / 1_000).toInt()
-                delay(1_000)
+                val seconds = ((remainingMs + 999) / 1_000).toInt()
+                _remaining.value = seconds
+
+                val delayMs = remainingMs % 1_000
+                delay(if (delayMs == 0L) 1_000 else delayMs)
             }
         }
     }
