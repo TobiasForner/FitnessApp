@@ -5,7 +5,6 @@ import android.content.Intent;
 
 
 import com.example.fitnessapp3.data.CurrentWorkout;
-import com.example.fitnessapp3.com.example.fitnessapp3.ui.DurationExerciseActivity2;
 import com.example.fitnessapp3.com.example.fitnessapp3.MainActivity2;
 import com.example.fitnessapp3.data.Exercise;
 import com.example.fitnessapp3.data.Rest;
