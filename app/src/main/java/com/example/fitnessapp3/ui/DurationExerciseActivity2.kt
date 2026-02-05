@@ -102,9 +102,7 @@ private fun ActivityContent() {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                LinearProgressIndicator(progress = { progress }, strokeCap = StrokeCap.Round)
-                Text(name, fontSize = 40.sp)
-                Text(CurrentWorkout.getSetString(), fontSize = 15.sp)
+                ExerciseHeader(name, progress)
                 if (timerStarted && !finished) {
                     Column{
                         Spacer(modifier = Modifier.weight(0.3f))
