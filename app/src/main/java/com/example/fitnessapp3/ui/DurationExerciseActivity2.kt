@@ -55,10 +55,7 @@ class DurationExerciseActivity2 : ComponentActivity() {
 private fun ActivityContent() {
     val activity = LocalActivity.current
 
-    var name = CurrentWorkout.getWorkoutComponentName()
-    if (name == null) {
-        name = "Exercise name"
-    }
+    val name = CurrentWorkout.getWorkoutComponentName()?:"Exercise name"
 
     var pickedSeconds by rememberSaveable { mutableIntStateOf(0) }
     var pickedMinutes by rememberSaveable { mutableIntStateOf(0) }
