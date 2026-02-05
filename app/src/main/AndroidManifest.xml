@@ -21,7 +21,7 @@
             android:name=".ui.ManageExercisesActivity"
            />
         <activity
-            android:name=".com.example.fitnessapp3.ui.DurationExerciseActivity2"
+            android:name=".ui.DurationExerciseActivity2"
             android:theme="@style/Theme.FitnessApp.ActivityFade"
             />
         <activity
