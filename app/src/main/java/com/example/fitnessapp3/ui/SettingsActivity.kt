@@ -35,7 +35,6 @@ import com.example.fitnessapp3.R
 import com.example.fitnessapp3.com.example.fitnessapp3.MainActivity2
 import com.example.fitnessapp3.data.ExerciseManager
 import com.example.fitnessapp3.data.WorkoutManager
-import com.example.fitnessapp3.getPastWeights
 
 class SettingsActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
