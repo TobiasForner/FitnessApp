@@ -1,8 +1,12 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.app.Application;
 import android.content.Context;
 
+
+import com.example.fitnessapp3.data.ExerciseManager;
+import com.example.fitnessapp3.util.Util;
+import com.example.fitnessapp3.data.WorkoutManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;

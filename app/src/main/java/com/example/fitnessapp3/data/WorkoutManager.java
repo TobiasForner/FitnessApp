@@ -1,6 +1,8 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.data;
 
 import android.content.Context;
+
+import com.example.fitnessapp3.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;

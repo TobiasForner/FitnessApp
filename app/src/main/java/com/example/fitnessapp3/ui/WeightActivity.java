@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import static com.androidplot.xy.StepMode.INCREMENT_BY_VAL;
 
@@ -20,6 +20,8 @@ import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.XYGraphWidget;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
+import com.example.fitnessapp3.R;
+import com.example.fitnessapp3.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;

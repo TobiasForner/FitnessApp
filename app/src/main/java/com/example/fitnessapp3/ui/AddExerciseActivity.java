@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.fitnessapp3.data.Exercise;
+import com.example.fitnessapp3.data.ExerciseManager;
+import com.example.fitnessapp3.R;
+import com.example.fitnessapp3.data.WorkoutComponent;
 
 
 public class AddExerciseActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener, PositiveNegativeDialogFragment.NoticeDialogListener, CompoundButton.OnCheckedChangeListener {

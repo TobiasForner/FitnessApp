@@ -1,16 +1,16 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.data;
 
 import androidx.annotation.NonNull;
 
 public class WorkoutStats {
-    int count;
+    public int count;
 
-    String lastCompletedDate;
+    public String lastCompletedDate;
 
-    int posInSortedNames;
-    int posInSortedCounts;
+    public int posInSortedNames;
+    public int posInSortedCounts;
 
-    int posInSortedDates;
+    public int posInSortedDates;
 
     public WorkoutStats(int count, String lastCompletedDate, int posInSortedNames, int posInSortedCounts, int posInSortedDates) {
         this.count = count;

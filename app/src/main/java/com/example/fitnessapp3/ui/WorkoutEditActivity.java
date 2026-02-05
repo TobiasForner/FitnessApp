@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.fitnessapp3.R;
+import com.example.fitnessapp3.data.WorkoutManager;
 
 import java.util.List;
 

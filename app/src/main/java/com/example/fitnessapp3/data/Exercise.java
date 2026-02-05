@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.data;
 
 import androidx.annotation.NonNull;
 
@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 public class Exercise extends WorkoutComponent {
 
-    enum ExType {
+    public enum ExType {
         REST, REPS, DURATION;
 
         public static ExType fromString(String exType) {

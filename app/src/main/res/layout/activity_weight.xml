@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".WeightActivity">
+    tools:context=".ui.WeightActivity">
 
     <Button
         android:id="@+id/log_weight_button"

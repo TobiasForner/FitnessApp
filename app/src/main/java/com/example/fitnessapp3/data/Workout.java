@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.data;
 
 import java.util.ArrayList;
 import java.util.List;

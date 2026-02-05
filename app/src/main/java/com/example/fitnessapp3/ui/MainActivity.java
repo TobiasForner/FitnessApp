@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -15,9 +15,16 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.fitnessapp3.data.CurrentWorkout;
+import com.example.fitnessapp3.R;
+import com.example.fitnessapp3.util.Util;
+import com.example.fitnessapp3.WeightActivity2;
+import com.example.fitnessapp3.data.Workout;
+import com.example.fitnessapp3.data.WorkoutComponent;
+import com.example.fitnessapp3.data.WorkoutManager;
+import com.example.fitnessapp3.data.WorkoutStats;
 import com.google.android.material.card.MaterialCardView;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

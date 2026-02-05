@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ResumeWorkoutActivity">
+    tools:context=".ui.ResumeWorkoutActivity">
     <TextView
         android:id="@+id/text_workout_in_progress_exists"
         android:layout_width="wrap_content"

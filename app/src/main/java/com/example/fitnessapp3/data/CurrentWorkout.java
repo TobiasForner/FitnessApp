@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.data;
 
 import android.app.Activity;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.util.Log;
 import android.widget.ProgressBar;
 
 import com.example.fitnessapp3.SetResults.SetResult;
+import com.example.fitnessapp3.util.StringOccurrenceCounter;
+import com.example.fitnessapp3.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;

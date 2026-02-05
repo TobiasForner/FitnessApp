@@ -50,9 +50,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.example.fitnessapp3.Util.readFromInternal
-import com.example.fitnessapp3.Util.writeFileOnInternalStorage
+import com.example.fitnessapp3.util.Util.readFromInternal
+import com.example.fitnessapp3.util.Util.writeFileOnInternalStorage
+import com.example.fitnessapp3.ui.WeightActivity
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
+import com.example.fitnessapp3.util.Util
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart

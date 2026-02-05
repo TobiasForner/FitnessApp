@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.media.AudioManager;
 import android.media.ToneGenerator;
@@ -19,6 +19,9 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fitnessapp3.data.CurrentWorkout;
+import com.example.fitnessapp3.data.Exercise;
+import com.example.fitnessapp3.R;
 import com.example.fitnessapp3.SetResults.SetResult;
 
 import java.text.SimpleDateFormat;

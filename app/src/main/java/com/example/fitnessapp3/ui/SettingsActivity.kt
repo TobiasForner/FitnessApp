@@ -1,4 +1,4 @@
-package com.example.fitnessapp3
+package com.example.fitnessapp3.ui
 
 import android.content.Context
 import android.content.Intent
@@ -31,6 +31,10 @@ import org.json.JSONException
 import org.json.JSONObject
 import androidx.compose.material3.AlertDialog
 import androidx.documentfile.provider.DocumentFile
+import com.example.fitnessapp3.R
+import com.example.fitnessapp3.com.example.fitnessapp3.MainActivity2
+import com.example.fitnessapp3.data.ExerciseManager
+import com.example.fitnessapp3.data.WorkoutManager
 
 class SettingsActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {

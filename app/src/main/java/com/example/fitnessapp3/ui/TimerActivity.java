@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.content.Intent;
 import android.media.AudioManager;
@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.fitnessapp3.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

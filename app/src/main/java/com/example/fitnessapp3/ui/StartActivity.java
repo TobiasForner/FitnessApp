@@ -1,9 +1,13 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+
+import com.example.fitnessapp3.data.CurrentWorkout;
+import com.example.fitnessapp3.com.example.fitnessapp3.MainActivity2;
+import com.example.fitnessapp3.R;
 
 public class StartActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package com.example.fitnessapp3
+package com.example.fitnessapp3.com.example.fitnessapp3.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -39,7 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fitnessapp3.data.CurrentWorkout
+import com.example.fitnessapp3.data.Exercise
 import com.example.fitnessapp3.timer.TimerViewModel
+import com.example.fitnessapp3.ui.ActivityTransition
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 
 class DurationExerciseActivity2 : ComponentActivity() {

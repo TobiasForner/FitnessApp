@@ -1,4 +1,4 @@
-package com.example.fitnessapp3
+package com.example.fitnessapp3.com.example.fitnessapp3
 
 import android.app.Activity
 import android.content.Context
@@ -31,7 +31,18 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fitnessapp3.R
+import com.example.fitnessapp3.ui.SettingsActivity
+import com.example.fitnessapp3.WeightActivity2
+import com.example.fitnessapp3.data.CurrentWorkout
+import com.example.fitnessapp3.data.WorkoutManager
+import com.example.fitnessapp3.data.WorkoutStats
+import com.example.fitnessapp3.ui.ActivityTransition
+import com.example.fitnessapp3.ui.AddExerciseActivity
+import com.example.fitnessapp3.ui.ManageExercisesActivity
+import com.example.fitnessapp3.ui.WorkoutEditActivity
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
+import com.example.fitnessapp3.util.Util
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.function.Function

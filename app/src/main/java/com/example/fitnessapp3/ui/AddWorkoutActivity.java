@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,12 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
+
+import com.example.fitnessapp3.data.CurrentWorkout;
+import com.example.fitnessapp3.data.ExerciseManager;
+import com.example.fitnessapp3.R;
+import com.example.fitnessapp3.util.Util;
+import com.example.fitnessapp3.data.WorkoutManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +13,11 @@ import android.widget.TextView;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.fitnessapp3.data.CurrentWorkout;
+import com.example.fitnessapp3.data.Exercise;
+import com.example.fitnessapp3.R;
 import com.example.fitnessapp3.SetResults.SetResult;
+import com.example.fitnessapp3.data.WorkoutComponent;
 
 
 public class WorkoutActivity extends AppCompatActivity {

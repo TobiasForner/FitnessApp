@@ -1,4 +1,4 @@
-package com.example.fitnessapp3;
+package com.example.fitnessapp3.util;
 
 import java.util.HashMap;
 import java.util.Map;
