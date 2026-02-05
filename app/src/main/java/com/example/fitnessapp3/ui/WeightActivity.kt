@@ -1,4 +1,4 @@
-package com.example.fitnessapp3
+package com.example.fitnessapp3.ui
 
 import android.content.Context
 import android.graphics.Color
@@ -77,6 +77,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
+import kotlin.collections.iterator
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
