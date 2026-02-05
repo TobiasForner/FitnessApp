@@ -32,6 +32,10 @@
         <activity
             android:name=".ui.DurationExerciseActivity" />
         <activity
+            android:name=".ui.RepExerciseActivity"
+            android:theme="@style/Theme.FitnessApp.ActivityFade"
+            />
+        <activity
             android:name=".ui.StartActivity"
             android:exported="true">
             <intent-filter>

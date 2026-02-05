@@ -27,7 +27,7 @@ public class ActivityTransition {
                 } else if (((Exercise) CurrentWorkout.getCurrentWorkoutComponent()).getType() == Exercise.ExType.DURATION) {
                     nextIntent = new Intent(origin, DurationExerciseActivity2.class);
                 } else {
-                    nextIntent = new Intent(origin, WorkoutActivity.class);
+                    nextIntent = new Intent(origin, RepExerciseActivity.class);
                 }
             }
             else{
