@@ -1,7 +1,6 @@
 package com.example.fitnessapp3.ui
 
 import android.app.Activity
-import android.content.Intent.getIntent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
