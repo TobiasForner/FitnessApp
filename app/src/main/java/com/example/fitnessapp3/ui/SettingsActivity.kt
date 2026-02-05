@@ -35,6 +35,7 @@ import com.example.fitnessapp3.R
 import com.example.fitnessapp3.com.example.fitnessapp3.MainActivity2
 import com.example.fitnessapp3.data.ExerciseManager
 import com.example.fitnessapp3.data.WorkoutManager
+import com.example.fitnessapp3.getPastWeights
 
 class SettingsActivity : ComponentActivity(){
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -124,7 +125,7 @@ private fun fullJSONData(context: Context): JSONObject {
     val workoutsJSON = WorkoutManager.workoutsJSON(context)
     res.put("workouts", workoutsJSON)
     // store logged weight
-    val loggedWeight = WeightActivity.getPastWeights(context)
+    val loggedWeight = getPastWeights(context)
     res.put("weight", loggedWeight)
     // store results for last workouts (set strings)
     // TODO
