@@ -42,7 +42,7 @@ public class ActivityTransition {
     }
 
     private static Intent restIntent(Activity origin){
-        Intent nextIntent = new Intent(origin, RestActivity.class);
+        Intent nextIntent = new Intent(origin, RestActivity2.class);
         int time = ((Rest) CurrentWorkout.getCurrentWorkoutComponent()).getRestTime();
         nextIntent.putExtra(MainActivity.EXTRA_MESSAGE, time);
         nextIntent.putExtra(MainActivity.EXTRA_RETURN_DEST, "WorkoutActivity");

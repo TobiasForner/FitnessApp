@@ -71,6 +71,10 @@
             android:name=".ui.RestActivity"
              />
         <activity
+            android:name=".ui.RestActivity2"
+            android:theme="@style/Theme.FitnessApp.ActivityFade"
+            />
+        <activity
             android:name=".ui.MainActivity" />
     </application>
 
