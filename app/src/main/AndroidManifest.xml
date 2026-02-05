@@ -11,7 +11,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
         <activity
-            android:name=".WeightActivity2"
+            android:name=".ui.WeightActivity2"
             android:exported="false"
             android:label="@string/title_activity_main2"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
