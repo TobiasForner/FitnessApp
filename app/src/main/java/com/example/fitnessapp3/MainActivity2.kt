@@ -1,4 +1,4 @@
-package com.example.fitnessapp3.com.example.fitnessapp3
+package com.example.fitnessapp3
 
 import android.app.Activity
 import android.content.Context
@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -17,29 +18,35 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.fitnessapp3.R
-import com.example.fitnessapp3.ui.SettingsActivity
-import com.example.fitnessapp3.ui.WeightActivity2
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.WorkoutManager
 import com.example.fitnessapp3.data.WorkoutStats
 import com.example.fitnessapp3.ui.ActivityTransition
 import com.example.fitnessapp3.ui.AddExerciseActivity
 import com.example.fitnessapp3.ui.ManageExercisesActivity
+import com.example.fitnessapp3.ui.SettingsActivity
+import com.example.fitnessapp3.ui.WeightActivity2
 import com.example.fitnessapp3.ui.WorkoutEditActivity
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 import com.example.fitnessapp3.util.Util
@@ -50,7 +57,7 @@ import java.util.function.Function
 class MainActivity2 : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
+        enableEdgeToEdge()
 
         setContent {
             ActivityContent()
@@ -61,6 +68,8 @@ class MainActivity2 : ComponentActivity() {
 @Composable
 private fun ActivityContent() {
     val context = LocalContext.current
+    val activity = LocalActivity.current
+    var showResumeWorkoutAlert by remember { mutableStateOf(CurrentWorkout.workoutIsInProgress(context)) }
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(
@@ -93,6 +102,33 @@ private fun ActivityContent() {
 
                 WorkoutList()
             }
+        }
+        if (showResumeWorkoutAlert){
+            fun dismissResume(){
+                showResumeWorkoutAlert = false
+                CurrentWorkout.setInProgress(false, context)
+            }
+
+            AlertDialog(
+                onDismissRequest = ::dismissResume,
+                title = { Text("Workout in progress") },
+                text = { Text(stringResource(R.string.workout_in_progress_exists, CurrentWorkout.getWorkoutNameInProgress(context))) },
+                confirmButton = {
+                    TextButton(onClick = { showResumeWorkoutAlert = false
+                        CurrentWorkout.restoreWorkoutInProgress(activity)
+
+                        val nextIntent = ActivityTransition.goToNextActivityInWorkout(activity)
+                        activity?.startActivity(nextIntent)
+                    }) {
+                        Text("Resume")
+                    }
+                },
+                dismissButton = {TextButton(onClick = ::dismissResume) {
+                    Text("Dismiss")
+                }}
+
+            )
+
         }
     }
 }
@@ -128,7 +164,6 @@ fun ToManageExercisesActivity() {
 fun WorkoutList() {
     val context = LocalContext.current
     val workoutNames = sortedWorkoutNames(context)
-
 
     Column() {
         Row {

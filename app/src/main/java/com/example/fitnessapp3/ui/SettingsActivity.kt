@@ -32,7 +32,7 @@ import org.json.JSONObject
 import androidx.compose.material3.AlertDialog
 import androidx.documentfile.provider.DocumentFile
 import com.example.fitnessapp3.R
-import com.example.fitnessapp3.com.example.fitnessapp3.MainActivity2
+import com.example.fitnessapp3.MainActivity2
 import com.example.fitnessapp3.data.ExerciseManager
 import com.example.fitnessapp3.data.WorkoutManager
 

@@ -381,8 +381,8 @@ public class CurrentWorkout {
         }
     }
 
-    public static String getWorkoutNameInProgress(Activity activity) {
-        String jsonStr = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS_JSON, activity);
+    public static String getWorkoutNameInProgress(Context context) {
+        String jsonStr = Util.readFromInternal(Util.WORKOUT_IN_PROGRESS_JSON, context);
         try {
             assert jsonStr != null;
             JSONObject workoutInProgress = new JSONObject(jsonStr);
