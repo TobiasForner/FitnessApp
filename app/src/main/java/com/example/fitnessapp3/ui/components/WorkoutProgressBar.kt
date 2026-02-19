@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.dp
 
 
@@ -76,22 +78,32 @@ fun WorkoutProgressBar(
 
     val listState = rememberLazyListState()
 
+    // box width (28) + line width (24)
+    val elementWidth = 52
+    val screenWidth = LocalWindowInfo.current.containerDpSize.width
+
+    val elementsFitting = screenWidth/elementWidth
+    val scrollPosition = minOf(maxOf((position - (elementsFitting/2).value+1).toInt(), 0), stepCount+1)
+
     LaunchedEffect(position) {
-        listState.animateScrollToItem(position)
+        listState.animateScrollToItem(scrollPosition)
     }
     LazyRow(
         state = listState,
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(stepCount) { index ->
-            StepItem(index)
-            if (index < stepCount - 1) {
+        items(stepCount+2) { index ->
+            if(index==0 || index == stepCount+1){
+                Spacer(Modifier.width(5.dp))
+            }else{
+            StepItem(index-1)
+            if (index < stepCount) {
                 Box(modifier = Modifier
                     .height(2.dp)
                     .width(24.dp)
                     .background(defaultColor))
-            }
+            }}
         }
     }
 }
