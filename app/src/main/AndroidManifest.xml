@@ -33,12 +33,10 @@
         <activity
             android:name=".ui.SettingsActivity"
             android:exported="false"
-            android:label="@string/title_activity_main2"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar" />
         <activity
             android:name=".MainActivity2"
             android:exported="true"
-            android:label="@string/title_activity_main2"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
