@@ -21,7 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,11 +63,11 @@ private fun ActivityContent() {
 
 
     val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
-    var text by remember { mutableStateOf(setResult.addedWeight.toString()) }
+    var text by rememberSaveable { mutableStateOf(setResult.addedWeight.toString()) }
 
-     var repNumber by remember { mutableIntStateOf(setResult.repNr) }
+     var repNumber by rememberSaveable { mutableIntStateOf(setResult.repNr) }
 
-    var showWeightError by remember { mutableStateOf(false) }
+    var showWeightError by rememberSaveable { mutableStateOf(false) }
 
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
