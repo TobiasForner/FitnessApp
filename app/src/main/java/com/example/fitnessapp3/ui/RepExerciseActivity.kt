@@ -34,7 +34,7 @@ import com.example.fitnessapp3.ui.components.ExerciseHeader
 import com.example.fitnessapp3.ui.components.NumberStepper
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 
-class RepExerciseActivity: ComponentActivity() {
+class RepExerciseActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
@@ -47,27 +47,7 @@ class RepExerciseActivity: ComponentActivity() {
 
 @Composable
 private fun ActivityContent() {
-    val activity = LocalActivity.current
-
-    val name = CurrentWorkout.getWorkoutComponentName()?:"Exercise name"
-
-    val setResult = if (!CurrentWorkout.useLastWorkout) {
-        CurrentWorkout.getPrevSetResultsOfCurrentExercise()
-    } else {
-        CurrentWorkout.getPrevSetResultsOfCurrentPosition()
-    }
-
-    val workoutPosition = CurrentWorkout.getWorkoutPosition()
-
-    val progress = (workoutPosition+1).toFloat() / CurrentWorkout.getWorkoutLength()
-
-
-    val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
-    var text by rememberSaveable { mutableStateOf(setResult.addedWeight.toString()) }
-
-     var repNumber by rememberSaveable { mutableIntStateOf(setResult.repNr) }
-
-    var showWeightError by rememberSaveable { mutableStateOf(false) }
+    val name = CurrentWorkout.getWorkoutComponentName() ?: "Exercise name"
 
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -78,64 +58,85 @@ private fun ActivityContent() {
                     .padding(top = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ExerciseHeader(exerciseName = name, progress = progress)
-
-                Spacer(modifier = Modifier.weight(0.4f))
-
-                NumberStepper(repNumber, IntRange(0, 100), onChange = {repNumber=it }, cycling=false)
-
-                if (isWeighted) {
-                    Spacer(modifier = Modifier.weight(0.1f))
-                    TextField(
-                        value = setResult.addedWeight.toString(),
-                        onValueChange = {text=it},
-                        label = { Text("Weight") },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
-                    )
-                }
-                Spacer(modifier = Modifier.weight(0.5f))
-                Button(
-                    onClick = {
-                        // stored as float in preparation of using float for weight
-                        val weight = text.toFloatOrNull()
-                        if(weight==null){
-                            showWeightError=true
-                        }else{
-                            logExercise(repNumber, weight.toInt(), workoutPosition, activity)
-                            goToNextActivity(activity)
-                        }
-                        },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) { Text("Log", fontSize = 30.sp) }
-
+                ExerciseHeader(exerciseName = name)
 
                 Spacer(modifier = Modifier.weight(1f))
-                val prevResults = CurrentWorkout.getPrevResultsInWorkout()
-                if (!prevResults.isEmpty()) {
-                    Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
 
-                if (showWeightError){
-                    AlertDialog(
-                        onDismissRequest = { showWeightError = false },
-                        title = { Text("Invalid input") },
-                        text = { Text("Please enter a valid number.") },
-                        confirmButton = {
-                            TextButton(onClick = { showWeightError = false }) {
-                                Text("OK")
-                            }
-                        }
-                    )
-
-                }
-                }
-
+                RepExerciseMainContent(modifier = Modifier.weight(5f))
+            }
         }
     }
 }
 
-fun logExercise(repNumber: Int, weight: Int?, workoutPosition: Int,activity: Activity?) {
-    if (weight!=null) {
+@Composable
+fun RepExerciseMainContent(modifier: Modifier) {
+    val activity = LocalActivity.current
+
+    val workoutPosition = CurrentWorkout.getWorkoutPosition()
+
+    val setResult = if (!CurrentWorkout.useLastWorkout) {
+        CurrentWorkout.getPrevSetResultsOfCurrentExercise()
+    } else {
+        CurrentWorkout.getPrevSetResultsOfCurrentPosition()
+    }
+
+    val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
+    var text by rememberSaveable { mutableStateOf(setResult.addedWeight.toString()) }
+
+    var repNumber by rememberSaveable { mutableIntStateOf(setResult.repNr) }
+
+    var showWeightError by rememberSaveable { mutableStateOf(false) }
+    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+
+        NumberStepper(repNumber, IntRange(0, 100), onChange = { repNumber = it }, cycling = false)
+
+        if (isWeighted) {
+            Spacer(modifier = Modifier.weight(0.1f))
+            TextField(
+                value = setResult.addedWeight.toString(),
+                onValueChange = { text = it },
+                label = { Text("Weight") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            )
+        }
+        Spacer(modifier = Modifier.weight(0.5f))
+        Button(
+            onClick = {
+                // stored as float in preparation of using float for weight
+                val weight = text.toFloatOrNull()
+                if (weight == null) {
+                    showWeightError = true
+                } else {
+                    logExercise(repNumber, weight.toInt(), workoutPosition, activity)
+                    goToNextActivity(activity)
+                }
+            },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) { Text("Log", fontSize = 30.sp) }
+
+        Spacer(modifier = Modifier.weight(1f))
+        val prevResults = CurrentWorkout.getPrevResultsInWorkout()
+        if (!prevResults.isEmpty()) {
+            Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))
+        }
+
+        if (showWeightError) {
+            AlertDialog(
+                onDismissRequest = { showWeightError = false },
+                title = { Text("Invalid input") },
+                text = { Text("Please enter a valid number.") },
+                confirmButton = {
+                    TextButton(onClick = { showWeightError = false }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+    }
+}
+
+fun logExercise(repNumber: Int, weight: Int?, workoutPosition: Int, activity: Activity?) {
+    if (weight != null) {
         CurrentWorkout.logExercise(weight, repNumber, activity, workoutPosition)
     } else {
         CurrentWorkout.logExercise(0, repNumber, activity, workoutPosition)

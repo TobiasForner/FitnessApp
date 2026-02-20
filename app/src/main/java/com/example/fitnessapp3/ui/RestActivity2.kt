@@ -36,19 +36,7 @@ class RestActivity2 : ComponentActivity() {
 
 @Composable
 private fun ActivityContent() {
-    val activity = LocalActivity.current
-
-    val name = CurrentWorkout.getWorkoutComponentName()?:"Exercise name"
-
-    val workoutPosition = CurrentWorkout.getWorkoutPosition()
-
-    val progress = (workoutPosition+1).toFloat() / CurrentWorkout.getWorkoutLength()
-
-    val timerViewModel: TimerViewModel = viewModel()
-
-    val intent = activity?.intent
-    val millis = intent?.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000)
-    timerViewModel.start(millis?.div(1000) ?: 120)
+    val name = CurrentWorkout.getWorkoutComponentName() ?: "Exercise name"
 
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -59,25 +47,40 @@ private fun ActivityContent() {
                     .padding(top = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ExerciseHeader(name, progress)
+                ExerciseHeader(name)
                 Spacer(Modifier.weight(1.0f))
-                Timer(viewModel=timerViewModel, onFinished = {
-                    if ("WorkoutActivity" == Objects.requireNonNull(
-                            intent?.getStringExtra(
-                                MainActivity.EXTRA_RETURN_DEST
-                            )
-                        )
-                    ) {
-                        if (millis!=null){
-                        CurrentWorkout.logRest(millis, activity, workoutPosition)}
-                    }
-                    goToNextActivity(activity)}, skippable = true, modifier = Modifier.weight(1f))
+                RestActivityMainContent(modifier = Modifier.weight(4f))
                 Spacer(Modifier.weight(1.0f))
-                }
             }
-
         }
     }
+}
+
+@Composable
+fun RestActivityMainContent(modifier: Modifier) {
+    val activity = LocalActivity.current
+    val workoutPosition = CurrentWorkout.getWorkoutPosition()
+
+    val timerViewModel: TimerViewModel = viewModel()
+    val intent = activity?.intent
+    val millis = intent?.getIntExtra(MainActivity.EXTRA_MESSAGE, 30000)
+    timerViewModel.start(millis?.div(1000) ?: 120)
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+        Timer(viewModel = timerViewModel, onFinished = {
+            if ("WorkoutActivity" == Objects.requireNonNull(
+                    intent?.getStringExtra(
+                        MainActivity.EXTRA_RETURN_DEST
+                    )
+                )
+            ) {
+                if (millis != null) {
+                    CurrentWorkout.logRest(millis, activity, workoutPosition)
+                }
+            }
+            goToNextActivity(activity)
+        }, skippable = true, modifier = Modifier.weight(1f))
+    }
+}
 
 private fun goToNextActivity(activity: Activity?) {
     if (!CurrentWorkout.hasCurrentExercise()) {

@@ -50,42 +50,8 @@ class DurationExerciseActivity2 : ComponentActivity() {
 
 @Composable
 private fun ActivityContent() {
-    val activity = LocalActivity.current
-
     val name = CurrentWorkout.getWorkoutComponentName()?:"Exercise name"
 
-    var pickedSeconds by rememberSaveable { mutableIntStateOf(0) }
-    var pickedMinutes by rememberSaveable { mutableIntStateOf(0) }
-
-    var finished by rememberSaveable { mutableStateOf(false) }
-
-    val setResult = if (!CurrentWorkout.useLastWorkout) {
-        CurrentWorkout.getPrevSetResultsOfCurrentExercise()
-    } else {
-        CurrentWorkout.getPrevSetResultsOfCurrentPosition()
-    }
-    if (setResult != null && setResult.isDuration) {
-        val repNr = setResult.repNr
-        pickedSeconds = repNr.mod(60)
-        pickedMinutes = repNr / 60
-    }
-
-    var timerStarted by rememberSaveable { mutableStateOf(false) }
-
-    val workoutPosition = CurrentWorkout.getWorkoutPosition()
-
-    val progress = (workoutPosition+1).toFloat() / CurrentWorkout.getWorkoutLength()
-
-
-    val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
-    var text by remember { mutableStateOf(setResult.addedWeight.toString()) }
-    val weight = try {
-        text.toFloat()
-    } catch (_: NumberFormatException) {
-        0f
-    }
-
-    val timerViewModel: TimerViewModel = viewModel()
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(
@@ -95,38 +61,72 @@ private fun ActivityContent() {
                     .padding(top = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                ExerciseHeader(name, progress)
-                if (timerStarted && !finished) {
-                    Column{
-                        Spacer(modifier = Modifier.weight(0.3f))
-                    Timer(modifier=Modifier.weight(1.0f),viewModel = timerViewModel, onFinished = {
-                        finished = true
-                        logDuration(
-                            60 * pickedMinutes + pickedSeconds,
-                            if (isWeighted){weight.toInt()}else{null},
-                            activity,
-                            workoutPosition
-                        )
-
-                        goToNextActivity(activity)
-                    },
-                        skippable = true)
-                        Spacer(modifier = Modifier.weight(1f))
-                    }
-
-                } else {
-                    DurationPicking({
-                        timerStarted = true
-                        timerViewModel.start(60 * pickedMinutes + pickedSeconds)
-                    }, pickedSeconds, pickedMinutes, { pickedSeconds = it }, { pickedMinutes = it }, isWeighted,
-                        onWeightChange = {text=it})
-                }
+                ExerciseHeader(name)
+                DurationExerciseMainContent()
             }
         }
     }
 }
 
+@Composable
+fun DurationExerciseMainContent(){
+    val activity = LocalActivity.current
+    val workoutPosition = CurrentWorkout.getWorkoutPosition()
+
+    var pickedSeconds by rememberSaveable { mutableIntStateOf(0) }
+    var pickedMinutes by rememberSaveable { mutableIntStateOf(0) }
+
+    val setResult = if (!CurrentWorkout.useLastWorkout) {
+        CurrentWorkout.getPrevSetResultsOfCurrentExercise()
+    } else {
+        CurrentWorkout.getPrevSetResultsOfCurrentPosition()
+    }
+
+    if (setResult != null && setResult.isDuration) {
+        val repNr = setResult.repNr
+        pickedSeconds = repNr.mod(60)
+        pickedMinutes = repNr / 60
+    }
+
+    val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
+    var text by remember { mutableStateOf(setResult.addedWeight.toString()) }
+    val weight = try {
+        text.toFloat()
+    } catch (_: NumberFormatException) {
+        0f
+    }
+
+    var finished by rememberSaveable { mutableStateOf(false) }
+    var timerStarted by rememberSaveable { mutableStateOf(false) }
+
+    val timerViewModel: TimerViewModel = viewModel()
+
+    if (timerStarted && !finished) {
+        Column{
+            Spacer(modifier = Modifier.weight(0.3f))
+            Timer(modifier=Modifier.weight(1.0f),viewModel = timerViewModel, onFinished = {
+                finished = true
+                logDuration(
+                    60 * pickedMinutes + pickedSeconds,
+                    if (isWeighted){weight.toInt()}else{null},
+                    activity,
+                    workoutPosition
+                )
+
+                goToNextActivity(activity)
+            },
+                skippable = true)
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
+    } else {
+        DurationPicking({
+            timerStarted = true
+            timerViewModel.start(60 * pickedMinutes + pickedSeconds)
+        }, pickedSeconds, pickedMinutes, { pickedSeconds = it }, { pickedMinutes = it }, isWeighted,
+            onWeightChange = {text=it})
+    }
+}
 @Composable
 fun DurationPicking(
     onCountdownStart: () -> Unit,

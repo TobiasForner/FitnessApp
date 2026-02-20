@@ -7,7 +7,7 @@ import androidx.compose.ui.unit.sp
 import com.example.fitnessapp3.data.CurrentWorkout
 
 @Composable
-fun ExerciseHeader(exerciseName:String, progress:Float) {
+fun ExerciseHeader(exerciseName:String) {
     val done = MutableList(CurrentWorkout.getWorkoutLength()) { false }
     repeat(CurrentWorkout.getWorkoutPosition()){
         index->
