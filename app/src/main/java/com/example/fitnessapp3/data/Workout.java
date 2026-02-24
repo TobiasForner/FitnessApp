@@ -20,7 +20,7 @@ public class Workout {
     }
 
     public void proceed() {
-        if (position < workoutComponents.size()) {
+        if (position < workoutComponents.size()-1) {
             this.position += 1;
         }
     }
@@ -31,12 +31,22 @@ public class Workout {
         }
     }
 
+    public void setPosition(int position){
+        if(0<=position && position<workoutComponents.size()){
+            this.position=position;
+        }
+    }
+
     public WorkoutComponent getCurrentComponent() {
         if(position<workoutComponents.size()){
             return workoutComponents.get(position);
         }else{
             return null;
         }
+    }
+
+    public WorkoutComponent getComponentAtPosition(int position) {
+            return workoutComponents.get(position);
     }
 
     public String getName() {

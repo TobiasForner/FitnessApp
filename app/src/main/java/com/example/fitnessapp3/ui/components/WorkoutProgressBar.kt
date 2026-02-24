@@ -44,10 +44,16 @@ fun WorkoutProgressBar(
             targetValue = if (isCurrent) 1.2f else 1f,
             label = "scale"
         )
-        val animateColor by animateColorAsState(
+        val backgroundColor by animateColorAsState(
             targetValue = when {
                 isCompleted -> completedColor
+                else -> Color.Transparent
+            }, label = "color"
+        )
+        val borderColor by animateColorAsState(
+            targetValue = when {
                 isCurrent -> focusedColor
+                isCompleted -> completedColor
                 else -> defaultColor
             }, label = "color"
         )
@@ -61,11 +67,11 @@ fun WorkoutProgressBar(
                 }
                 .border(
                     width = if (isCurrent) 3.dp else 1.dp,
-                    color = animateColor,
+                    color = borderColor,
                     shape = RoundedCornerShape(6.dp)
                 )
                 .background(
-                    color = if (isCompleted) animateColor else Color.Transparent,
+                    color = backgroundColor,
                     shape = RoundedCornerShape(6.dp)
                 )
                 .clickable(enabled = onStepClick != null) {
@@ -82,28 +88,38 @@ fun WorkoutProgressBar(
     val elementWidth = 52
     val screenWidth = LocalWindowInfo.current.containerDpSize.width
 
-    val elementsFitting = screenWidth/elementWidth
-    val scrollPosition = minOf(maxOf((position - (elementsFitting/2).value+1).toInt(), 0), stepCount+1)
+    val elementsFitting = screenWidth / elementWidth
+    val scrollPosition =
+        minOf(maxOf((2*position - elementsFitting.value + 3).toInt(), 0), stepCount + 1)
 
     LaunchedEffect(position) {
         listState.animateScrollToItem(scrollPosition)
     }
+
+
     LazyRow(
         state = listState,
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(stepCount+2) { index ->
-            if(index==0 || index == stepCount+1){
-                Spacer(Modifier.width(5.dp))
-            }else{
-            StepItem(index-1)
-            if (index < stepCount) {
-                Box(modifier = Modifier
-                    .height(2.dp)
-                    .width(24.dp)
-                    .background(defaultColor))
-            }}
+        // spacer at the start and end, lines between stepCount boxes
+        items(2 * stepCount + 1) { index ->
+            if (index == 0 || index == 2 * stepCount) {
+                Spacer(Modifier.width(10.dp))
+            } else {
+                // boxes at odd indices
+                if (index.mod(2) == 1) {
+                    StepItem((index - 1)/2)
+                } else {
+
+                        Box(
+                            modifier = Modifier
+                                .height(2.dp)
+                                .width(24.dp)
+                                .background(defaultColor)
+                        )
+                }
+            }
         }
     }
 }

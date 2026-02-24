@@ -48,6 +48,7 @@ class RepExerciseActivity : ComponentActivity() {
 @Composable
 private fun ActivityContent() {
     val name = CurrentWorkout.getWorkoutComponentName() ?: "Exercise name"
+    val activity = LocalActivity.current
 
     FitnessApp3Theme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -62,17 +63,34 @@ private fun ActivityContent() {
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                RepExerciseMainContent(modifier = Modifier.weight(5f))
+                RepExerciseMainContent(
+                    modifier = Modifier.weight(5f),
+                    afterFinish = {
+                        goToNextActivity(activity)
+
+                    })
             }
         }
     }
 }
 
 @Composable
-fun RepExerciseMainContent(modifier: Modifier) {
+fun RepExerciseMainContent(
+    modifier: Modifier,
+    workoutPosition: Int = CurrentWorkout.getWorkoutPosition(),
+    afterFinish: () -> Unit
+) {
     val activity = LocalActivity.current
+    val workoutComponent = CurrentWorkout.getWorkoutComponentAtPosition(workoutPosition)
 
-    val workoutPosition = CurrentWorkout.getWorkoutPosition()
+    var finished by rememberSaveable {
+        mutableStateOf(
+            CurrentWorkout.positionIsFinished(
+                workoutPosition
+            )
+        )
+    }
+
 
     val setResult = if (!CurrentWorkout.useLastWorkout) {
         CurrentWorkout.getPrevSetResultsOfCurrentExercise()
@@ -80,57 +98,74 @@ fun RepExerciseMainContent(modifier: Modifier) {
         CurrentWorkout.getPrevSetResultsOfCurrentPosition()
     }
 
-    val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
+    val isWeighted = (workoutComponent as Exercise).isWeighted
     var text by rememberSaveable { mutableStateOf(setResult.addedWeight.toString()) }
 
     var repNumber by rememberSaveable { mutableIntStateOf(setResult.repNr) }
 
     var showWeightError by rememberSaveable { mutableStateOf(false) }
-    Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    if (finished) {
+        Column {
+            Text("Finished!", fontSize = 60.sp)
+            Text("$repNumber reps")
+            if (isWeighted) {
+                Text("Weight: $text kg")
+            }
+        }
 
-        NumberStepper(repNumber, IntRange(0, 100), onChange = { repNumber = it }, cycling = false)
+    } else {
+        Column(modifier, horizontalAlignment = Alignment.CenterHorizontally) {
 
-        if (isWeighted) {
-            Spacer(modifier = Modifier.weight(0.1f))
-            TextField(
-                value = setResult.addedWeight.toString(),
-                onValueChange = { text = it },
-                label = { Text("Weight") },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+            NumberStepper(
+                repNumber,
+                IntRange(0, 100),
+                onChange = { repNumber = it },
+                cycling = false
             )
-        }
-        Spacer(modifier = Modifier.weight(0.5f))
-        Button(
-            onClick = {
-                // stored as float in preparation of using float for weight
-                val weight = text.toFloatOrNull()
-                if (weight == null) {
-                    showWeightError = true
-                } else {
-                    logExercise(repNumber, weight.toInt(), workoutPosition, activity)
-                    goToNextActivity(activity)
-                }
-            },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) { Text("Log", fontSize = 30.sp) }
 
-        Spacer(modifier = Modifier.weight(1f))
-        val prevResults = CurrentWorkout.getPrevResultsInWorkout()
-        if (!prevResults.isEmpty()) {
-            Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))
-        }
-
-        if (showWeightError) {
-            AlertDialog(
-                onDismissRequest = { showWeightError = false },
-                title = { Text("Invalid input") },
-                text = { Text("Please enter a valid number.") },
-                confirmButton = {
-                    TextButton(onClick = { showWeightError = false }) {
-                        Text("OK")
+            if (isWeighted) {
+                Spacer(modifier = Modifier.weight(0.1f))
+                TextField(
+                    value = setResult.addedWeight.toString(),
+                    onValueChange = { text = it },
+                    label = { Text("Weight") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                )
+            }
+            Spacer(modifier = Modifier.weight(0.5f))
+            Button(
+                onClick = {
+                    // stored as float in preparation of using float for weight
+                    val weight = text.toFloatOrNull()
+                    if (weight == null) {
+                        showWeightError = true
+                    } else {
+                        logExercise(repNumber, weight.toInt(), workoutPosition, activity)
+                        finished = true
+                        afterFinish()
                     }
-                }
-            )
+                },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) { Text("Log", fontSize = 30.sp) }
+
+            Spacer(modifier = Modifier.weight(1f))
+            val prevResults = CurrentWorkout.getPrevResultsInWorkout()
+            if (!prevResults.isEmpty()) {
+                Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))
+            }
+
+            if (showWeightError) {
+                AlertDialog(
+                    onDismissRequest = { showWeightError = false },
+                    title = { Text("Invalid input") },
+                    text = { Text("Please enter a valid number.") },
+                    confirmButton = {
+                        TextButton(onClick = { showWeightError = false }) {
+                            Text("OK")
+                        }
+                    }
+                )
+            }
         }
     }
 }

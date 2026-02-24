@@ -27,6 +27,8 @@
         <activity
             android:name=".ui.DurationExerciseActivity" />
         <activity
+            android:name=".ui.WorkoutActivityMain" />
+        <activity
             android:name=".ui.RepExerciseActivity"
             android:theme="@style/Theme.FitnessApp.ActivityFade"
             />

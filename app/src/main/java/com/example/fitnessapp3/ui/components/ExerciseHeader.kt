@@ -7,14 +7,18 @@ import androidx.compose.ui.unit.sp
 import com.example.fitnessapp3.data.CurrentWorkout
 
 @Composable
-fun ExerciseHeader(exerciseName:String) {
-    val done = MutableList(CurrentWorkout.getWorkoutLength()) { false }
-    repeat(CurrentWorkout.getWorkoutPosition()){
-        index->
-        done[index]=true
+fun ExerciseHeader(
+    exerciseName: String,
+    workoutPosition: Int = CurrentWorkout.getWorkoutPosition(),
+    done: MutableList<Boolean>?=null
+) {
+    val donePositions = done?:MutableList(CurrentWorkout.getWorkoutLength()) { false }
+    if(done==null){
+    repeat(CurrentWorkout.getWorkoutLength()) { index ->
+        donePositions[index]= CurrentWorkout.positionIsFinished(index)
+    }}
 
-    }
-    WorkoutProgressBar(Modifier, CurrentWorkout.getWorkoutLength(), CurrentWorkout.getWorkoutPosition(), done)
+    WorkoutProgressBar(Modifier, CurrentWorkout.getWorkoutLength(), workoutPosition, donePositions)
     Text(exerciseName, fontSize = 40.sp)
     Text(CurrentWorkout.getSetString(), fontSize = 15.sp)
 }

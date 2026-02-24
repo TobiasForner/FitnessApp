@@ -47,6 +47,7 @@ import com.example.fitnessapp3.ui.AddExerciseActivity
 import com.example.fitnessapp3.ui.ManageExercisesActivity
 import com.example.fitnessapp3.ui.SettingsActivity
 import com.example.fitnessapp3.ui.WeightActivity2
+import com.example.fitnessapp3.ui.WorkoutActivityMain
 import com.example.fitnessapp3.ui.WorkoutEditActivity
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 import com.example.fitnessapp3.util.Util
@@ -212,7 +213,7 @@ fun WorkoutList() {
                         .wrapContentHeight()
                         .padding(5.dp)
                 ) {
-                    Column {
+                    Column(Modifier.padding(5.dp)) {
                         Text(
                             workoutNames[item],
                             modifier = Modifier.fillMaxWidth(),
@@ -246,7 +247,8 @@ private fun startWorkout(activity: Activity) {
     } catch (e: JSONException) {
         e.printStackTrace()
     }
-    activity.startActivity(ActivityTransition.goToNextActivityInWorkout(activity))
+    activity.startActivity(Intent(activity, WorkoutActivityMain::class.java))
+    //activity.startActivity(ActivityTransition.goToNextActivityInWorkout(activity))
 }
 
 fun sortedWorkoutNames(context: Context): MutableList<String>{

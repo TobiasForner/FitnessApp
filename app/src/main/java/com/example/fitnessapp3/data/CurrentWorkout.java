@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -123,6 +124,15 @@ public class CurrentWorkout {
         saveProgress(activity);
     }
 
+    public static boolean positionIsFinished(int position){
+        var currWorkoutEntry = currentWorkout[position];
+        return currWorkoutEntry != null && !currWorkoutEntry.isEmpty();
+    }
+
+    public static boolean workoutIsFinished(){
+        return Arrays.stream(currentWorkout).sequential().map((x)->(x!=null && !x.isEmpty())).reduce(true, (x,y)->x&&y);
+    }
+
     private static String formatSetString(int workoutPos, Map<String, Integer> exCounts) {
         int setNum = numberOfExercise.get(workoutPos) + 1;
         String compName = workout.getComponentAt(workoutPos).getName();
@@ -216,6 +226,10 @@ public class CurrentWorkout {
         return workout.getCurrentComponent();
     }
 
+    public static WorkoutComponent getWorkoutComponentAtPosition(int position) throws IllegalArgumentException {
+        return workout.getComponentAtPosition(position);
+    }
+
     public static WorkoutComponent getNextWorkoutComponent() throws IllegalArgumentException {
         if (hasNextExercise()) {
             return workout.getComponentAt(workout.getPosition() + 1);
@@ -223,6 +237,10 @@ public class CurrentWorkout {
             throw new IllegalArgumentException("No next exercise!");
         }
 
+    }
+
+    public static void goToPosition(int position){
+        workout.setPosition(position);
     }
 
     public static void goBack() {
@@ -321,6 +339,9 @@ public class CurrentWorkout {
     }
 
     public static SetResult getPrevSetResultsOfCurrentPosition() {
+        if(getWorkoutPosition()>=getWorkoutLength()){
+            return null;
+        }
         String compName = workout.getCurrentComponent().getName();
         if (lastWorkoutExToResults.containsKey(compName)) {
             ArrayList<SetResult> setResults = lastWorkoutExToResults.get(compName);
@@ -341,6 +362,36 @@ public class CurrentWorkout {
             if (setPos > 0) {
                 return setResults.get(setPos - 1);
             }
+        }
+        return null;
+    }
+
+
+
+    public static SetResult getPrevSetResultsOfPositionExercise(int workoutPosition) {
+        String compName = workout.getComponentAtPosition(workoutPosition).getName();
+        if (exToResults.containsKey(compName)) {
+            ArrayList<SetResult> setResults = exToResults.get(compName);
+            int setPos = numberOfExercise.get(workoutPosition);
+            assert setResults != null;
+            if (setPos > 0) {
+                return setResults.get(setPos - 1);
+            }
+        }
+        return null;
+    }
+
+    public static SetResult getPrevSetResultsOfPosition(int workoutPosition) {
+        if(workoutPosition>=getWorkoutLength()){
+            return null;
+        }
+        String compName = workout.getComponentAtPosition(workoutPosition).getName();
+        if (lastWorkoutExToResults.containsKey(compName)) {
+            ArrayList<SetResult> setResults = lastWorkoutExToResults.get(compName);
+            int setPos = numberOfExercise.get(workoutPosition);
+            assert setResults != null;
+            int usePos = Math.min(setPos, setResults.size() - 1);
+            return setResults.get(usePos);
         }
         return null;
     }
@@ -407,11 +458,9 @@ public class CurrentWorkout {
                         tryAddToWorkout(wip.getString(i));
                     }
 
-                    int workoutPos = (int) progress.get("position");
+                    int workoutPos = progress.getInt("position");
                     Log.d("CurrentWorkout", "restoreWorkoutInProgress: restoring from position " + workoutPos);
-                    while (workout.getPosition() < workoutPos) {
-                        workout.proceed();
-                    }
+                    goToPosition(workoutPos);
                     JSONObject exToRes = (JSONObject) progress.get("exResults");
                     for (Iterator<String> it = exToRes.keys(); it.hasNext(); ) {
                         String key = it.next();
@@ -423,6 +472,7 @@ public class CurrentWorkout {
                             currResults.set(i, ithRes);
                         }
                     }
+                    saveProgress(activity);
                     setInProgress(true, activity);
                 } catch (JSONException e) {
                     Log.e("CurrentWorkout", "restoreWorkoutInProgress: failed to load from JSON");
