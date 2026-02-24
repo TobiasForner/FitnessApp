@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.fitnessapp3.util.Util.readFromInternal
 import com.example.fitnessapp3.util.Util.writeFileOnInternalStorage
@@ -89,8 +90,6 @@ class WeightActivity2 : ComponentActivity() {
         val activity = this
         val wm = savedInstanceState?.getBooleanArray("weightModifiers")?.toMutableList()
 
-
-
         setContent {
             ActivityContent(activity = activity, activatedModifiers = wm)
         }
@@ -116,7 +115,7 @@ fun ActivityContent(activity: WeightActivity2, activatedModifiers: MutableList<B
                     modifier = Modifier
                         .padding(innerPadding)
                         .height(120f.dp)
-                        .padding(top = 10.dp, start = 10.dp),
+                        .padding(top = 10.dp, start = 10.dp).weight(4f),
                     activity = activity,
                     appendWeight = ::appendWeight,
                     activatedModifiers=activatedModifiers
@@ -125,12 +124,12 @@ fun ActivityContent(activity: WeightActivity2, activatedModifiers: MutableList<B
                 VicoChart(
                     Modifier
                         .padding(innerPadding)
-                        .height(250.dp), weights = pastWeights, xToDateMapKey = xToDateMapKey
+                        .height(250.dp).weight(2.5f), weights = pastWeights, xToDateMapKey = xToDateMapKey
                 )
                 PastWeightText(
                     Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp), weights = pastWeights
+                        .padding(start = 10.dp).weight(1f), weights = pastWeights
                 )
             }
         }
@@ -211,7 +210,7 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
     val editPosition = remember {
         mutableIntStateOf(1)
     }
-    Column(modifier = Modifier.padding(top = 30.dp)) {
+    Column(modifier = modifier.padding(top = 30.dp)) {
         if (openModifierDialog.value) {
             AddWeightModifierDialog(openModifierDialog, weightModifiers, context = activity)
         } else if (openModifierEditDialog.value) {
@@ -223,7 +222,7 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
             )
         }
 
-        Row(modifier = modifier) {
+        Row(modifier = Modifier.weight(1f)) {
             TextField(
                 value = text,
                 onValueChange = {
@@ -248,8 +247,12 @@ fun WeightInput(modifier: Modifier, activity: WeightActivity2, appendWeight: (JS
                 Text(text = "Log Weight")
             }
         }
-        Text("${activatedModifiers.toList()} (-$adjustment): $finalWeight")
-        LazyColumn(modifier = Modifier.height(200.dp)) {
+        Spacer(Modifier.weight(0.5f))
+        Text("Final weight: $weight - $adjustment = $finalWeight", fontSize = 20.sp)
+        Spacer(Modifier.weight(0.5f))
+        //Text("${activatedModifiers.toList()} (-$adjustment): $finalWeight")
+
+        LazyColumn(modifier = Modifier.weight(4f)) {
             items(weightModifiers.size) { item ->
                 WeightModifierCard(
                     modifier = Modifier.fillMaxWidth(),
