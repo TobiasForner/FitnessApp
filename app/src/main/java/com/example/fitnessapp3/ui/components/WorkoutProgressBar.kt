@@ -90,7 +90,7 @@ fun WorkoutProgressBar(
 
     val elementsFitting = screenWidth / elementWidth
     val scrollPosition =
-        minOf(maxOf((2*position - elementsFitting.value + 3).toInt(), 0), stepCount + 1)
+        minOf(maxOf((2*position - elementsFitting.value + 3).toInt(), 0), 2*stepCount)
 
     LaunchedEffect(position) {
         listState.animateScrollToItem(scrollPosition)
