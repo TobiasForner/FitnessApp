@@ -80,8 +80,7 @@ fun DurationExerciseMainContent(
 ) {
     val activity = LocalActivity.current
     val setResult = if (!CurrentWorkout.useLastWorkout) {
-        // TODO: figure out difference between these two
-        CurrentWorkout.getPrevSetResultsOfPositionExercise(workoutPosition)
+        CurrentWorkout.getThisWorkoutSetResultsOfPositionExercise(workoutPosition)
     } else {
         CurrentWorkout.getPrevSetResultsOfPosition(workoutPosition)
     }

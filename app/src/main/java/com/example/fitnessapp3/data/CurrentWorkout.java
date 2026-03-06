@@ -368,7 +368,7 @@ public class CurrentWorkout {
 
 
 
-    public static SetResult getPrevSetResultsOfPositionExercise(int workoutPosition) {
+    public static SetResult getThisWorkoutSetResultsOfPositionExercise(int workoutPosition) {
         String compName = workout.getComponentAtPosition(workoutPosition).getName();
         if (exToResults.containsKey(compName)) {
             ArrayList<SetResult> setResults = exToResults.get(compName);
@@ -381,6 +381,11 @@ public class CurrentWorkout {
         return null;
     }
 
+    /**
+     * Returns the SetResult in the last completed workout with the current name for the current position
+     * @param workoutPosition position in the workout
+     * @return SetResult in the last workout for workoutPosition
+     */
     public static SetResult getPrevSetResultsOfPosition(int workoutPosition) {
         if(workoutPosition>=getWorkoutLength()){
             return null;
