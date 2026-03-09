@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.fitnessapp3.SetResults.SetResult
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.Exercise
 import com.example.fitnessapp3.ui.components.ExerciseHeader
@@ -79,19 +80,14 @@ fun DurationExerciseMainContent(
     afterFinish: () -> Unit
 ) {
     val activity = LocalActivity.current
-    val setResult = if (!CurrentWorkout.useLastWorkout) {
-        CurrentWorkout.getThisWorkoutSetResultsOfPositionExercise(workoutPosition)
-    } else {
-        CurrentWorkout.getPrevSetResultsOfPosition(workoutPosition)
-    }
+    val setResult: SetResult? = CurrentWorkout.getPositionSetResult(workoutPosition)
 
-    var pickedSeconds by rememberSaveable { mutableIntStateOf(setResult?.repNr?.mod(60)?:0) }
-    var pickedMinutes by rememberSaveable { mutableIntStateOf(setResult?.repNr?.div(60)?:0) }
-
+    var pickedSeconds by rememberSaveable { mutableIntStateOf(setResult?.repNr?.mod(60) ?: 30) }
+    var pickedMinutes by rememberSaveable { mutableIntStateOf(setResult?.repNr?.div(60) ?: 0) }
 
 
     val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
-    var text by remember { mutableStateOf(setResult.addedWeight.toString()) }
+    var text by remember { mutableStateOf(setResult?.addedWeight?.toString() ?: "0") }
     val weight = try {
         text.toFloat()
     } catch (_: NumberFormatException) {
@@ -110,9 +106,9 @@ fun DurationExerciseMainContent(
     val timerViewModel: TimerViewModel = viewModel()
     if (finished) {
         Column {
-        Text("Finished!", fontSize = 60.sp)
+            Text("Finished!", fontSize = 60.sp)
             Text("Duration: $pickedMinutes min $pickedSeconds sec")
-            if (isWeighted){
+            if (isWeighted) {
                 Text("Weight: $weight kg")
             }
         }
@@ -202,7 +198,6 @@ fun DurationPicking(
             onClick = onCountdownStart,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) { Text("Start", fontSize = 30.sp) }
-
 
 
         val prevResults = CurrentWorkout.getPrevResultsInWorkout()

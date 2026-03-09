@@ -381,6 +381,19 @@ public class CurrentWorkout {
         return null;
     }
 
+    public static SetResult getPositionSetResult(int workoutPosition){
+        SetResult setResult;
+        if (!CurrentWorkout.useLastWorkout) {
+            setResult = CurrentWorkout.getThisWorkoutSetResultsOfPositionExercise(workoutPosition);
+        } else {
+            setResult = CurrentWorkout.getPrevSetResultsOfPosition(workoutPosition);
+            if (setResult == null) {
+                setResult = CurrentWorkout.getThisWorkoutSetResultsOfPositionExercise(workoutPosition);
+            }
+        }
+        return setResult;
+    }
+
     /**
      * Returns the SetResult in the last completed workout with the current name for the current position
      * @param workoutPosition position in the workout

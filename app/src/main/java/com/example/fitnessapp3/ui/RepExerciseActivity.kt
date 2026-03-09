@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.fitnessapp3.SetResults.SetResult
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.Exercise
 import com.example.fitnessapp3.ui.components.ExerciseHeader
@@ -92,11 +93,7 @@ fun RepExerciseMainContent(
     }
 
 
-    val setResult = if (!CurrentWorkout.useLastWorkout) {
-        CurrentWorkout.getThisWorkoutSetResultsOfPositionExercise(workoutPosition)
-    } else {
-        CurrentWorkout.getPrevSetResultsOfPosition(workoutPosition)
-    }
+    val setResult: SetResult? = CurrentWorkout.getPositionSetResult(workoutPosition)
 
     val isWeighted = (workoutComponent as Exercise).isWeighted
     var text by rememberSaveable { mutableStateOf(setResult?.addedWeight?.toString() ?: "10") }
@@ -126,7 +123,7 @@ fun RepExerciseMainContent(
             if (isWeighted) {
                 Spacer(modifier = Modifier.weight(0.1f))
                 TextField(
-                    value = setResult.addedWeight.toString(),
+                    value = setResult?.addedWeight?.toString()?:"0",
                     onValueChange = { text = it },
                     label = { Text("Weight") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
