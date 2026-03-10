@@ -86,7 +86,7 @@ fun DurationExerciseMainContent(
     var pickedMinutes by rememberSaveable { mutableIntStateOf(setResult?.repNr?.div(60) ?: 0) }
 
 
-    val isWeighted = (CurrentWorkout.getCurrentWorkoutComponent() as Exercise).isWeighted
+    val isWeighted = (CurrentWorkout.getWorkoutComponentAtPosition(workoutPosition) as Exercise).isWeighted
     var text by remember { mutableStateOf(setResult?.addedWeight?.toString() ?: "0") }
     val weight = try {
         text.toFloat()
@@ -142,7 +142,7 @@ fun DurationExerciseMainContent(
             { pickedSeconds = it },
             { pickedMinutes = it },
             isWeighted,
-            onWeightChange = { text = it })
+            onWeightChange = { text = it }, workoutPosition = workoutPosition)
     }
 }
 
@@ -155,13 +155,11 @@ fun DurationPicking(
     onSecondsChange: (Int) -> Unit,
     onMinutesChange: (Int) -> Unit,
     isWeighted: Boolean,
-    onWeightChange: (String) -> Unit
+    onWeightChange: (String) -> Unit,
+    workoutPosition: Int
 ) {
-    val setResult = if (!CurrentWorkout.useLastWorkout) {
-        CurrentWorkout.getPrevSetResultsOfCurrentExercise()
-    } else {
-        CurrentWorkout.getPrevSetResultsOfCurrentPosition()
-    }
+
+    val setResult: SetResult? = CurrentWorkout.getPositionSetResult(workoutPosition)
 
     Column(modifier = modifier) {
         Row {
@@ -187,7 +185,7 @@ fun DurationPicking(
         }
         if (isWeighted) {
             TextField(
-                value = setResult.addedWeight.toString(),
+                value = setResult?.addedWeight?.toString()?:"0",
                 onValueChange = onWeightChange,
                 label = { Text("Weight") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
@@ -200,7 +198,7 @@ fun DurationPicking(
         ) { Text("Start", fontSize = 30.sp) }
 
 
-        val prevResults = CurrentWorkout.getPrevResultsInWorkout()
+        val prevResults = CurrentWorkout.getPrevResultsInWorkoutForPosition(workoutPosition)
         if (!prevResults.isEmpty()) {
             Spacer(modifier = Modifier.weight(1f))
             Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))

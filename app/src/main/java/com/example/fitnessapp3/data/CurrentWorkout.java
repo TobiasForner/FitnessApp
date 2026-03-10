@@ -300,18 +300,22 @@ public class CurrentWorkout {
         saveProgress(activity);
     }
 
-    public static String getPrevResultsInWorkout() {
-        var currentComp = workout.getCurrentComponent();
-        if (currentComp==null){
+    public static String getPrevResultsInWorkoutForCurrentPosition() {
+        return getPrevResultsInWorkoutForPosition(workout.getPosition());
+    }
+
+    public static String getPrevResultsInWorkoutForPosition(int workoutPosition) {
+        var positionComp = workout.getComponentAtPosition(workoutPosition);
+        if (positionComp==null){
             return "";
         }
-        String compName = workout.getCurrentComponent().getName();
+        String compName = positionComp.getName();
         ArrayList<SetResult> prevResults = exToResults.getOrDefault(compName, null);
         if (prevResults == null || prevResults.get(0) == null) {
             return "";
         }
         StringBuilder res = new StringBuilder();
-        for (int i = 0; i < numberOfExercise.get(workout.getPosition()); i++) {
+        for (int i = 0; i < numberOfExercise.get(workoutPosition); i++) {
 
             res.append("Set ").append(i + 1).append(":\t");
             SetResult ithResult = prevResults.get(i);

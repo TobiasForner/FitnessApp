@@ -164,7 +164,7 @@ public class DurationExerciseActivity extends AppCompatActivity {
     }
 
     private void setPrevResults() {
-        String prevResults = CurrentWorkout.getPrevResultsInWorkout();
+        String prevResults = CurrentWorkout.getPrevResultsInWorkoutForCurrentPosition();
         TextView prevResultsView = findViewById(R.id.duration_exercise_prev_results_body);
         if (!prevResults.isEmpty()) {
             prevResultsView.setText(prevResults);

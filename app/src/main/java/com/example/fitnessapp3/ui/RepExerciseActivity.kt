@@ -92,7 +92,6 @@ fun RepExerciseMainContent(
         )
     }
 
-
     val setResult: SetResult? = CurrentWorkout.getPositionSetResult(workoutPosition)
 
     val isWeighted = (workoutComponent as Exercise).isWeighted
@@ -146,7 +145,7 @@ fun RepExerciseMainContent(
             ) { Text("Log", fontSize = 30.sp) }
 
             Spacer(modifier = Modifier.weight(1f))
-            val prevResults = CurrentWorkout.getPrevResultsInWorkout()
+            val prevResults = CurrentWorkout.getPrevResultsInWorkoutForPosition(workoutPosition)
             if (!prevResults.isEmpty()) {
                 Text(prevResults, modifier = Modifier.align(Alignment.CenterHorizontally))
             }

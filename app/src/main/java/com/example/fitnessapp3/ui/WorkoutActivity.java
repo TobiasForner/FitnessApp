@@ -103,7 +103,7 @@ public class WorkoutActivity extends AppCompatActivity {
     }
 
     private void setPrevResults() {
-        String prevResults = CurrentWorkout.getPrevResultsInWorkout();
+        String prevResults = CurrentWorkout.getPrevResultsInWorkoutForCurrentPosition();
         TextView prevResultsView = findViewById(R.id.prev_results_body);
         if (!prevResults.isEmpty()) {
             prevResultsView.setText(prevResults);

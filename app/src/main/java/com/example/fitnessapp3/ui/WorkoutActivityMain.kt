@@ -55,9 +55,10 @@ private fun ActivityContent() {
     val activity = LocalActivity.current
     var name by rememberSaveable { mutableStateOf(CurrentWorkout.getWorkoutComponentName()) }
 
-    val pagerState = rememberPagerState(pageCount = {
-        CurrentWorkout.getWorkoutLength()
-    })
+    val pagerState =
+        rememberPagerState(initialPage = CurrentWorkout.getWorkoutPosition(), pageCount = {
+            CurrentWorkout.getWorkoutLength()
+        })
 
     val workoutPosition by remember { derivedStateOf { pagerState.currentPage } }
 
@@ -96,12 +97,12 @@ private fun ActivityContent() {
         } else {
             animationScope.launch {
                 pagerState.animateScrollToPage(
-                    workoutPosition+1
+                    workoutPosition + 1
                 )
             }
         }
     }
-LaunchedEffect(pagerState) {
+    LaunchedEffect(pagerState) {
         pagerState.animateScrollToPage(
             workoutPosition
         )
@@ -128,7 +129,11 @@ LaunchedEffect(pagerState) {
                             contentAlignment = Alignment.Center
                         ) {
                             if (comp.isRest) {
-                                RestActivityMainContent(Modifier,workoutPosition=page, afterFinish = afterFinish)
+                                RestActivityMainContent(
+                                    Modifier,
+                                    workoutPosition = page,
+                                    afterFinish = afterFinish
+                                )
                             } else {
                                 val exercise = comp as Exercise
                                 if (exercise.type == Exercise.ExType.DURATION) {
@@ -158,8 +163,7 @@ LaunchedEffect(pagerState) {
                             name = CurrentWorkout.getWorkoutComponentName()
                             if (CurrentWorkout.workoutIsFinished()) {
                                 showWorkoutFinishedAlert = true
-                            }
-                            else if (workoutPosition == CurrentWorkout.getWorkoutLength() - 1 && CurrentWorkout.positionIsFinished(
+                            } else if (workoutPosition == CurrentWorkout.getWorkoutLength() - 1 && CurrentWorkout.positionIsFinished(
                                     workoutPosition
                                 )
                             ) {
