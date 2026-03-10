@@ -86,7 +86,8 @@ fun DurationExerciseMainContent(
     var pickedMinutes by rememberSaveable { mutableIntStateOf(setResult?.repNr?.div(60) ?: 0) }
 
 
-    val isWeighted = (CurrentWorkout.getWorkoutComponentAtPosition(workoutPosition) as Exercise).isWeighted
+    val isWeighted =
+        (CurrentWorkout.getWorkoutComponentAtPosition(workoutPosition) as Exercise).isWeighted
     var text by remember { mutableStateOf(setResult?.addedWeight?.toString() ?: "0") }
     val weight = try {
         text.toFloat()
@@ -105,9 +106,19 @@ fun DurationExerciseMainContent(
 
     val timerViewModel: TimerViewModel = viewModel()
     if (finished) {
+        var durationText = "Duration: "
+        if (pickedMinutes > 0) {
+            durationText += "$pickedMinutes min"
+        }
+        if (pickedSeconds > 0 || pickedMinutes == 0) {
+            if (pickedMinutes > 0) {
+                durationText += " "
+            }
+            durationText += "$pickedSeconds sec"
+        }
         Column {
             Text("Finished!", fontSize = 60.sp)
-            Text("Duration: $pickedMinutes min $pickedSeconds sec")
+            Text(durationText)
             if (isWeighted) {
                 Text("Weight: $weight kg")
             }
@@ -142,7 +153,8 @@ fun DurationExerciseMainContent(
             { pickedSeconds = it },
             { pickedMinutes = it },
             isWeighted,
-            onWeightChange = { text = it }, workoutPosition = workoutPosition)
+            onWeightChange = { text = it }, workoutPosition = workoutPosition
+        )
     }
 }
 
@@ -185,7 +197,7 @@ fun DurationPicking(
         }
         if (isWeighted) {
             TextField(
-                value = setResult?.addedWeight?.toString()?:"0",
+                value = setResult?.addedWeight?.toString() ?: "0",
                 onValueChange = onWeightChange,
                 label = { Text("Weight") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
