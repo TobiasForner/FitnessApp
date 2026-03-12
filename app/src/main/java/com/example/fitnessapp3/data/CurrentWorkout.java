@@ -6,6 +6,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.ProgressBar;
 
+import androidx.annotation.NonNull;
+
 import com.example.fitnessapp3.SetResults.SetResult;
 import com.example.fitnessapp3.util.StringOccurrenceCounter;
 import com.example.fitnessapp3.util.Util;
@@ -324,7 +326,8 @@ public class CurrentWorkout {
                 res.append("+").append(weightNum).append("kg x ");
             }
             if (ithResult.isDuration()) {
-                res.append(ithResult.getRepNr()).append(" s");
+                var timeString = getFormattedTimeBuilder(ithResult);
+                res.append(timeString);
             } else {
                 res.append(ithResult.getRepNr()).append(" Reps");
             }
@@ -332,6 +335,26 @@ public class CurrentWorkout {
             res.append(System.lineSeparator());
         }
         return res.toString();
+    }
+
+    @NonNull
+    private static StringBuilder getFormattedTimeBuilder(SetResult ithResult) {
+        var timeString = new StringBuilder();
+        var mins = ithResult.getRepNr() / 60;
+        if (mins > 0) {
+            timeString.append(mins);
+            timeString.append("min");
+        }
+        var secs = ithResult.getRepNr() % 60;
+
+        if (secs > 0 || mins <= 0) {
+            if (mins > 0) {
+                timeString.append(" ");
+            }
+            timeString.append(secs);
+            timeString.append("s");
+        }
+        return timeString;
     }
 
     public static String getWorkoutComponentName() {
