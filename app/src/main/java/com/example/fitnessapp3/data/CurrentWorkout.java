@@ -126,13 +126,13 @@ public class CurrentWorkout {
         saveProgress(activity);
     }
 
-    public static boolean positionIsFinished(int position){
+    public static boolean positionIsFinished(int position) {
         var currWorkoutEntry = currentWorkout[position];
         return currWorkoutEntry != null && !currWorkoutEntry.isEmpty();
     }
 
-    public static boolean workoutIsFinished(){
-        return Arrays.stream(currentWorkout).sequential().map((x)->(x!=null && !x.isEmpty())).reduce(true, (x,y)->x&&y);
+    public static boolean workoutIsFinished() {
+        return Arrays.stream(currentWorkout).sequential().map((x) -> (x != null && !x.isEmpty())).reduce(true, (x, y) -> x && y);
     }
 
     private static String formatSetString(int workoutPos, Map<String, Integer> exCounts) {
@@ -174,7 +174,7 @@ public class CurrentWorkout {
             useLastWorkout = true;
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("CurrentWorkout", "Failed to parse last results for " + workout + " to json: " + e);
         }
 
     }
@@ -198,8 +198,7 @@ public class CurrentWorkout {
             workoutProgress.put("exResults", exerciseResults);
             Util.writeFileOnInternalStorage(activity, workoutName + "last_result.json", workoutProgress.toString());
         } catch (JSONException e) {
-            Log.e("CurrentWorkout", "saveFinalResults: failed to store set results");
-            e.printStackTrace();
+            Log.e("CurrentWorkout", "saveFinalResults: failed to store set results " + e);
         }
     }
 
@@ -241,7 +240,7 @@ public class CurrentWorkout {
 
     }
 
-    public static void goToPosition(int position){
+    public static void goToPosition(int position) {
         workout.setPosition(position);
     }
 
@@ -308,7 +307,7 @@ public class CurrentWorkout {
 
     public static String getPrevResultsInWorkoutForPosition(int workoutPosition) {
         var positionComp = workout.getComponentAtPosition(workoutPosition);
-        if (positionComp==null){
+        if (positionComp == null) {
             return "";
         }
         String compName = positionComp.getName();
@@ -358,7 +357,7 @@ public class CurrentWorkout {
     }
 
     public static String getWorkoutComponentName() {
-        if(workout==null){
+        if (workout == null) {
 
             return null;
         }
@@ -366,7 +365,7 @@ public class CurrentWorkout {
     }
 
     public static SetResult getPrevSetResultsOfCurrentPosition() {
-        if(getWorkoutPosition()>=getWorkoutLength()){
+        if (getWorkoutPosition() >= getWorkoutLength()) {
             return null;
         }
         String compName = workout.getCurrentComponent().getName();
@@ -394,7 +393,6 @@ public class CurrentWorkout {
     }
 
 
-
     public static SetResult getThisWorkoutSetResultsOfPositionExercise(int workoutPosition) {
         String compName = workout.getComponentAtPosition(workoutPosition).getName();
         if (exToResults.containsKey(compName)) {
@@ -408,7 +406,7 @@ public class CurrentWorkout {
         return null;
     }
 
-    public static SetResult getPositionSetResult(int workoutPosition){
+    public static SetResult getPositionSetResult(int workoutPosition) {
         SetResult setResult;
         if (!CurrentWorkout.useLastWorkout) {
             setResult = CurrentWorkout.getThisWorkoutSetResultsOfPositionExercise(workoutPosition);
@@ -423,11 +421,12 @@ public class CurrentWorkout {
 
     /**
      * Returns the SetResult in the last completed workout with the current name for the current position
+     *
      * @param workoutPosition position in the workout
      * @return SetResult in the last workout for workoutPosition
      */
     public static SetResult getPrevSetResultsOfPosition(int workoutPosition) {
-        if(workoutPosition>=getWorkoutLength()){
+        if (workoutPosition >= getWorkoutLength()) {
             return null;
         }
         String compName = workout.getComponentAtPosition(workoutPosition).getName();
@@ -442,8 +441,8 @@ public class CurrentWorkout {
     }
 
     public static String getSetString() {
-        if(workout.getPosition()<setStrings.size()){
-        return setStrings.get(workout.getPosition());
+        if (workout.getPosition() < setStrings.size()) {
+            return setStrings.get(workout.getPosition());
         } else {
             return "";
         }
@@ -535,7 +534,7 @@ public class CurrentWorkout {
             JSONObject progress = new JSONObject(progressText);
             return progress.getBoolean(WorkoutIsInProgressFieldName);
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("CurrentWorkout", "Failed to parse " + Util.WORKOUT_IN_PROGRESS_JSON + ": " + e);
         }
         return false;
     }
@@ -586,7 +585,7 @@ public class CurrentWorkout {
             workout_in_progress.put("is_in_progress", b);
             Util.writeFileOnInternalStorage(context, Util.WORKOUT_IS_IN_PROGRESS_JSON, workout_in_progress.toString());
         } catch (JSONException e) {
-            e.printStackTrace();
+            Log.e("CurrentWorkout", "Failed to update " + Util.WORKOUT_IS_IN_PROGRESS_JSON + ": " + e);
         }
     }
 }
