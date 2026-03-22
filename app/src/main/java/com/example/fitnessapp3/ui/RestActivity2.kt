@@ -66,9 +66,19 @@ private fun ActivityContent() {
 }
 
 @Composable
-fun RestActivityMainContent(modifier: Modifier, workoutPosition:Int= CurrentWorkout.getWorkoutPosition(), afterFinish: () -> Unit) {
+fun RestActivityMainContent(
+    modifier: Modifier,
+    workoutPosition: Int = CurrentWorkout.getWorkoutPosition(),
+    afterFinish: () -> Unit
+) {
     val activity = LocalActivity.current
-    var finished by rememberSaveable { mutableStateOf(CurrentWorkout.positionIsFinished(workoutPosition)) }
+    var finished by rememberSaveable {
+        mutableStateOf(
+            CurrentWorkout.positionIsFinished(
+                workoutPosition
+            )
+        )
+    }
 
     val timerViewModel: TimerViewModel = viewModel()
     val intent = activity?.intent
@@ -77,10 +87,11 @@ fun RestActivityMainContent(modifier: Modifier, workoutPosition:Int= CurrentWork
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (finished) {
             Column {
-            Text("Finished!", fontSize = 60.sp)
-                val seconds = millis?.div(1000) ?:120
-            Text("Duration: $seconds sec")
-            } }else {
+                Text("Finished!", fontSize = 60.sp)
+                val seconds = millis?.div(1000) ?: 120
+                Text("Duration: $seconds sec")
+            }
+        } else {
             Timer(viewModel = timerViewModel, onFinished = {
                 if ("WorkoutActivity" == Objects.requireNonNull(
                         intent?.getStringExtra(
