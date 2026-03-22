@@ -80,7 +80,7 @@ fun DurationExerciseMainContent(
     afterFinish: () -> Unit
 ) {
     val activity = LocalActivity.current
-    val setResult: SetResult? = CurrentWorkout.getPositionSetResult(workoutPosition)
+    val setResult: SetResult? = CurrentWorkout.getPositionPrevSetResult(workoutPosition)
 
     var pickedSeconds by rememberSaveable { mutableIntStateOf(setResult?.repNr?.mod(60) ?: 30) }
     var pickedMinutes by rememberSaveable { mutableIntStateOf(setResult?.repNr?.div(60) ?: 0) }
@@ -106,21 +106,25 @@ fun DurationExerciseMainContent(
 
     val timerViewModel: TimerViewModel = viewModel()
     if (finished) {
+        val setResult = CurrentWorkout.getSetResultForPosition(workoutPosition)
+        val minutes = setResult.repNr/60
+        val seconds = setResult.repNr.mod(60)
+
         var durationText = "Duration: "
-        if (pickedMinutes > 0) {
-            durationText += "$pickedMinutes min"
+        if (minutes > 0) {
+            durationText += "$minutes min"
         }
-        if (pickedSeconds > 0 || pickedMinutes == 0) {
-            if (pickedMinutes > 0) {
+        if (seconds > 0 || minutes == 0) {
+            if (minutes > 0) {
                 durationText += " "
             }
-            durationText += "$pickedSeconds sec"
+            durationText += "$seconds sec"
         }
         Column {
             Text("Finished!", fontSize = 60.sp)
             Text(durationText)
             if (isWeighted) {
-                Text("Weight: $weight kg")
+                Text("Weight: ${setResult.addedWeight} kg")
             }
         }
     } else if (timerStarted) {
@@ -171,7 +175,7 @@ fun DurationPicking(
     workoutPosition: Int
 ) {
 
-    val setResult: SetResult? = CurrentWorkout.getPositionSetResult(workoutPosition)
+    val setResult: SetResult? = CurrentWorkout.getPositionPrevSetResult(workoutPosition)
 
     Column(modifier = modifier) {
         Row {

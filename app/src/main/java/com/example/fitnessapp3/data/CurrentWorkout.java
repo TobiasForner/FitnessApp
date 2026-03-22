@@ -406,7 +406,7 @@ public class CurrentWorkout {
         return null;
     }
 
-    public static SetResult getPositionSetResult(int workoutPosition) {
+    public static SetResult getPositionPrevSetResult(int workoutPosition) {
         SetResult setResult;
         if (!CurrentWorkout.useLastWorkout) {
             setResult = CurrentWorkout.getThisWorkoutSetResultsOfPositionExercise(workoutPosition);
@@ -417,6 +417,17 @@ public class CurrentWorkout {
             }
         }
         return setResult;
+    }
+
+    public static SetResult getSetResultForPosition(int workoutPosition) {
+        String compName = workout.getComponentAtPosition(workoutPosition).getName();
+        if (exToResults.containsKey(compName)) {
+            ArrayList<SetResult> setResults = exToResults.get(compName);
+            int setPos = numberOfExercise.get(workoutPosition);
+            assert setResults != null;
+            return setResults.get(setPos);
+        }
+        return null;
     }
 
     /**

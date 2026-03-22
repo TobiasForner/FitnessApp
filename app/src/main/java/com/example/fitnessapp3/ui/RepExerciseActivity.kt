@@ -92,7 +92,7 @@ fun RepExerciseMainContent(
         )
     }
 
-    val setResult: SetResult? = CurrentWorkout.getPositionSetResult(workoutPosition)
+    val setResult: SetResult? = CurrentWorkout.getPositionPrevSetResult(workoutPosition)
 
     val isWeighted = (workoutComponent as Exercise).isWeighted
     var text by rememberSaveable { mutableStateOf(setResult?.addedWeight?.toString() ?: "10") }
@@ -101,11 +101,12 @@ fun RepExerciseMainContent(
 
     var showWeightError by rememberSaveable { mutableStateOf(false) }
     if (finished) {
+        val setResult = CurrentWorkout.getSetResultForPosition(workoutPosition)
         Column {
             Text("Finished!", fontSize = 60.sp)
-            Text("$repNumber reps")
+            Text("${setResult.repNr} reps")
             if (isWeighted) {
-                Text("Weight: $text kg")
+                Text("Weight: ${setResult.addedWeight} kg")
             }
         }
 
