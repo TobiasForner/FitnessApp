@@ -34,7 +34,9 @@ import androidx.compose.ui.unit.dp
 import com.example.fitnessapp3.MainActivity2
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.Exercise
+import com.example.fitnessapp3.ui.components.DurationExerciseMainContent
 import com.example.fitnessapp3.ui.components.ExerciseHeader
+import com.example.fitnessapp3.ui.components.RepExerciseMainContent
 import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 import kotlinx.coroutines.launch
 
@@ -53,14 +55,27 @@ class WorkoutActivityMain : ComponentActivity() {
 @Composable
 private fun ActivityContent() {
     val activity = LocalActivity.current
-    var name by rememberSaveable { mutableStateOf(CurrentWorkout.getWorkoutComponentName()) }
+
+    // compute first not done position in current workout
+    var pos = 0
+    while (pos < CurrentWorkout.getWorkoutLength() && CurrentWorkout.positionIsFinished(pos)) {
+        pos += 1
+    }
 
     val pagerState =
-        rememberPagerState(initialPage = CurrentWorkout.getWorkoutPosition(), pageCount = {
+        rememberPagerState(initialPage = pos, pageCount = {
             CurrentWorkout.getWorkoutLength()
         })
 
     val workoutPosition by remember { derivedStateOf { pagerState.currentPage } }
+
+    var name by rememberSaveable {
+        mutableStateOf(
+            CurrentWorkout.getWorkoutComponentAtPosition(
+                workoutPosition
+            ).name
+        )
+    }
 
     var showEndButUnfinishedAlert by remember { mutableStateOf(false) }
     var showWorkoutFinishedAlert by remember { mutableStateOf(false) }
@@ -117,7 +132,7 @@ private fun ActivityContent() {
                     .padding(top = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                ExerciseHeader(name)
+                ExerciseHeader(name, workoutPosition)
                 HorizontalPager(state = pagerState) { page ->
                     val comp = CurrentWorkout.getWorkoutComponentAtPosition(page)
                     Column {
@@ -128,29 +143,21 @@ private fun ActivityContent() {
                                 .weight(3f),
                             contentAlignment = Alignment.Center
                         ) {
-                            if (comp.isRest) {
-                                RestActivityMainContent(
+                            val exercise = comp as Exercise
+                            if (exercise.type == Exercise.ExType.DURATION) {
+                                DurationExerciseMainContent(
                                     Modifier,
                                     workoutPosition = page,
                                     afterFinish = afterFinish
                                 )
                             } else {
-                                val exercise = comp as Exercise
-                                if (exercise.type == Exercise.ExType.DURATION) {
-
-                                    DurationExerciseMainContent(
-                                        Modifier,
-                                        workoutPosition = page,
-                                        afterFinish = afterFinish
-                                    )
-                                } else {
-                                    RepExerciseMainContent(
-                                        Modifier,
-                                        workoutPosition = page,
-                                        afterFinish = afterFinish
-                                    )
-                                }
+                                RepExerciseMainContent(
+                                    Modifier,
+                                    workoutPosition = page,
+                                    afterFinish = afterFinish
+                                )
                             }
+
                         }
                         Spacer(Modifier.weight(2f))
                     }
@@ -159,8 +166,7 @@ private fun ActivityContent() {
                 LaunchedEffect(pagerState) {
                     snapshotFlow { pagerState.currentPage }
                         .collect { page ->
-                            CurrentWorkout.goToPosition(page)
-                            name = CurrentWorkout.getWorkoutComponentName()
+                            name = CurrentWorkout.getWorkoutComponentAtPosition(page).name
                             if (CurrentWorkout.workoutIsFinished()) {
                                 showWorkoutFinishedAlert = true
                             } else if (workoutPosition == CurrentWorkout.getWorkoutLength() - 1 && CurrentWorkout.positionIsFinished(

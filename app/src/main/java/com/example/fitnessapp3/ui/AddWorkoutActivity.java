@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
 
+import com.example.fitnessapp3.MainActivity2;
 import com.example.fitnessapp3.data.CurrentWorkout;
 import com.example.fitnessapp3.data.ExerciseManager;
 import com.example.fitnessapp3.R;
@@ -207,7 +208,7 @@ public class AddWorkoutActivity extends AppCompatActivity implements PositiveNeg
                 WorkoutManager.addWorkoutJSON(workout, this);
                 CurrentWorkout.assureNotInProgress(workoutName.getText().toString(), this);
 
-                Intent intent = new Intent(this, MainActivity.class);
+                Intent intent = new Intent(this, MainActivity2.class);
                 startActivity(intent);
             } else {
                 showPopupWindowClick(workoutName, getString(R.string.workout_invalid));

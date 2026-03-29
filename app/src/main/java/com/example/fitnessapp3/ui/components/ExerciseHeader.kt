@@ -9,7 +9,7 @@ import com.example.fitnessapp3.data.CurrentWorkout
 @Composable
 fun ExerciseHeader(
     exerciseName: String,
-    workoutPosition: Int = CurrentWorkout.getWorkoutPosition(),
+    workoutPosition: Int,
     done: MutableList<Boolean>?=null
 ) {
     val donePositions = done?:MutableList(CurrentWorkout.getWorkoutLength()) { false }
@@ -20,5 +20,5 @@ fun ExerciseHeader(
 
     WorkoutProgressBar(Modifier, CurrentWorkout.getWorkoutLength(), workoutPosition, donePositions)
     Text(exerciseName, fontSize = 40.sp)
-    Text(CurrentWorkout.getSetString(), fontSize = 15.sp)
+    Text(CurrentWorkout.getSetStringForPosition(workoutPosition), fontSize = 15.sp)
 }

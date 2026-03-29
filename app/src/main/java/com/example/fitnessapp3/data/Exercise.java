@@ -8,12 +8,10 @@ import org.json.JSONObject;
 public class Exercise extends WorkoutComponent {
 
     public enum ExType {
-        REST, REPS, DURATION;
+        REPS, DURATION;
 
         public static ExType fromString(String exType) {
-            if (exType.equals("Rest")) {
-                return REST;
-            } else if (exType.equals("Reps")) {
+            if (exType.equals("Reps")) {
                 return REPS;
             } else {
                 return DURATION;
@@ -23,9 +21,7 @@ public class Exercise extends WorkoutComponent {
         @NonNull
         @Override
         public String toString() {
-            if (this == REST) {
-                return "Rest";
-            } else if (this == REPS) {
+            if (this == REPS) {
                 return "Reps";
             } else {
                 return "Duration";
@@ -57,10 +53,6 @@ public class Exercise extends WorkoutComponent {
 
     public boolean isExercise() {
         return true;
-    }
-
-    public boolean isRest() {
-        return false;
     }
 
     @Override

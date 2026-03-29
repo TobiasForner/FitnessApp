@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 
 import android.util.Log;
-import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 
@@ -113,17 +112,14 @@ public class CurrentWorkout {
         Map<String, Integer> exCounts = counter.getCountMap();
         setStrings = IntStream.range(0, numberOfExercise.size()).mapToObj(i -> formatSetString(i, exCounts)).collect(Collectors.toList());
 
-        exToResults = exCounts.entrySet().stream().filter(e -> !e.getKey().equals("Rest")).collect(Collectors.toMap(Map.Entry::getKey, e -> new ArrayList<>()));
+        exToResults = exCounts.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> new ArrayList<>()));
         for (Map.Entry<String, Integer> pair : exCounts.entrySet()) {
-            if (!pair.getKey().equals("Rest")) {
                 for (int i = 0; i < pair.getValue(); i++) {
                     Objects.requireNonNull(exToResults.get(pair.getKey())).add(new SetResult(0, 0));
                 }
-            }
-
         }
         tryInitLastWorkoutJSON(activity);
-        saveProgress(activity);
+        saveProgress(activity, 0);
     }
 
     public static boolean positionIsFinished(int position) {
@@ -212,97 +208,44 @@ public class CurrentWorkout {
         numberOfExercise = new ArrayList<>(workoutLength);
     }
 
-    public static boolean hasCurrentExercise() {
-        return workout.hasNextExercise();
-    }
-
-    public static boolean hasNextExercise() {
-        return workout.getPosition() < workout.getLength() - 1;
-    }
-
-    public static WorkoutComponent getCurrentWorkoutComponent() throws IllegalArgumentException {
-        if (!hasCurrentExercise()) {
-            throw new IllegalArgumentException("No next exercise!");
-        }
-        return workout.getCurrentComponent();
-    }
-
     public static WorkoutComponent getWorkoutComponentAtPosition(int position) throws IllegalArgumentException {
         return workout.getComponentAtPosition(position);
     }
 
-    public static WorkoutComponent getNextWorkoutComponent() throws IllegalArgumentException {
-        if (hasNextExercise()) {
-            return workout.getComponentAt(workout.getPosition() + 1);
-        } else {
-            throw new IllegalArgumentException("No next exercise!");
-        }
-
-    }
-
-    public static void goToPosition(int position) {
-        workout.setPosition(position);
-    }
-
-    public static void goBack() {
-        workout.goBack();
-    }
-
     public static void logExercise(int exNum, int repNum, Activity activity, int pos) {
-        currentWorkout[workout.getPosition()] = exNum + "," + repNum;
-        String compName = workout.getCurrentComponent().getName();
+        currentWorkout[pos] = exNum + "," + repNum;
+        String compName = workout.getComponentAtPosition(pos).getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
         assert setResults != null;
-        SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
+        SetResult currentSetResult = setResults.get(numberOfExercise.get(pos));
         currentSetResult.setRepNr(repNum);
         currentSetResult.setAddedWeight(exNum);
-        if (pos == getWorkoutPosition()) {
-            workout.proceed();
-        }
-        saveProgress(activity);
-    }
-
-    public static void logRest(int millis, Activity activity, int pos) {
-        currentWorkout[workout.getPosition()] = "" + millis;
-        if (pos == getWorkoutPosition()) {
-            workout.proceed();
-        }
-        saveProgress(activity);
+        saveProgress(activity, pos);
     }
 
 
     public static void logDuration(int duration, Activity activity, int pos) {
-        currentWorkout[workout.getPosition()] = "" + duration;
-        String compName = workout.getCurrentComponent().getName();
+        currentWorkout[pos] = "" + duration;
+        String compName = workout.getComponentAt(pos).getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
         assert setResults != null;
-        SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
+        SetResult currentSetResult = setResults.get(numberOfExercise.get(pos));
         currentSetResult.setRepNr(duration);
         currentSetResult.setAddedWeight(0);
         currentSetResult.setIsDuration(true);
-        if (pos == getWorkoutPosition()) {
-            workout.proceed();
-        }
-        saveProgress(activity);
+        saveProgress(activity, pos);
     }
 
     public static void logWeightedDuration(int duration, int weight, Activity activity, int pos) {
-        currentWorkout[workout.getPosition()] = duration + "," + weight + "," + true;
-        String compName = workout.getCurrentComponent().getName();
+        currentWorkout[pos] = duration + "," + weight + "," + true;
+        String compName = workout.getComponentAtPosition(pos).getName();
         ArrayList<SetResult> setResults = exToResults.get(compName);
         assert setResults != null;
-        SetResult currentSetResult = setResults.get(numberOfExercise.get(workout.getPosition()));
+        SetResult currentSetResult = setResults.get(numberOfExercise.get(pos));
         currentSetResult.setRepNr(duration);
         currentSetResult.setAddedWeight(weight);
         currentSetResult.setIsDuration(true);
-        if (pos == getWorkoutPosition()) {
-            workout.proceed();
-        }
-        saveProgress(activity);
-    }
-
-    public static String getPrevResultsInWorkoutForCurrentPosition() {
-        return getPrevResultsInWorkoutForPosition(workout.getPosition());
+        saveProgress(activity, pos);
     }
 
     public static String getPrevResultsInWorkoutForPosition(int workoutPosition) {
@@ -318,7 +261,7 @@ public class CurrentWorkout {
         StringBuilder res = new StringBuilder();
         for (int i = 0; i < numberOfExercise.get(workoutPosition); i++) {
 
-            res.append("Set ").append(i + 1).append(":\t");
+            res.append("Set ").append(i + 1).append(": ");
             SetResult ithResult = prevResults.get(i);
             int weightNum = ithResult.getAddedWeight();
             if (weightNum > 0) {
@@ -354,42 +297,6 @@ public class CurrentWorkout {
             timeString.append("s");
         }
         return timeString;
-    }
-
-    public static String getWorkoutComponentName() {
-        if (workout == null) {
-
-            return null;
-        }
-        return workout.getCurrentComponent().getName();
-    }
-
-    public static SetResult getPrevSetResultsOfCurrentPosition() {
-        if (getWorkoutPosition() >= getWorkoutLength()) {
-            return null;
-        }
-        String compName = workout.getCurrentComponent().getName();
-        if (lastWorkoutExToResults.containsKey(compName)) {
-            ArrayList<SetResult> setResults = lastWorkoutExToResults.get(compName);
-            int setPos = numberOfExercise.get(workout.getPosition());
-            assert setResults != null;
-            int usePos = Math.min(setPos, setResults.size() - 1);
-            return setResults.get(usePos);
-        }
-        return null;
-    }
-
-    public static SetResult getPrevSetResultsOfCurrentExercise() {
-        String compName = workout.getCurrentComponent().getName();
-        if (exToResults.containsKey(compName)) {
-            ArrayList<SetResult> setResults = exToResults.get(compName);
-            int setPos = numberOfExercise.get(workout.getPosition());
-            assert setResults != null;
-            if (setPos > 0) {
-                return setResults.get(setPos - 1);
-            }
-        }
-        return null;
     }
 
 
@@ -451,15 +358,15 @@ public class CurrentWorkout {
         return null;
     }
 
-    public static String getSetString() {
-        if (workout.getPosition() < setStrings.size()) {
-            return setStrings.get(workout.getPosition());
+    public static String getSetStringForPosition(int workoutPosition) {
+        if (workoutPosition < setStrings.size()) {
+            return setStrings.get(workoutPosition);
         } else {
             return "";
         }
     }
 
-    private static void saveProgress(Activity activity) {
+    private static void saveProgress(Activity activity, int workoutPosition) {
         setInProgress(true, activity);
 
         JSONObject workoutProgress = new JSONObject();
@@ -478,7 +385,7 @@ public class CurrentWorkout {
                 exerciseResults.put(ex, new JSONArray(repr));
             }
             workoutProgress.put("exResults", exerciseResults);
-            workoutProgress.put("position", workout.getPosition());
+            workoutProgress.put("position", workoutPosition);
 
             workoutProgress.put("currentWorkout", new JSONArray(currentWorkout));
             Util.writeFileOnInternalStorage(activity, Util.WORKOUT_IN_PROGRESS_JSON, workoutProgress.toString());
@@ -515,7 +422,6 @@ public class CurrentWorkout {
 
                     int workoutPos = progress.getInt("position");
                     Log.d("CurrentWorkout", "restoreWorkoutInProgress: restoring from position " + workoutPos);
-                    goToPosition(workoutPos);
                     JSONObject exToRes = (JSONObject) progress.get("exResults");
                     for (Iterator<String> it = exToRes.keys(); it.hasNext(); ) {
                         String key = it.next();
@@ -527,7 +433,7 @@ public class CurrentWorkout {
                             currResults.set(i, ithRes);
                         }
                     }
-                    saveProgress(activity);
+                    saveProgress(activity, workoutPos);
                     setInProgress(true, activity);
                 } catch (JSONException e) {
                     Log.e("CurrentWorkout", "restoreWorkoutInProgress: failed to load from JSON");
@@ -559,17 +465,6 @@ public class CurrentWorkout {
 
     public static int getWorkoutLength() {
         return workout.getLength();
-    }
-
-    public static int getWorkoutPosition() {
-        return workout.getPosition();
-    }
-
-    public static void setProgress(ProgressBar progressBar) {
-        progressBar.setMin(0);
-        progressBar.setMax(getWorkoutLength());
-        progressBar.setIndeterminate(false);
-        progressBar.setProgress(getWorkoutPosition() + 1);
     }
 
     public static void assureNotInProgress(String workoutName, Activity activity) {

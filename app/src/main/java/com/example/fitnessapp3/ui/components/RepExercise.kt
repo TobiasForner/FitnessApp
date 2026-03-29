@@ -1,19 +1,12 @@
-package com.example.fitnessapp3.ui
+package com.example.fitnessapp3.ui.components
 
 import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
@@ -26,59 +19,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.fitnessapp3.SetResults.SetResult
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.Exercise
-import com.example.fitnessapp3.ui.components.ExerciseHeader
-import com.example.fitnessapp3.ui.components.NumberStepper
-import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
 
-class RepExerciseActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            ActivityContent()
-        }
-    }
-}
-
-@Composable
-private fun ActivityContent() {
-    val name = CurrentWorkout.getWorkoutComponentName() ?: "Exercise name"
-    val activity = LocalActivity.current
-
-    FitnessApp3Theme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-                    .padding(top = 10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ExerciseHeader(exerciseName = name)
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                RepExerciseMainContent(
-                    modifier = Modifier.weight(5f),
-                    afterFinish = {
-                        goToNextActivity(activity)
-
-                    })
-            }
-        }
-    }
-}
 
 @Composable
 fun RepExerciseMainContent(
     modifier: Modifier,
-    workoutPosition: Int = CurrentWorkout.getWorkoutPosition(),
+    workoutPosition: Int,
     afterFinish: () -> Unit
 ) {
     val activity = LocalActivity.current
@@ -95,7 +45,7 @@ fun RepExerciseMainContent(
     val setResult: SetResult? = CurrentWorkout.getPositionPrevSetResult(workoutPosition)
 
     val isWeighted = (workoutComponent as Exercise).isWeighted
-    var text by rememberSaveable { mutableStateOf(setResult?.addedWeight?.toString() ?: "10") }
+    var text by rememberSaveable { mutableStateOf(setResult?.addedWeight?.toString() ?: "0") }
 
     var repNumber by rememberSaveable { mutableIntStateOf(setResult?.repNr ?: 10) }
 
@@ -173,13 +123,4 @@ fun logExercise(repNumber: Int, weight: Int?, workoutPosition: Int, activity: Ac
     } else {
         CurrentWorkout.logExercise(0, repNumber, activity, workoutPosition)
     }
-}
-
-private fun goToNextActivity(activity: Activity?) {
-    if (!CurrentWorkout.hasCurrentExercise()) {
-        CurrentWorkout.finishWorkout(activity)
-        activity?.startActivity(ActivityTransition.goToNextActivityInWorkout(activity))
-        activity?.finish()
-    }
-    activity?.startActivity(ActivityTransition.goToNextActivityInWorkout(activity))
 }

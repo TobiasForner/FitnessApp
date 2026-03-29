@@ -195,7 +195,7 @@ fun WorkoutList() {
                 val w = WorkoutManager.getWorkout(workoutName, context)
                 for (i in 0..<w.length) {
                     val comp = w.getComponentAt(i)
-                    if (comp.isExercise()) {
+                    if (comp!=null && comp.isExercise()) {
                         val exName = comp.getName()
                         if (!foundExercises.contains(exName)) {
                             foundExercises.add(exName)

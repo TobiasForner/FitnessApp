@@ -28,11 +28,11 @@ public class ExerciseManager {
     }
 
     public void initExerciseDetails(Context context) {
-        addExercise("Pull Up", Exercise.ExType.REPS, true,  context);
-        addExercise("Ring Dip", Exercise.ExType.REPS, true,  context);
-        addExercise("Push Up", Exercise.ExType.REPS, true,  context);
-        addExercise("Row", Exercise.ExType.REPS, true,  context);
-        addExercise("Rest", Exercise.ExType.REST, true,  context);
+        addExercise("Pull Up", Exercise.ExType.REPS, true, context);
+        addExercise("Ring Dip", Exercise.ExType.REPS, true, context);
+        addExercise("Push Up", Exercise.ExType.REPS, true, context);
+        addExercise("Row", Exercise.ExType.REPS, true, context);
+        addExercise("Rest", Exercise.ExType.DURATION, true, context);
     }
 
     public void addExercise(String name, Exercise.ExType exType, boolean weighted, Context context) {
@@ -42,19 +42,10 @@ public class ExerciseManager {
         writeExercisesToJSON(context);
     }
 
-    public void deleteExercise(String exerciseName, Context context){
-        if(nameToEx.containsKey(exerciseName)){
+    public void deleteExercise(String exerciseName, Context context) {
+        if (nameToEx.containsKey(exerciseName)) {
             nameToEx.remove(exerciseName);
             writeExercisesToJSON(context);
-        }
-    }
-
-    public void addStrippedExercise(String exName, Context context) {
-        String strippedName = Util.strip(exName);
-        WorkoutComponent comp = getWorkoutComponent(exName);
-        if (comp.isExercise()) {
-            Exercise ex = (Exercise) comp;
-            addExercise(strippedName, ex.getType(), ex.isWeighted(), context);
         }
     }
 
@@ -93,15 +84,8 @@ public class ExerciseManager {
             JSONArray exerciseDetails = new JSONArray(content);
             for (int i = 0; i < exerciseDetails.length(); i++) {
                 JSONObject compJSON = (JSONObject) exerciseDetails.get(i);
-
-                if (compJSON.get(WorkoutComponent.typeJSON).equals(Exercise.ExType.REST.toString())) {
-                    WorkoutComponent rest = Rest.fromJSON(compJSON);
-                    nameToEx.put(rest.getName(), rest);
-
-                } else {
-                    WorkoutComponent exercise = Exercise.fromJSON(compJSON);
-                    nameToEx.put(exercise.getName(), exercise);
-                }
+                WorkoutComponent exercise = Exercise.fromJSON(compJSON);
+                nameToEx.put(exercise.getName(), exercise);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -109,16 +93,11 @@ public class ExerciseManager {
     }
 
     public void overwriteExerciseDetailsJSON(JSONArray json, Context context) throws JSONException {
-        for(int i=0; i<json.length(); i++){
+        for (int i = 0; i < json.length(); i++) {
             JSONObject current = json.getJSONObject(i);
             String name = current.getString("name");
-            if(name.equals("Rest")){
-                Rest rest = Rest.fromJSON(current);
-                nameToEx.put(name, rest);
-            }else{
-                Exercise exercise=Exercise.fromJSON(current);
+                Exercise exercise = Exercise.fromJSON(current);
                 nameToEx.put(name, exercise);
-            }
         }
         writeExercisesToJSON(context);
     }
@@ -131,23 +110,10 @@ public class ExerciseManager {
         return false;
     }
 
-    private Rest parseRest(String exName) {
-        if (exName.length() >= 5) {
-            String start = exName.substring(0, 5);
-            if (start.equals("Rest:")) {
-                int time = Integer.parseInt(exName.substring(5));
-                return new Rest(time);
-            }
-        }
-        return new Rest(180000);
-    }
-
     public WorkoutComponent getWorkoutComponent(String exName) {
 
         assert exName != null;
-        if (isRest(exName)) {
-            return parseRest(exName);
-        } else if (nameToEx.containsKey(exName)) {
+        if (nameToEx.containsKey(exName)) {
             return nameToEx.get(exName);
         } else {
             Log.e("ExerciseManager", "Exercise " + exName + " not defined.");
@@ -156,9 +122,6 @@ public class ExerciseManager {
     }
 
     private WorkoutComponent getExerciseFromDetails(String exName, Exercise.ExType exType, boolean weighted) {
-        if (exType == Exercise.ExType.REST) {
-            return new Rest(180000);
-        }
         return new Exercise(exName, exType, weighted);
     }
 

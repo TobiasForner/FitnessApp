@@ -1,19 +1,12 @@
-package com.example.fitnessapp3.ui
+package com.example.fitnessapp3.ui.components
 
 import android.app.Activity
-import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.LocalActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -26,57 +19,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.fitnessapp3.SetResults.SetResult
 import com.example.fitnessapp3.data.CurrentWorkout
 import com.example.fitnessapp3.data.Exercise
-import com.example.fitnessapp3.ui.components.ExerciseHeader
-import com.example.fitnessapp3.ui.components.TimerViewModel
-import com.example.fitnessapp3.ui.components.NumberStepper
-import com.example.fitnessapp3.ui.components.Timer
-import com.example.fitnessapp3.ui.theme.FitnessApp3Theme
-
-class DurationExerciseActivity2 : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        enableEdgeToEdge()
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            ActivityContent()
-        }
-    }
-}
-
-@Composable
-private fun ActivityContent() {
-    val name = CurrentWorkout.getWorkoutComponentName() ?: "Exercise name"
-    val activity = LocalActivity.current
-
-    FitnessApp3Theme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Column(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize()
-                    .padding(top = 10.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                ExerciseHeader(name)
-                Spacer(modifier = Modifier.weight(1f))
-                DurationExerciseMainContent(
-                    modifier = Modifier.weight(5f),
-                    afterFinish = { goToNextActivity(activity) })
-            }
-        }
-    }
-}
 
 @Composable
 fun DurationExerciseMainContent(
     modifier: Modifier,
-    workoutPosition: Int = CurrentWorkout.getWorkoutPosition(),
+    workoutPosition: Int,
     afterFinish: () -> Unit
 ) {
     val activity = LocalActivity.current
@@ -228,13 +180,4 @@ private fun logDuration(duration: Int, weight: Int?, activity: Activity?, workou
     } else {
         CurrentWorkout.logDuration(duration, activity, workoutPosition)
     }
-}
-
-private fun goToNextActivity(activity: Activity?) {
-    if (!CurrentWorkout.hasCurrentExercise()) {
-        CurrentWorkout.finishWorkout(activity)
-        activity?.startActivity(ActivityTransition.goToNextActivityInWorkout(activity))
-        activity?.finish()
-    }
-    activity?.startActivity(ActivityTransition.goToNextActivityInWorkout(activity))
 }
