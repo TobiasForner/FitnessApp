@@ -73,7 +73,7 @@ fun RepExerciseMainContent(
             if (isWeighted) {
                 Spacer(modifier = Modifier.weight(0.1f))
                 TextField(
-                    value = setResult?.addedWeight?.toString()?:"0",
+                    value = text,
                     onValueChange = { text = it },
                     label = { Text("Weight") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
